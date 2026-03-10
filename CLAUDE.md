@@ -13,103 +13,111 @@ docutray-claude-code-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json      # Central marketplace catalog
 ├── plugins/
-│   └── <plugin-name>/        # Each plugin in its own directory
-│       ├── .claude-plugin/
-│       │   └── plugin.json   # Plugin manifest
+│   ├── devflow/              # Agile workflow commands (pure markdown)
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── commands/         # Slash commands (.md with YAML frontmatter)
+│   │   └── templates/        # Framework-specific templates (python, typescript-node)
+│   └── rag-research/         # RAG document search (Python + markdown)
+│       ├── .claude-plugin/plugin.json
 │       ├── commands/         # Slash commands
-│       ├── skills/           # Agent skills (optional)
-│       ├── templates/        # Supporting files (optional)
-│       └── README.md         # Plugin documentation
-├── README.md                 # Marketplace documentation
-└── CLAUDE.md                 # This file
+│       ├── skills/           # Auto-activated skills (SKILL.md)
+│       ├── agents/           # Autonomous agent definitions
+│       ├── src/              # Python implementation (cli.py, rag_manager.py, document_loader.py)
+│       └── pyproject.toml    # Python package config (uv)
+├── .kimi/skills/             # Kimi CLI Flow Skills (parallel implementation)
+├── AGENTS.md                 # Detailed context for AI coding agents
+├── CHANGELOG.md              # Version history
+└── install-kimi-flows.sh     # Kimi Flow Skills installer
 ```
 
 ## Plugin Architecture
 
-### Marketplace (Root Level)
+### Marketplace (`marketplace.json`)
 
-- **`.claude-plugin/marketplace.json`**: Central catalog listing all available plugins
-- Uses `metadata.pluginRoot: "./plugins"` to simplify source paths
-- Each plugin entry references its directory name under `plugins/`
-
-### Individual Plugins
-
-Each plugin follows the standard Claude Code plugin structure:
-
-- **`.claude-plugin/plugin.json`**: Plugin manifest with metadata and versioning
-- **`commands/`**: Markdown files defining slash commands with YAML frontmatter
-- **`skills/`**: Agent Skills in subdirectories with `SKILL.md` files
-- **`README.md`**: Plugin-specific documentation
+The root `.claude-plugin/marketplace.json` lists all plugins with `source` paths relative to the marketplace root (e.g., `"source": "./plugins/devflow"`). Each plugin also has its own `.claude-plugin/plugin.json` manifest with version and metadata.
 
 ### Key Concepts
 
-**Slash Commands vs Skills:**
-- **Commands**: User-invoked via `/command-name`, defined in `.md` files, support arguments (`$ARGUMENTS`, `$1`, `$2`), bash execution (`!`), and file references (`@`)
-- **Skills**: Auto-activated by Claude based on context, defined in `SKILL.md` files, require specific trigger terms in descriptions for proper activation
+- **Commands**: User-invoked via `/plugin:command-name`, defined in `.md` files with YAML frontmatter (`description`, `allowed-tools`, `argument-hint`). Support `$ARGUMENTS`, `$1`/`$2`, `` !`bash` `` execution, `@file` references, and `${CLAUDE_PLUGIN_ROOT}`.
+- **Skills**: Auto-activated by Claude based on trigger terms in the `description` field of `SKILL.md` frontmatter. Located in `skills/<skill-name>/SKILL.md`.
+- **Agents**: Autonomous task handlers defined in `agents/<name>.md` with frontmatter specifying `tools`, `model`, and `whenToUse`.
 
-**Plugin Distribution:**
-- Users add the marketplace: `/plugin marketplace add docutray/docutray-claude-code-plugins`
-- Users install plugins: `/plugin install <plugin-name>@docutray-plugins`
-- Semantic versioning in each plugin's `plugin.json` is required
+### Plugin Distribution
 
-## Working with This Repository
+```bash
+# Users add the marketplace
+/plugin marketplace add docutray/docutray-claude-code-plugins
 
-### Adding a New Plugin
-
-1. Create plugin directory: `plugins/<plugin-name>/`
-2. Create manifest: `plugins/<plugin-name>/.claude-plugin/plugin.json`
-3. Add commands in `plugins/<plugin-name>/commands/`
-4. Add skills in `plugins/<plugin-name>/skills/` (optional)
-5. Create `plugins/<plugin-name>/README.md`
-6. Register in `.claude-plugin/marketplace.json`:
-   ```json
-   {
-     "plugins": [
-       {
-         "name": "<plugin-name>",
-         "source": "<plugin-name>",
-         "description": "...",
-         "version": "1.0.0"
-       }
-     ]
-   }
-   ```
-
-### Adding a Slash Command to Existing Plugin
-
-1. Create `.md` file in `plugins/<plugin-name>/commands/`
-2. Add YAML frontmatter (description, allowed-tools, argument-hint)
-3. Write the command prompt content
-4. Update plugin version in `plugin.json`
-
-### Adding a Skill to Existing Plugin
-
-1. Create directory: `plugins/<plugin-name>/skills/<skill-name>/`
-2. Create `SKILL.md` with required frontmatter:
-   - `name`: lowercase with hyphens (max 64 chars)
-   - `description`: must include trigger terms (max 1024 chars)
-3. Add supporting files if needed
-4. Update plugin version in `plugin.json`
-
-## Development Workflow
-
-1. Add or modify plugin files
-2. Update plugin's `plugin.json` version
-3. Update `marketplace.json` version if needed
-4. Test locally:
-   ```bash
-   /plugin marketplace add .
-   /plugin install <plugin-name>@docutray-plugins
-   ```
-5. Uninstall and reinstall to verify changes
-
-Use `claude --debug` to troubleshoot plugin loading issues.
+# Users install individual plugins
+/plugin install devflow@docutray-plugins
+/plugin install rag-research@docutray-plugins
+```
 
 ## Current Plugins
 
-| Plugin | Description |
-|--------|-------------|
-| `devflow` | Complete agile development workflow with GitHub integration |
+| Plugin | Version | Description |
+|--------|---------|-------------|
+| `devflow` | 1.2.0 | Agile development workflow with GitHub integration (feat, dev, check, review-pr, research, epic) |
+| `rag-research` | 1.1.1 | RAG document indexing and semantic search using Qdrant + FastEmbed (Python 3.10+, `uv`) |
+
+## Build & Test Commands
+
+### RAG Research Plugin (Python)
+
+```bash
+cd plugins/rag-research
+uv sync                                    # Install dependencies
+uv run rag-research list                   # List indexed documents
+uv run rag-research add --file ./doc.pdf   # Index a document
+uv run rag-research research "query"       # Semantic search
+uv run rag-research stats                  # Database stats
+```
+
+### Plugin Integration Testing (in Claude Code)
+
+```bash
+/plugin marketplace add .                  # Add local marketplace
+/plugin install devflow@local              # Install for testing
+/plugin install rag-research@local
+
+# After changes, uninstall and reinstall to refresh
+/plugin uninstall devflow && /plugin install devflow@local
+```
+
+Use `claude --debug` to troubleshoot plugin loading issues.
+
+## Development Workflow
+
+1. Add or modify plugin files in `plugins/<plugin-name>/`
+2. Update version in `plugins/<plugin-name>/.claude-plugin/plugin.json`
+3. Update version in `.claude-plugin/marketplace.json` if needed
+4. Update `CHANGELOG.md` with notable changes
+5. Test locally (see commands above)
+
+### Adding a New Plugin
+
+1. Create `plugins/<name>/` with `.claude-plugin/plugin.json`, `commands/`, and `README.md`
+2. Register in `.claude-plugin/marketplace.json` with `name`, `source`, `description`, `version`, `category`
+
+### Adding Commands and Skills
+
+- **Command**: Create `.md` file in `commands/` with YAML frontmatter. Restrict `allowed-tools` to minimum required.
+- **Skill**: Create `skills/<skill-name>/SKILL.md` with `name` (lowercase-hyphen, max 64 chars) and `description` (must include trigger terms, max 1024 chars).
+
+## Code Style
+
+### Python (rag-research)
+- Formatter: `black`, Linter: `ruff`, Type hints required, Google-style docstrings
+
+### Markdown
+- YAML frontmatter for metadata, ATX-style headers, code blocks with language specifiers
+
+### JSON
+- 4-space indentation
+
+## Kimi CLI Flow Skills
+
+The `.kimi/skills/` directory contains parallel implementations of DevFlow commands as Kimi CLI Flow Skills (multi-step workflows with Mermaid flow diagrams). These are independent from Claude Code plugins. Install with `./install-kimi-flows.sh` (copies to `~/.config/agents/skills/`).
 
 ## Official References
 

@@ -26,8 +26,8 @@ Or use the interactive menu:
 
 | Plugin | Description | Version |
 |--------|-------------|---------|
-| [devflow](./plugins/devflow/) | Complete agile development workflow with GitHub integration | 1.1.4 |
-| [rag-research](./plugins/rag-research/) | RAG-based document indexing and semantic search for research | 1.0.0 |
+| [devflow](./plugins/devflow/) | Complete agile development workflow with GitHub integration | 1.2.0 |
+| [rag-research](./plugins/rag-research/) | RAG-based document indexing and semantic search with project-local database support | 1.1.1 |
 
 ---
 
