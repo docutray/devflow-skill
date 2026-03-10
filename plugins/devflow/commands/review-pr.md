@@ -14,6 +14,7 @@ argument-hints:
   - "--auto-approve"
   - "--functional-tests"
   - "--skip-functional"
+  - "--worktree"
 ---
 
 # Pull Request Review Command (/review-pr)
@@ -70,6 +71,9 @@ Perform complete technical review of a Pull Request as part of structured develo
 - `--functional-tests`: Enable automatic functional tests (if configured)
 - `--skip-functional`: Skip functional tests (only technical validations)
 
+### Worktree Parameter
+- `--worktree`: Review in an isolated git worktree without leaving your current branch (optional). See `@${CLAUDE_PLUGIN_ROOT}/templates/worktree-guide.md` for details.
+
 ## 🔄 Review Process
 
 ### **Phase 1: PR Analysis** 🔍
@@ -78,6 +82,28 @@ Perform complete technical review of a Pull Request as part of structured develo
 3. **Impact analysis** - Modified files, affected areas, statistics
 
 ### **Phase 2: Environment Preparation** ⚙️
+
+**Worktree Mode** (if `--worktree` is used):
+
+Read `@${CLAUDE_PLUGIN_ROOT}/templates/worktree-guide.md` for full worktree procedures.
+
+1. Detect if already inside a worktree (CWD contains `.claude/worktrees/`). If yes, work in-place.
+2. Get the PR branch name: `gh pr view <pr-number> --json headRefName -q .headRefName`
+3. Ensure `.gitignore` includes worktrees:
+   ```bash
+   grep -q "\.claude/worktrees" .gitignore 2>/dev/null || echo -e "\n# Claude Code worktrees\n.claude/worktrees/" >> .gitignore
+   ```
+4. Create worktree for the PR branch:
+   ```bash
+   git fetch origin
+   WORKTREE_DIR=".claude/worktrees/review-pr-<number>"
+   git worktree add "$WORKTREE_DIR" "origin/<pr-branch-name>"
+   ```
+5. All subsequent bash commands must run inside the worktree: `cd "$WORKTREE_DIR" && <command>`
+6. Install dependencies inside worktree.
+
+**Standard Mode** (default, without `--worktree`):
+
 4. **Branch checkout** - Fork or same repo, automatic setup
 5. **Dependency verification** - Install if necessary
 6. **State backup** - For complete reversibility
@@ -109,6 +135,19 @@ Perform complete technical review of a Pull Request as part of structured develo
 14. **Actions based on decision** - Comment, approval, required changes
 15. **Cleanup** - State restoration, cleanup
 
+**Worktree Cleanup** (if `--worktree` was used):
+```
+🌿 Worktree Info:
+   Location: .claude/worktrees/review-pr-<number>
+   PR Branch: <branch-name>
+
+📋 Clean up after review:
+   git worktree remove .claude/worktrees/review-pr-<number>
+
+📋 List active worktrees:
+   git worktree list
+```
+
 ## 🚀 Common Use Cases
 
 ### Complete Technical Review (Standard)
@@ -133,6 +172,14 @@ Perform complete technical review of a Pull Request as part of structured develo
 # 🧪 Automated functional tests (if configured)
 # 🔧 Automatic corrections applied
 # 📊 Consolidated technical + QA report
+```
+
+### Review in Isolated Worktree
+```bash
+/review-pr 123 --worktree --fix-issues
+# 🌿 Reviews in isolated worktree without leaving your current branch
+# ✅ Complete technical validations
+# 🔧 Automatic corrections applied
 ```
 
 ## 🎯 Quality Criteria

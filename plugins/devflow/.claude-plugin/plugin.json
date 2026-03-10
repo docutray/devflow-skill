@@ -1,6 +1,6 @@
 {
   "name": "devflow",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Complete agile development workflow commands for Claude Code based on GitHub and best practices. Includes feature planning, implementation, validation, and PR review commands.",
   "author": {
     "name": "Roberto Arce",

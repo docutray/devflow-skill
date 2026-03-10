@@ -21,6 +21,7 @@ argument-hints:
   - "--priority=high"
   - "--priority=critical"
   - "--target-version=X.Y.Z"
+  - "--worktree"
 ---
 
 # Epic Creation Command
@@ -56,6 +57,7 @@ Create comprehensive epic planning for major development initiatives including:
 - `<epic-name>`: Name of the epic in kebab-case
 - `--priority`: Epic priority level (default: `high`)
 - `--target-version`: Target version for completion (optional)
+- `--worktree`: Create epic branch in an isolated git worktree (optional). See `@${CLAUDE_PLUGIN_ROOT}/templates/worktree-guide.md` for details.
 
 ## Instructions for Claude
 
@@ -143,6 +145,27 @@ Generate list of specific issues that compose the epic:
 #### 4. Epic Branch Creation
 
 **IMPORTANT**: Create dedicated epic branch for all related work
+
+**Worktree Mode** (if `--worktree` is used):
+
+Read `@${CLAUDE_PLUGIN_ROOT}/templates/worktree-guide.md` for full worktree procedures.
+
+1. Detect if already inside a worktree (CWD contains `.claude/worktrees/`). If yes, work in-place.
+2. Ensure `.gitignore` includes worktrees:
+   ```bash
+   grep -q "\.claude/worktrees" .gitignore 2>/dev/null || echo -e "\n# Claude Code worktrees\n.claude/worktrees/" >> .gitignore
+   ```
+3. Create worktree with epic branch:
+   ```bash
+   git fetch origin
+   EPIC_BRANCH="epic/<epic-name>"
+   WORKTREE_DIR=".claude/worktrees/epic-<epic-name>"
+   git worktree add "$WORKTREE_DIR" -b $EPIC_BRANCH origin/main
+   cd "$WORKTREE_DIR" && git push -u origin $EPIC_BRANCH
+   ```
+4. All subsequent bash commands must run inside the worktree: `cd "$WORKTREE_DIR" && <command>`
+
+**Standard Mode** (default, without `--worktree`):
 
 ```bash
 # Ensure main branch is up to date

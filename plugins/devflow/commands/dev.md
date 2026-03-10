@@ -15,6 +15,7 @@ argument-hints:
   - "--draft"
   - "--auto-tests"
   - "--full-validation"
+  - "--worktree"
 ---
 
 # Development Implementation Command
@@ -52,6 +53,7 @@ Implement complete features based on existing GitHub issues, following a structu
 - `--draft`: Create PR as draft for incremental review (optional)
 - `--auto-tests`: Automatically run tests after each change (optional)
 - `--full-validation`: Run complete validation suite at the end (optional)
+- `--worktree`: Run in an isolated git worktree for parallel development (optional). See `@${CLAUDE_PLUGIN_ROOT}/templates/worktree-guide.md` for details.
 
 ## Instructions for Claude
 
@@ -161,27 +163,54 @@ Git context is already automatically available. If there are uncommitted changes
 - **Discard**: `git reset --hard` (with confirmation)
 
 **Branch Creation**
+
+Determine branch name based on issue:
 ```bash
-# Determine branch name based on issue
 BRANCH_NAME="feat/issue-<number>-<title-slug>"
-
-# Ensure we're on main branch updated
-git checkout main
-git pull origin main
-
-# Create new branch for development
-git checkout -b $BRANCH_NAME
-git push -u origin $BRANCH_NAME
 ```
 
-**Epic Integration**
-If the issue is part of an epic:
+Determine base branch:
+- If issue is part of an epic: `BASE_BRANCH="epic/<epic-name>"`
+- Otherwise: `BASE_BRANCH="main"`
+
+**Worktree Mode** (if `--worktree` is used):
+
+Read `@${CLAUDE_PLUGIN_ROOT}/templates/worktree-guide.md` for full worktree procedures.
+
+1. **Detect existing worktree**: Check if CWD is already inside `.claude/worktrees/` using `git rev-parse --show-toplevel`. If yes, skip worktree creation and work in-place.
+
+2. **Ensure `.gitignore` includes worktrees**:
 ```bash
-# Check issue labels/body for epic reference
-# If part of epic, base branch should be epic branch
-EPIC_BRANCH="epic/<epic-name>"
-git checkout $EPIC_BRANCH
-git pull origin $EPIC_BRANCH
+grep -q "\.claude/worktrees" .gitignore 2>/dev/null || echo -e "\n# Claude Code worktrees\n.claude/worktrees/" >> .gitignore
+```
+
+3. **Create worktree**:
+```bash
+git fetch origin
+WORKTREE_NAME=$(echo "$BRANCH_NAME" | tr '/' '-')
+WORKTREE_DIR=".claude/worktrees/$WORKTREE_NAME"
+git worktree add "$WORKTREE_DIR" -b $BRANCH_NAME origin/$BASE_BRANCH
+```
+
+4. **All subsequent bash commands must run inside the worktree** (shell state does not persist):
+```bash
+cd "$WORKTREE_DIR" && <command>
+```
+
+5. **Push branch from worktree**:
+```bash
+cd "$WORKTREE_DIR" && git push -u origin $BRANCH_NAME
+```
+
+6. **Install dependencies inside worktree** (read from `.claude/details/commands/dev.md`).
+
+**Standard Mode** (default, without `--worktree`):
+```bash
+# Ensure we're on base branch updated
+git checkout $BASE_BRANCH
+git pull origin $BASE_BRANCH
+
+# Create new branch for development
 git checkout -b $BRANCH_NAME
 git push -u origin $BRANCH_NAME
 ```
@@ -416,6 +445,15 @@ EOF
 # Runs all possible validations at the end
 ```
 
+#### Parallel Development with Worktrees
+```bash
+# Terminal 1: Implement feature in isolated worktree
+/dev issue#123 --worktree
+
+# Terminal 2: Implement another feature simultaneously
+/dev issue#456 --worktree
+```
+
 ### User Output
 
 **Process Start**
@@ -465,6 +503,19 @@ Proceed with implementation? (Y/n)
 📋 Issue will close automatically on merge
 
 🎯 Next step: /review-pr <pr-number> for technical review
+```
+
+**Worktree Mode Finalization** (if `--worktree` was used):
+```
+🌿 Worktree Info:
+   Location: .claude/worktrees/<name>
+   Branch: <branch-name>
+
+📋 After PR is merged, clean up:
+   git worktree remove .claude/worktrees/<name>
+
+📋 List active worktrees:
+   git worktree list
 ```
 
 ## Project Customization
