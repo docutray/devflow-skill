@@ -4,6 +4,13 @@ All notable changes to this project are documented in this file.
 
 This project follows Semantic Versioning.
 
+## [Unreleased]
+
+### Removed
+- **rag-research** plugin: removed from the marketplace. The RAG document indexing
+  and semantic search plugin (Qdrant + FastEmbed) has been deprecated from this
+  repository. The marketplace now focuses exclusively on `devflow`.
+
 ## [1.2.0] - 2025-01-26
 
 ### Changed (devflow)
