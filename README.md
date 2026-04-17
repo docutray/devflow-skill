@@ -26,8 +26,7 @@ Or use the interactive menu:
 
 | Plugin | Description | Version |
 |--------|-------------|---------|
-| [devflow](./plugins/devflow/) | Complete agile development workflow with GitHub integration | 1.2.0 |
-| [rag-research](./plugins/rag-research/) | RAG-based document indexing and semantic search with project-local database support | 1.1.1 |
+| [devflow](./plugins/devflow/) | Complete agile development workflow with GitHub integration | 1.3.0 |
 
 ---
 
@@ -71,50 +70,6 @@ TypeScript/Node.js, Python, Go, Ruby, Java, Rust, and more.
 
 ---
 
-## Plugin: RAG Research
-
-RAG-based reference document management for Claude Code. Index documents (PDF, Markdown, Text) and search them semantically using Qdrant + FastEmbed for efficient local vector storage and retrieval.
-
-### Quick Start
-
-```bash
-# Install
-/plugin install rag-research@docutray-plugins
-
-# Setup dependencies (first time only)
-cd ~/.claude/plugins/marketplaces/docutray-plugins/plugins/rag-research
-uv sync
-
-# Use commands
-/rag-research:add-doc ./docs/manual.pdf    # Index a document
-/rag-research:list                          # List indexed documents
-/rag-research:research "your topic"         # Semantic search
-```
-
-### Commands
-
-| Command | Description |
-|---------|-------------|
-| `/rag-research:add-doc` | Index a document (PDF, Markdown, Text, JSON) |
-| `/rag-research:list` | List all indexed documents with filtering |
-| `/rag-research:research` | Semantic search across indexed documents |
-
-### Features
-
-- **Document Indexing**: PDF, Markdown, Text, JSON support
-- **Semantic Search**: FastEmbed embeddings + Qdrant vector store
-- **Local Storage**: No external servers required
-- **PDF OCR**: Mistral AI integration for scanned documents
-- **Deep Research Agent**: Autonomous comprehensive topic research
-
-### Configuration
-
-Set `MISTRAL_API_KEY` in `.env` for PDF OCR support (optional - falls back to pypdf).
-
-[**View Full Documentation**](./plugins/rag-research/README.md)
-
----
-
 ## Repository Structure
 
 ```
@@ -122,19 +77,11 @@ docutray-claude-code-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json      # Marketplace catalog
 ├── plugins/
-│   ├── devflow/              # DevFlow plugin (Claude Code)
-│   │   ├── .claude-plugin/
-│   │   │   └── plugin.json
-│   │   ├── commands/         # Slash commands
-│   │   ├── templates/
-│   │   └── README.md
-│   └── rag-research/         # RAG Research plugin
+│   └── devflow/              # DevFlow plugin (Claude Code)
 │       ├── .claude-plugin/
 │       │   └── plugin.json
-│       ├── commands/
-│       ├── skills/
-│       ├── agents/
-│       ├── src/
+│       ├── commands/         # Slash commands
+│       ├── templates/
 │       └── README.md
 ├── README.md                 # This file
 └── CLAUDE.md
@@ -150,9 +97,8 @@ cd docutray-claude-code-plugins
 # Add as local marketplace
 /plugin marketplace add .
 
-# Install plugins
+# Install plugin
 /plugin install devflow@docutray-plugins
-/plugin install rag-research@docutray-plugins
 ```
 
 ---

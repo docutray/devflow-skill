@@ -13,17 +13,10 @@ docutray-claude-code-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json      # Central marketplace catalog
 ├── plugins/
-│   ├── devflow/              # Agile workflow commands (pure markdown)
-│   │   ├── .claude-plugin/plugin.json
-│   │   ├── commands/         # Slash commands (.md with YAML frontmatter)
-│   │   └── templates/        # Framework-specific templates (python, typescript-node)
-│   └── rag-research/         # RAG document search (Python + markdown)
+│   └── devflow/              # Agile workflow commands (pure markdown)
 │       ├── .claude-plugin/plugin.json
-│       ├── commands/         # Slash commands
-│       ├── skills/           # Auto-activated skills (SKILL.md)
-│       ├── agents/           # Autonomous agent definitions
-│       ├── src/              # Python implementation (cli.py, rag_manager.py, document_loader.py)
-│       └── pyproject.toml    # Python package config (uv)
+│       ├── commands/         # Slash commands (.md with YAML frontmatter)
+│       └── templates/        # Framework-specific templates (python, typescript-node)
 ├── AGENTS.md                 # Detailed context for AI coding agents
 └── CHANGELOG.md              # Version history
 ```
@@ -46,37 +39,23 @@ The root `.claude-plugin/marketplace.json` lists all plugins with `source` paths
 # Users add the marketplace
 /plugin marketplace add docutray/docutray-claude-code-plugins
 
-# Users install individual plugins
+# Users install the plugin
 /plugin install devflow@docutray-plugins
-/plugin install rag-research@docutray-plugins
 ```
 
 ## Current Plugins
 
 | Plugin | Version | Description |
 |--------|---------|-------------|
-| `devflow` | 1.2.0 | Agile development workflow with GitHub integration (feat, dev, check, review-pr, research, epic) |
-| `rag-research` | 1.1.1 | RAG document indexing and semantic search using Qdrant + FastEmbed (Python 3.10+, `uv`) |
+| `devflow` | 1.3.0 | Agile development workflow with GitHub integration (feat, dev, check, review-pr, research, epic) |
 
 ## Build & Test Commands
-
-### RAG Research Plugin (Python)
-
-```bash
-cd plugins/rag-research
-uv sync                                    # Install dependencies
-uv run rag-research list                   # List indexed documents
-uv run rag-research add --file ./doc.pdf   # Index a document
-uv run rag-research research "query"       # Semantic search
-uv run rag-research stats                  # Database stats
-```
 
 ### Plugin Integration Testing (in Claude Code)
 
 ```bash
 /plugin marketplace add .                  # Add local marketplace
 /plugin install devflow@local              # Install for testing
-/plugin install rag-research@local
 
 # After changes, uninstall and reinstall to refresh
 /plugin uninstall devflow && /plugin install devflow@local
@@ -103,9 +82,6 @@ Use `claude --debug` to troubleshoot plugin loading issues.
 - **Skill**: Create `skills/<skill-name>/SKILL.md` with `name` (lowercase-hyphen, max 64 chars) and `description` (must include trigger terms, max 1024 chars).
 
 ## Code Style
-
-### Python (rag-research)
-- Formatter: `black`, Linter: `ruff`, Type hints required, Google-style docstrings
 
 ### Markdown
 - YAML frontmatter for metadata, ATX-style headers, code blocks with language specifiers

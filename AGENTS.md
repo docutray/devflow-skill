@@ -12,8 +12,7 @@ This is a **Claude Code plugin marketplace** maintained by the Docutray organiza
 
 | Plugin | Version | Description | Category |
 |--------|---------|-------------|----------|
-| `devflow` | 1.2.0 | Complete agile development workflow with GitHub integration | development |
-| `rag-research` | 1.1.1 | RAG-based document indexing and semantic search | research |
+| `devflow` | 1.3.0 | Complete agile development workflow with GitHub integration | development |
 
 ## Repository Structure
 
@@ -22,40 +21,20 @@ docutray-claude-code-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json          # Central marketplace catalog
 ├── plugins/
-│   ├── devflow/                  # DevFlow plugin (agile workflow)
-│   │   ├── .claude-plugin/
-│   │   │   └── plugin.json       # Plugin manifest
-│   │   ├── commands/             # Slash command definitions (.md files)
-│   │   │   ├── feat.md
-│   │   │   ├── dev.md
-│   │   │   ├── check.md
-│   │   │   ├── review-pr.md
-│   │   │   ├── research.md
-│   │   │   ├── epic.md
-│   │   │   └── devflow-setup.md
-│   │   ├── templates/            # Framework-specific templates
-│   │   │   ├── python/
-│   │   │   └── typescript-node/
-│   │   └── README.md
-│   └── rag-research/             # RAG Research plugin
+│   └── devflow/                  # DevFlow plugin (agile workflow)
 │       ├── .claude-plugin/
 │       │   └── plugin.json       # Plugin manifest
-│       ├── commands/             # Slash command definitions
-│       │   ├── add-doc.md
-│       │   ├── list.md
-│       │   └── research.md
-│       ├── skills/               # Auto-activated skills
-│       │   └── rag-research/
-│       │       ├── SKILL.md
-│       │       └── references/
-│       ├── agents/               # Autonomous agents
-│       │   └── deep-researcher.md
-│       ├── src/                  # Python implementation
-│       │   ├── __init__.py
-│       │   ├── cli.py            # CLI entry point
-│       │   ├── rag_manager.py    # Vector DB logic
-│       │   └── document_loader.py
-│       ├── pyproject.toml        # Python package config
+│       ├── commands/             # Slash command definitions (.md files)
+│       │   ├── feat.md
+│       │   ├── dev.md
+│       │   ├── check.md
+│       │   ├── review-pr.md
+│       │   ├── research.md
+│       │   ├── epic.md
+│       │   └── devflow-setup.md
+│       ├── templates/            # Framework-specific templates
+│       │   ├── python/
+│       │   └── typescript-node/
 │       └── README.md
 ├── README.md                     # Marketplace documentation
 ├── CLAUDE.md                     # Claude Code guidance
@@ -76,39 +55,7 @@ docutray-claude-code-plugins/
 - **Templates**: Framework-specific configuration examples (Python, TypeScript/Node.js)
 - **Dependencies**: GitHub CLI (`gh`), project-specific tools
 
-### RAG Research Plugin
-- **Language**: Python 3.10+
-- **Package Manager**: `uv` (modern Python package manager)
-- **Vector Database**: Qdrant (local mode)
-- **Embeddings**: FastEmbed with ONNX Runtime
-- **Default Model**: BAAI/bge-small-en-v1.5 (384 dimensions)
-- **PDF Processing**: Mistral AI OCR (optional) / pypdf (fallback)
-- **Key Dependencies**:
-  - `qdrant-client[fastembed]>=1.12.0`
-  - `python-dotenv>=1.0.0`
-  - `mistralai>=1.0.0`
-  - `pypdf>=4.0.0`
-
 ## Build and Development Commands
-
-### RAG Research Plugin (Python)
-
-```bash
-# Navigate to plugin directory
-cd plugins/rag-research
-
-# Install dependencies (using uv)
-uv sync
-
-# Run CLI commands
-uv run rag-research list
-uv run rag-research add --file ./doc.pdf
-uv run rag-research research "search query"
-uv run rag-research stats
-
-# Run as module
-uv run python -m src.cli list
-```
 
 ### Local Development Setup
 
@@ -120,9 +67,8 @@ cd docutray-claude-code-plugins
 # Add as local marketplace in Claude Code
 /plugin marketplace add .
 
-# Install plugins for testing
+# Install plugin for testing
 /plugin install devflow@local
-/plugin install rag-research@local
 
 # Test changes (uninstall and reinstall to refresh)
 /plugin uninstall devflow
@@ -237,47 +183,12 @@ model: sonnet
 - Line length: ~100 characters for readability
 - Use code blocks with language specifiers
 
-### Python Code (rag-research)
-- **Formatter**: `black` (default settings)
-- **Linter**: `flake8` or `ruff`
-- **Type hints**: Required for all functions
-- **Docstrings**: Google-style or NumPy-style
-- **Imports**: `isort` compatible (stdlib, third-party, local)
-
-Example:
-```python
-def search(self, query: str, limit: int = 10) -> list[SearchResult]:
-    """Search for relevant chunks using semantic similarity.
-
-    Args:
-        query: Search query string
-        limit: Maximum number of results
-
-    Returns:
-        List of SearchResult objects sorted by relevance
-    """
-    ...
-```
-
 ### JSON Files
 - 4-space indentation
 - Trailing commas allowed (json5-friendly)
 - Sort keys alphabetically where logical
 
 ## Testing Instructions
-
-### RAG Research Plugin
-
-```bash
-cd plugins/rag-research
-
-# Run CLI tests manually
-uv run rag-research stats
-uv run rag-research add --file ./test.pdf --title "Test"
-uv run rag-research list
-uv run rag-research research "test query" --json
-uv run rag-research remove --id <doc_id>
-```
 
 ### Plugin Integration Testing
 
@@ -286,9 +197,6 @@ uv run rag-research remove --id <doc_id>
 /devflow:feat test-feature --type=feat
 /devflow:dev issue#1
 /devflow:check
-/rag-research:add-doc ./README.md
-/rag-research:list
-/rag-research:research "marketplace"
 ```
 
 ### Debugging
@@ -306,19 +214,11 @@ claude --debug
 
 ### API Keys and Secrets
 - **Never commit** API keys to the repository
-- RAG Research uses `.env` file for `MISTRAL_API_KEY`
 - Document required secrets in README files, not in code
 
 ### File System Access
 - Plugins execute with user's permissions
-- RAG Research creates `.rag-research/` directories (auto-added to `.gitignore`)
 - Commands can execute arbitrary bash commands - review carefully
-
-### Data Privacy
-- RAG Research stores document embeddings locally (Qdrant)
-- No data is sent to external services except:
-  - Mistral OCR API (when `MISTRAL_API_KEY` is set)
-  - Embedding models (downloaded locally, runs offline)
 
 ### Command Allowed Tools
 Restrict `allowed-tools` in command frontmatter to minimum required:
@@ -344,7 +244,7 @@ allowed-tools: "*"
 6. **Push to GitHub**: `git push origin main`
 7. **Tag release** (optional): `git tag vX.Y.Z && git push origin vX.Y.Z`
 
-Users update plugins by reinstalling:
+Users update the plugin by reinstalling:
 ```bash
 /plugin uninstall devflow
 /plugin install devflow@docutray-plugins
@@ -374,24 +274,6 @@ Users update plugins by reinstalling:
 3. Ensure description includes trigger terms for auto-activation
 4. Add supporting files in subdirectory if needed
 
-### Updating RAG Research Dependencies
-
-Edit `plugins/rag-research/pyproject.toml`:
-
-```toml
-[project]
-dependencies = [
-    "qdrant-client[fastembed]>=1.12.0",
-    # Add new deps here
-]
-```
-
-Then run:
-```bash
-cd plugins/rag-research
-uv sync
-```
-
 ## Troubleshooting
 
 ### Plugin Not Loading
@@ -403,11 +285,6 @@ uv sync
 - Verify allowed-tools includes required tools
 - Check for typos in `$ARGUMENTS` or variable references
 - Test bash commands directly in terminal
-
-### RAG Research CLI Errors
-- Ensure `uv sync` has been run
-- Check Python version (>=3.10 required)
-- Verify Qdrant database permissions
 
 ## References
 

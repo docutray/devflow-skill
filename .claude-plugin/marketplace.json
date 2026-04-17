@@ -12,13 +12,6 @@
             "description": "Complete agile development workflow commands for Claude Code based on GitHub and best practices. Includes feature planning, implementation, validation, and PR review commands.",
             "version": "1.3.0",
             "category": "development"
-        },
-        {
-            "name": "rag-research",
-            "source": "./plugins/rag-research",
-            "description": "RAG-based reference document management for research. Index documents (PDF, Markdown, Text) and search them semantically using Qdrant + FastEmbed for efficient local vector storage and retrieval. Project-local database support.",
-            "version": "1.1.1",
-            "category": "research"
         }
     ]
 }
