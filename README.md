@@ -121,15 +121,6 @@ Set `MISTRAL_API_KEY` in `.env` for PDF OCR support (optional - falls back to py
 docutray-claude-code-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json      # Marketplace catalog
-├── .kimi/                    # Kimi CLI Flow Skills
-│   └── skills/
-│       └── devflow/          # DevFlow flow skills
-│           ├── feat/
-│           ├── dev/
-│           ├── check/
-│           ├── review-pr/
-│           ├── research/
-│           └── epic/
 ├── plugins/
 │   ├── devflow/              # DevFlow plugin (Claude Code)
 │   │   ├── .claude-plugin/
@@ -145,7 +136,6 @@ docutray-claude-code-plugins/
 │       ├── agents/
 │       ├── src/
 │       └── README.md
-├── install-kimi-flows.sh     # Installer for Kimi Flow Skills
 ├── README.md                 # This file
 └── CLAUDE.md
 ```
@@ -164,74 +154,6 @@ cd docutray-claude-code-plugins
 /plugin install devflow@docutray-plugins
 /plugin install rag-research@docutray-plugins
 ```
-
----
-
-## 🚀 Kimi CLI Support (Flow Skills)
-
-This repository also includes **Flow Skills** for [Kimi CLI](https://moonshotai.github.io/kimi-cli/), providing the same DevFlow workflows as automated multi-step processes.
-
-### What are Flow Skills?
-
-Flow Skills are a special skill type in Kimi CLI that define multi-step automated workflows using flow diagrams. Unlike Claude's slash commands which execute in one step, Flow Skills guide the Agent through complex processes with decision points and loops.
-
-### Available Flow Skills
-
-| Flow Skill | Description | Kimi Command |
-|------------|-------------|--------------|
-| `devflow-feat` | Create feature specifications and GitHub issues | `/flow:devflow-feat` |
-| `devflow-dev` | Implement features from GitHub issues | `/flow:devflow-dev` |
-| `devflow-check` | Execute parallel validations | `/flow:devflow-check` |
-| `devflow-review-pr` | Review Pull Requests | `/flow:devflow-review-pr` |
-| `devflow-research` | Research topics before planning | `/flow:devflow-research` |
-| `devflow-epic` | Plan major initiatives | `/flow:devflow-epic` |
-
-### Installation for Kimi CLI
-
-```bash
-# Clone this repository
-git clone https://github.com/docutray/docutray-claude-code-plugins
-cd docutray-claude-code-plugins
-
-# Install flow skills (copies to ~/.config/agents/skills/)
-./install-kimi-flows.sh
-
-# Or install with symlinks for development (auto-updates)
-./install-kimi-flows.sh --symlink
-```
-
-### Quick Start with Kimi
-
-```bash
-# Start Kimi
-kimi
-
-# Create a feature
-/flow:devflow-feat
-
-# Implement it
-/flow:devflow-dev issue#123
-
-# Validate
-/flow:devflow-check
-
-# Review PR
-/flow:devflow-review-pr 45
-```
-
-### Claude vs Kimi Comparison
-
-| Feature | Claude Code | Kimi CLI |
-|---------|-------------|----------|
-| **Format** | Slash Commands | Flow Skills |
-| **Execution** | Single-step | Multi-step with decisions |
-| **DevFlow** | `/devflow:feat` | `/flow:devflow-feat` |
-| **Automation** | Manual steps | Guided workflow |
-| **Diagrams** | N/A | Visual Mermaid flows |
-
-The Flow Skills are located in `.kimi/skills/` and do not interfere with Claude Code plugins.
-
-[**View Kimi Flow Skills Documentation**](./.kimi/README.md)
 
 ---
 

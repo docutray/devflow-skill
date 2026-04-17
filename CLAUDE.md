@@ -24,10 +24,8 @@ docutray-claude-code-plugins/
 │       ├── agents/           # Autonomous agent definitions
 │       ├── src/              # Python implementation (cli.py, rag_manager.py, document_loader.py)
 │       └── pyproject.toml    # Python package config (uv)
-├── .kimi/skills/             # Kimi CLI Flow Skills (parallel implementation)
 ├── AGENTS.md                 # Detailed context for AI coding agents
-├── CHANGELOG.md              # Version history
-└── install-kimi-flows.sh     # Kimi Flow Skills installer
+└── CHANGELOG.md              # Version history
 ```
 
 ## Plugin Architecture
@@ -114,10 +112,6 @@ Use `claude --debug` to troubleshoot plugin loading issues.
 
 ### JSON
 - 4-space indentation
-
-## Kimi CLI Flow Skills
-
-The `.kimi/skills/` directory contains parallel implementations of DevFlow commands as Kimi CLI Flow Skills (multi-step workflows with Mermaid flow diagrams). These are independent from Claude Code plugins. Install with `./install-kimi-flows.sh` (copies to `~/.config/agents/skills/`).
 
 ## Official References
 
