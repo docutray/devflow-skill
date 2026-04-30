@@ -29,6 +29,17 @@ DevFlow provides a structured workflow from research and planning through implem
 
 ### Standard Flow
 
+```mermaid
+flowchart LR
+    setup["/devflow:devflow-setup"] --> feat["/devflow:feat"]
+    feat --> issue["GitHub issue"]
+    issue --> dev["/devflow:dev"]
+    dev --> pr["Pull request"]
+    dev --> check["/devflow:check"]
+    check --> pr
+    pr --> review["/devflow:review-pr"]
+```
+
 ```bash
 # Claude Code command UX
 /devflow:devflow-setup
