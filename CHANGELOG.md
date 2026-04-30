@@ -76,7 +76,7 @@ This project follows Semantic Versioning.
 ### Changed
 - **BREAKING**: Reorganized repository to marketplace structure for multiple plugins
 - Moved devflow plugin to `plugins/devflow/` directory
-- Plugin installation now uses: `/plugin install devflow@docutray-plugins`
+- Plugin installation used the marketplace name available at that release.
 - Moved `README-devflow.md` to `plugins/devflow/README.md`
 - Updated root `README.md` as marketplace documentation
 - Updated `CLAUDE.md` with new structure guidelines
