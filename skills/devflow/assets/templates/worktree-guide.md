@@ -93,15 +93,15 @@ git worktree prune
 ```bash
 # Terminal 1: Implement feature
 claude --worktree
-> /dev issue#123 --worktree
+> /devflow:dev issue#123 --worktree
 
 # Terminal 2: Review a PR (simultaneously)
 claude --worktree
-> /review-pr 45 --worktree
+> /devflow:review-pr 45 --worktree
 
 # Terminal 3: Implement another feature (simultaneously)
 claude --worktree
-> /dev issue#456 --worktree
+> /devflow:dev issue#456 --worktree
 ```
 
 ## Troubleshooting

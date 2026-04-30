@@ -1,6 +1,6 @@
 # Check Command Configuration - Python
 
-This file configures the `/check` command validations for Python projects.
+This file configures the `/devflow:check` command validations for Python projects.
 
 ## Validation Configuration
 

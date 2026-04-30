@@ -1,56 +1,46 @@
-# Docutray Plugins Marketplace
+# DevFlow Skill
 
-A collection of [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) plugins maintained by the Docutray organization.
+Portable Agent Skill for agile development workflows with GitHub integration. DevFlow works with skills-compatible agents via `npx skills` and keeps Claude Code slash commands through a compatibility plugin.
 
 ## Installation
 
-### Add the Marketplace
+### Agent Skills
 
 ```bash
-/plugin marketplace add docutray/docutray-claude-code-plugins
+npx skills add https://github.com/docutray/devflow-skill --skill devflow
 ```
 
-### Install Plugins
+### Claude Code
 
 ```bash
-/plugin install <plugin-name>@docutray-plugins
+/plugin marketplace add docutray/devflow-skill
+/plugin install devflow@docutray-skills
 ```
 
-Or use the interactive menu:
-```bash
-/plugin
-# Select "Browse Plugins" → choose from docutray-plugins
-```
+This installs the `devflow` skill and exposes compatibility slash commands such as `/devflow:feat`, `/devflow:dev`, `/devflow:check`, and `/devflow:review-pr`.
 
-## Available Plugins
+## Version
 
-| Plugin | Description | Version |
-|--------|-------------|---------|
-| [devflow](./plugins/devflow/) | Complete agile development workflow with GitHub integration | 1.3.0 |
+Current version: `2.0.0`
 
----
+## What DevFlow Provides
 
-## Plugin: DevFlow
+DevFlow provides a structured workflow from research and planning through implementation, validation, and PR review.
 
-A comprehensive set of slash commands that implement a complete agile development workflow based on GitHub and best practices.
-
-### Quick Start
+### Standard Flow
 
 ```bash
-# Install
-/plugin install devflow@docutray-plugins
-
-# Configure for your project
+# Claude Code command UX
 /devflow:devflow-setup
-
-# Standard workflow
-/devflow:feat feature-name     # Create specification & GitHub issue
-/devflow:dev issue#123         # Implement feature
-/devflow:check                 # Validate quality
-/devflow:review-pr 45          # Review PR
+/devflow:feat feature-name
+/devflow:dev issue#123
+/devflow:check
+/devflow:review-pr 45
 ```
 
-### Commands
+In Codex and other Agent Skills clients, ask naturally: "Use DevFlow to implement issue #123" or "Use DevFlow to review PR #45".
+
+## Commands And Workflows
 
 | Command | Description |
 |---------|-------------|
@@ -62,75 +52,53 @@ A comprehensive set of slash commands that implement a complete agile developmen
 | `/devflow:research` | Research topics before planning |
 | `/devflow:epic` | Plan major initiatives with multiple phases |
 
-### Framework Support
-
-TypeScript/Node.js, Python, Go, Ruby, Java, Rust, and more.
-
-[**View Full Documentation**](./plugins/devflow/README.md)
-
----
-
 ## Repository Structure
 
 ```
-docutray-claude-code-plugins/
+devflow-skill/
 ├── .claude-plugin/
-│   └── marketplace.json      # Marketplace catalog
-├── plugins/
-│   └── devflow/              # DevFlow plugin (Claude Code)
-│       ├── .claude-plugin/
-│       │   └── plugin.json
-│       ├── commands/         # Slash commands
-│       ├── templates/
-│       └── README.md
-├── README.md                 # This file
-└── CLAUDE.md
+│   └── marketplace.json      # Claude Code marketplace catalog
+├── skills/
+│   └── devflow/              # Canonical Agent Skill
+│       ├── SKILL.md
+│       ├── references/
+│       └── assets/templates/
+├── commands/                 # Claude Code slash command wrappers
+└── README.md
 ```
 
 ## Local Development
 
 ```bash
 # Clone the repository
-git clone https://github.com/docutray/docutray-claude-code-plugins
-cd docutray-claude-code-plugins
+git clone https://github.com/docutray/devflow-skill
+cd devflow-skill
 
-# Add as local marketplace
+# Agent Skills local test
+npx skills add . --skill devflow
+
+# Claude Code local marketplace test
 /plugin marketplace add .
-
-# Install plugin
-/plugin install devflow@docutray-plugins
+/plugin install devflow@local
 ```
 
----
+Validate manifests:
 
-## Adding New Plugins
+```bash
+jq empty .claude-plugin/marketplace.json
+```
 
-1. Create a new directory under `plugins/`:
-   ```
-   plugins/new-plugin/
-   ├── .claude-plugin/
-   │   └── plugin.json
-   ├── commands/
-   └── README.md
-   ```
+If available, validate the Agent Skill:
 
-2. Add the plugin to `marketplace.json`:
-   ```json
-   {
-     "plugins": [
-       { "name": "new-plugin", "source": "./plugins/new-plugin", ... }
-     ]
-   }
-   ```
+```bash
+skills-ref validate ./skills/devflow
+```
 
-3. Document the plugin in its own `README.md`
+## References
 
-## Official Documentation
-
-- [Plugins Overview](https://docs.claude.com/en/docs/claude-code/plugins)
-- [Plugins Reference](https://docs.claude.com/en/docs/claude-code/plugins-reference)
-- [Slash Commands](https://docs.claude.com/en/docs/claude-code/slash-commands)
-- [Skills](https://docs.claude.com/en/docs/claude-code/skills)
+- [Agent Skills specification](https://agentskills.io/specification)
+- [skills.sh documentation](https://skills.sh/docs)
+- [Claude Code plugins](https://docs.claude.com/en/docs/claude-code/plugins)
 
 ## License
 
@@ -138,9 +106,5 @@ MIT
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/docutray/docutray-claude-code-plugins/issues)
+- **Issues**: [GitHub Issues](https://github.com/docutray/devflow-skill/issues)
 - **Contact**: Roberto Arce (roberto@docutray.com)
-
----
-
-Built with [Claude Code](https://docs.claude.com/en/docs/claude-code/overview) by Docutray

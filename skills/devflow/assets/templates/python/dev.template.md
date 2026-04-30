@@ -1,6 +1,6 @@
 # Development Workflow - Python
 
-This file configures the `/dev` command workflow for Python projects.
+This file configures the `/devflow:dev` command workflow for Python projects.
 
 ## Environment Setup
 

@@ -4,56 +4,66 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Purpose
 
-This is a **Claude Code plugin marketplace** for the Docutray organization. It contains multiple reusable plugins with slash commands and skills that can be installed across different projects. This is NOT an application codebase - it's a collection of plugin components organized as a marketplace.
+This is a **portable Agent Skill repository** for the Docutray organization. DevFlow is distributed through `npx skills` for skills-compatible agents and through a Claude Code marketplace entry that installs the same skill plus slash command wrappers. This is NOT an application codebase.
 
 ## Repository Structure
 
 ```
-docutray-claude-code-plugins/
+devflow-skill/
 ├── .claude-plugin/
 │   └── marketplace.json      # Central marketplace catalog
-├── plugins/
-│   └── devflow/              # Agile workflow commands (pure markdown)
-│       ├── .claude-plugin/plugin.json
-│       ├── commands/         # Slash commands (.md with YAML frontmatter)
-│       └── templates/        # Framework-specific templates (python, typescript-node)
+├── skills/
+│   └── devflow/              # Canonical Agent Skill
+│       ├── SKILL.md
+│       ├── references/
+│       └── assets/templates/
+├── commands/                 # Claude Code slash command wrappers
 ├── AGENTS.md                 # Detailed context for AI coding agents
 └── CHANGELOG.md              # Version history
 ```
 
-## Plugin Architecture
+## Skill Architecture
+
+### Canonical Skill
+
+`skills/devflow/SKILL.md` is the source of truth. Keep it concise and move detailed workflows to `skills/devflow/references/`. Templates and reusable resources live under `skills/devflow/assets/`.
 
 ### Marketplace (`marketplace.json`)
 
-The root `.claude-plugin/marketplace.json` lists all plugins with `source` paths relative to the marketplace root (e.g., `"source": "./plugins/devflow"`). Each plugin also has its own `.claude-plugin/plugin.json` manifest with version and metadata.
+The root `.claude-plugin/marketplace.json` exposes the `devflow` plugin with `source: "./"` and `skills: ["./skills/devflow"]` so Claude Code installs the same Agent Skill used by `npx skills`.
 
 ### Key Concepts
 
-- **Commands**: User-invoked via `/plugin:command-name`, defined in `.md` files with YAML frontmatter (`description`, `allowed-tools`, `argument-hint`). Support `$ARGUMENTS`, `$1`/`$2`, `` !`bash` `` execution, `@file` references, and `${CLAUDE_PLUGIN_ROOT}`.
-- **Skills**: Auto-activated by Claude based on trigger terms in the `description` field of `SKILL.md` frontmatter. Located in `skills/<skill-name>/SKILL.md`.
+- **Skills**: Auto-activated by agents based on trigger terms in the `description` field of `SKILL.md` frontmatter. Located in `skills/<skill-name>/SKILL.md`.
+- **Commands**: Claude Code wrappers in root `commands/`. They delegate to the canonical skill references and may use Claude-specific frontmatter (`allowed-tools`, `argument-hints`).
 - **Agents**: Autonomous task handlers defined in `agents/<name>.md` with frontmatter specifying `tools`, `model`, and `whenToUse`.
 
-### Plugin Distribution
+### Distribution
 
 ```bash
+# Agent Skills
+npx skills add https://github.com/docutray/devflow-skill --skill devflow
+
 # Users add the marketplace
-/plugin marketplace add docutray/docutray-claude-code-plugins
+/plugin marketplace add docutray/devflow-skill
 
 # Users install the plugin
-/plugin install devflow@docutray-plugins
+/plugin install devflow@docutray-skills
 ```
 
-## Current Plugins
+## Current Skill
 
-| Plugin | Version | Description |
-|--------|---------|-------------|
-| `devflow` | 1.3.0 | Agile development workflow with GitHub integration (feat, dev, check, review-pr, research, epic) |
+| Skill | Version | Description |
+|-------|---------|-------------|
+| `devflow` | 2.0.0 | Agile development workflow with GitHub integration (feat, dev, check, review-pr, research, epic) |
 
 ## Build & Test Commands
 
-### Plugin Integration Testing (in Claude Code)
+### Skill And Plugin Integration Testing
 
 ```bash
+npx skills add . --skill devflow
+
 /plugin marketplace add .                  # Add local marketplace
 /plugin install devflow@local              # Install for testing
 
@@ -65,20 +75,22 @@ Use `claude --debug` to troubleshoot plugin loading issues.
 
 ## Development Workflow
 
-1. Add or modify plugin files in `plugins/<plugin-name>/`
-2. Update version in `plugins/<plugin-name>/.claude-plugin/plugin.json`
-3. Update version in `.claude-plugin/marketplace.json` if needed
+1. Add or modify canonical skill files in `skills/devflow/`
+2. Keep Claude Code wrappers in `commands/` thin and delegated to the skill
+3. Update version in `skills/devflow/SKILL.md` and `.claude-plugin/marketplace.json`
 4. Update `CHANGELOG.md` with notable changes
 5. Test locally (see commands above)
 
-### Adding a New Plugin
+### Adding a New Workflow
 
-1. Create `plugins/<name>/` with `.claude-plugin/plugin.json`, `commands/`, and `README.md`
-2. Register in `.claude-plugin/marketplace.json` with `name`, `source`, `description`, `version`, `category`
+1. Add the detailed workflow under `skills/devflow/references/<workflow>.md`
+2. Link it from `skills/devflow/SKILL.md` with clear activation guidance
+3. Add a root `commands/<workflow>.md` wrapper only if Claude Code command UX is needed
+4. Use `/devflow:<command-file-name>` as the documented Claude Code command name
 
 ### Adding Commands and Skills
 
-- **Command**: Create `.md` file in `commands/` with YAML frontmatter. Restrict `allowed-tools` to minimum required.
+- **Command**: Create `.md` file in `commands/` with YAML frontmatter. Restrict `allowed-tools` to minimum required and delegate behavior to the skill.
 - **Skill**: Create `skills/<skill-name>/SKILL.md` with `name` (lowercase-hyphen, max 64 chars) and `description` (must include trigger terms, max 1024 chars).
 
 ## Code Style
@@ -94,4 +106,5 @@ Use `claude --debug` to troubleshoot plugin loading issues.
 - [Plugins Overview](https://docs.claude.com/en/docs/claude-code/plugins)
 - [Plugins Reference](https://docs.claude.com/en/docs/claude-code/plugins-reference)
 - [Slash Commands](https://docs.claude.com/en/docs/claude-code/slash-commands)
-- [Skills](https://docs.claude.com/en/docs/claude-code/skills)
+- [Agent Skills Specification](https://agentskills.io/specification)
+- [skills.sh Documentation](https://skills.sh/docs)

@@ -1,6 +1,6 @@
 # Check Command Configuration - TypeScript/Node.js
 
-This file configures the `/check` command validations for TypeScript/Node.js projects.
+This file configures the `/devflow:check` command validations for TypeScript/Node.js projects.
 
 ## Validation Configuration
 

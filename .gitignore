@@ -1,6 +1,15 @@
 # Claude Code local settings
 .claude/settings.local.json
 
+# Local Agent Skills installs
+.agents/
+.claude/skills/
+.goose/
+.kiro/
+.pi/
+.windsurf/
+skills-lock.json
+
 # OS files
 .DS_Store
 Thumbs.db

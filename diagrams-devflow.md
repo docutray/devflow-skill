@@ -210,7 +210,7 @@ flowchart TB
 ## Recomendaciones de uso
 
 1. **Diagrama 2** (Flujo con DevFlow): Ideal como imagen principal del post
-2. **Diagrama 4** (/check paralelo): Explica visualmente la eficiencia
+2. **Diagrama 4** (/devflow:check paralelo): Explica visualmente la eficiencia
 3. **Diagrama 6** (OPSX): Para la sección de "siguiente nivel" - muestra el flujo de artifacts
 4. **Diagrama 7** (Antes/Después): Buen cierre visual
 

@@ -6,6 +6,18 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-04-30
+
+### Changed
+- **BREAKING packaging change**: DevFlow is now an Agent Skill first, with the canonical implementation in `skills/devflow/SKILL.md`.
+- Claude Code slash commands are now compatibility wrappers that delegate to the portable skill references.
+- Marketplace metadata now installs the `devflow` skill from `./skills/devflow`.
+
+### Added
+- `npx skills add https://github.com/docutray/devflow-skill --skill devflow` installation path.
+- Portable DevFlow references for feature planning, implementation, validation, PR review, research, and epic planning.
+- Skill assets copied from the existing DevFlow templates.
+
 ### Removed
 - **rag-research** plugin: removed from the marketplace. The RAG document indexing
   and semantic search plugin (Qdrant + FastEmbed) has been deprecated from this

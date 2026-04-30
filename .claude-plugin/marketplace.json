@@ -1,6 +1,6 @@
 {
-    "name": "docutray-plugins",
-    "description": "Docutray's collection of Claude Code plugins for agile development workflows",
+    "name": "docutray-skills",
+    "description": "Docutray's collection of portable Agent Skills and Claude Code compatibility plugins",
     "owner": {
         "name": "Roberto Arce",
         "email": "roberto@docutray.com"
@@ -8,10 +8,14 @@
     "plugins": [
         {
             "name": "devflow",
-            "source": "./plugins/devflow",
-            "description": "Complete agile development workflow commands for Claude Code based on GitHub and best practices. Includes feature planning, implementation, validation, and PR review commands.",
-            "version": "1.3.0",
-            "category": "development"
+            "source": "./",
+            "description": "Portable agile development workflow skill for AI coding agents. Includes GitHub issue planning, implementation, validation, PR review, research, and epic planning.",
+            "version": "2.0.0",
+            "category": "development",
+            "strict": false,
+            "skills": [
+                "./skills/devflow"
+            ]
         }
     ]
 }
