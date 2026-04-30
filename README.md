@@ -51,6 +51,30 @@ flowchart LR
 
 In Codex and other Agent Skills clients, ask naturally: "Use DevFlow to implement issue #123" or "Use DevFlow to review PR #45".
 
+## Example Usage
+
+### Claude Code
+
+After installing the Claude Code marketplace plugin, use the namespaced slash commands:
+
+```bash
+/devflow:devflow-setup
+/devflow:feat add-invoice-export --type=feat --priority=high
+/devflow:dev issue#123 --worktree --full-validation
+/devflow:review-pr 45 --fix-issues
+```
+
+### Codex
+
+After installing the skill with `npx skills`, ask Codex to use DevFlow in natural language:
+
+```text
+Use DevFlow to configure this repository.
+Use DevFlow to create a GitHub issue for adding invoice export.
+Use DevFlow to implement issue #123 in an isolated worktree and run full validation.
+Use DevFlow to review PR #45 and fix any blocking issues.
+```
+
 ## Commands And Workflows
 
 | Command | Description |
