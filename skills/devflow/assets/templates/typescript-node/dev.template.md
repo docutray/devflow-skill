@@ -134,19 +134,21 @@ docs/issue-012-api-docs
 ```
 
 ### Code Style
-- Use ESLint and Prettier for consistent formatting
-- Follow project's TypeScript strict mode settings
-- Use async/await over raw promises
-- Prefer named exports over default exports
-- Add JSDoc comments for public APIs
+These are recommended defaults. Prefer the repository's existing conventions when they differ.
 
-## Testing Requirements
+- Use the configured formatter and linter, such as ESLint and Prettier when present.
+- Follow the project's TypeScript settings.
+- Prefer async/await where it improves readability.
+- Follow the project's export style.
+- Add JSDoc comments for public APIs when the project expects them.
+
+## Testing Guidelines
 
 ### Unit Tests
-- Test business logic and utilities
-- Mock external dependencies with `vi.mock()` or `vi.fn()`
-- Use descriptive test names
-- Follow AAA pattern (Arrange, Act, Assert)
+- Test business logic and utilities when behavior changes.
+- Mock external dependencies with the project's existing mocking approach, such as `vi.mock()` or `vi.fn()` in Vitest projects.
+- Use descriptive test names.
+- Prefer a clear Arrange, Act, Assert structure when it fits the project's style.
 
 Example:
 ```typescript
@@ -174,14 +176,15 @@ describe('UserService', () => {
 ```
 
 ### Integration Tests
-- Test API endpoints
-- Test database interactions
-- Use test database/containers
-- Consider using `@vitest/ui` for visual debugging
+- Test API endpoints when API behavior changes.
+- Test database interactions when persistence behavior changes.
+- Use the project's established test database or container strategy.
+- Consider using `@vitest/ui` for visual debugging.
 
 ### Test Coverage
 
-**Minimum coverage: 80%**
+Use the repository's configured coverage thresholds. If none exist, discuss a reasonable target with the team before enforcing one. Common starting examples are:
+
 - Statements: > 80%
 - Branches: > 75%
 - Functions: > 80%
