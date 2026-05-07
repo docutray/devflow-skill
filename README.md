@@ -21,7 +21,7 @@ This installs the `devflow` skill and exposes compatibility slash commands such 
 
 ## Version
 
-Current version: `2.0.0`
+Current version: `2.0.1`
 
 ## What DevFlow Provides
 

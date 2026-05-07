@@ -5,7 +5,7 @@ license: MIT
 compatibility: Works with Agent Skills compatible clients including Codex and Claude Code. Requires git for repository workflows, GitHub CLI for issue/PR workflows, and optional web access for research. OPSX/OpenSpec support is optional.
 metadata:
   author: docutray
-  version: "2.0.0"
+  version: "2.0.1"
 ---
 
 # DevFlow

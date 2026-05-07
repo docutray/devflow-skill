@@ -6,6 +6,8 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-05-07
+
 ### Added
 - Canonical DevFlow setup workflow reference for `/devflow:devflow-setup`.
 
