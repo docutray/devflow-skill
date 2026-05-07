@@ -19,7 +19,7 @@ This file configures the `/devflow:check` command validations for TypeScript/Nod
     },
     "typecheck": {
       "command": "npx tsc --noEmit",
-      "description": "TypeScript strict type validation (without --skipLibCheck)",
+      "description": "TypeScript validation; adapt to the project's configured typecheck script",
       "enabled": true
     },
     "build": {
@@ -41,7 +41,7 @@ This file configures the `/devflow:check` command validations for TypeScript/Nod
 - **Vitest with coverage**: `npx vitest run --coverage`
 - **Vitest UI mode**: `npx vitest --ui` (interactive browser interface)
 - For specific test file: `npm run test -- <path>`
-- **Coverage threshold validation**: Add to vitest.config.ts:
+- **Coverage threshold validation**: If the project enforces coverage thresholds, document them in vitest.config.ts and use the repository's existing targets. Example:
   ```typescript
   test: {
     coverage: {
@@ -61,10 +61,10 @@ This file configures the `/devflow:check` command validations for TypeScript/Nod
 - For specific paths: `npm run lint -- src/`
 
 ### Type Check Command
-- **Important**: Always run without `--skipLibCheck` for strict validation
-- Default: `npx tsc --noEmit`
+- Prefer the project's configured typecheck script when available.
+- Default example: `npx tsc --noEmit`
 - For monorepo: `npx turbo run type-check` or `npx tsc --build`
-- The `--skipLibCheck` flag in tsconfig.json is for dev speed only
+- Avoid adding stricter flags than the project already uses unless the team wants stricter validation.
 
 ### Build Command
 - Default: `npm run build`

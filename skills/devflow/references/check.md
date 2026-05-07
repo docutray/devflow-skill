@@ -12,7 +12,13 @@ Use this when running DevFlow quality checks: tests, linting, type checking, bui
 
 1. Load `.claude/details/commands/check.md` if present.
 2. If no config exists, infer checks from the repository:
-   - Node/TypeScript: `npm run test`, `npm run lint`, `npx tsc --noEmit`, `npm run build` when scripts exist.
+   - Prefer commands already used by the project in package scripts, task files, Makefiles, CI workflows, or documentation.
+   - Node/TypeScript: detect the package manager from lockfiles before choosing commands:
+     - `pnpm-lock.yaml` -> `pnpm` / `pnpm exec`
+     - `yarn.lock` -> `yarn` / `yarn exec` when supported
+     - `bun.lock` or `bun.lockb` -> `bun` / `bunx`
+     - `package-lock.json` or no alternative lockfile -> `npm` / `npx`
+     Run only scripts that exist, such as `<pm> run test`, `<pm> run lint`, `<pm> run typecheck` or `<pm> run type-check`, and `<pm> run build`. Use the project TypeScript script when available; otherwise use the matching exec command for `tsc --noEmit` only when TypeScript is configured.
    - Python: `pytest`, configured linter/type checker when present.
    - Go: `go test ./...` and `go build ./...`.
 3. Run independent validations in parallel when the client supports parallel tool execution. Otherwise run them sequentially and preserve the same report format.

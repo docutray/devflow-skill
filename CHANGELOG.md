@@ -6,6 +6,13 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+### Added
+- Canonical DevFlow setup workflow reference for `/devflow:devflow-setup`.
+
+### Changed
+- Improved DevFlow validation inference for Node/TypeScript projects by detecting package managers from lockfiles and preferring existing project scripts.
+- Softened framework templates so recommended defaults defer to each repository's existing conventions.
+
 ## [2.0.0] - 2026-04-30
 
 ### Changed

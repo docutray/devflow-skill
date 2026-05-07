@@ -176,12 +176,14 @@ docs/issue-012-api-docs
 ```
 
 ### Code Style
-- Follow PEP 8 style guide
-- Use type hints for function signatures
-- Write docstrings for modules, classes, and functions
-- Keep functions small and focused
-- Use list/dict comprehensions when appropriate
-- Prefer f-strings for string formatting
+These are recommended defaults. Prefer the repository's existing conventions when they differ.
+
+- Follow the configured formatter and linter, such as Ruff, Black, isort, or flake8 when present.
+- Use type hints where the project already uses typing or where they improve maintainability.
+- Write docstrings for public modules, classes, and functions when the project expects them.
+- Keep functions small and focused.
+- Use list/dict comprehensions when they improve readability.
+- Prefer f-strings for string formatting in modern Python codebases.
 
 Example:
 ```python
@@ -202,13 +204,13 @@ def calculate_total(items: List[Item]) -> float:
     return sum(item.price for item in items)
 ```
 
-## Testing Requirements
+## Testing Guidelines
 
 ### Unit Tests
-- Test individual functions and methods
-- Use fixtures for test data
-- Mock external dependencies
-- Follow AAA pattern (Arrange, Act, Assert)
+- Test individual functions and methods when behavior changes.
+- Use fixtures for test data when supported by the project's test framework.
+- Mock external dependencies with the project's existing mocking approach.
+- Prefer a clear Arrange, Act, Assert structure when it fits the project's style.
 
 Example:
 ```python
@@ -232,13 +234,14 @@ def test_create_user(user_data):
 ```
 
 ### Integration Tests
-- Test API endpoints
-- Test database interactions
-- Use test database or containers
-- Test authentication/authorization
+- Test API endpoints when API behavior changes.
+- Test database interactions when persistence behavior changes.
+- Use the project's established test database or container strategy.
+- Test authentication/authorization when security behavior changes.
 
 ### Test Coverage
-Minimum coverage: 80%
+Use the repository's configured coverage thresholds. If none exist, discuss a reasonable target with the team before enforcing one. Common starting examples are:
+
 - Statements: > 80%
 - Branches: > 75%
 - Functions: > 80%
