@@ -23,8 +23,8 @@ argument-hints:
 Use the `devflow` skill as the source of truth.
 
 1. Read `@${CLAUDE_PLUGIN_ROOT}/skills/devflow/SKILL.md`.
-2. Inspect the repository to infer framework, package manager, tests, linting, type checking, build, and CI conventions.
-3. Use templates from `@${CLAUDE_PLUGIN_ROOT}/skills/devflow/assets/templates/` when creating or updating `.claude/details/commands/`.
-4. Treat `$ARGUMENTS` as setup options.
+2. Read `@${CLAUDE_PLUGIN_ROOT}/skills/devflow/references/setup.md`.
+3. Treat `$ARGUMENTS` as setup options.
+4. Follow the setup workflow exactly, using templates from `@${CLAUDE_PLUGIN_ROOT}/skills/devflow/assets/templates/` only when useful.
 5. Ask only for configuration details that cannot be inferred safely.
 6. Create or update DevFlow configuration files and summarize the resulting commands.

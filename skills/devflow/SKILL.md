@@ -14,6 +14,7 @@ DevFlow is a portable workflow for turning ideas into GitHub issues, implementin
 
 ## Workflow Map
 
+- **Setup/configuration**: read [references/setup.md](references/setup.md) when the user asks to configure DevFlow for a repository, create project-local command details, adapt templates, or mentions `/devflow:devflow-setup`.
 - **Feature planning**: read [references/feat.md](references/feat.md) when the user asks to create a feature spec, bug spec, GitHub issue, or mentions `/devflow:feat`.
 - **Implementation**: read [references/dev.md](references/dev.md) when the user asks to implement a GitHub issue, open a development branch, create a PR, or mentions `/devflow:dev`.
 - **Validation**: read [references/check.md](references/check.md) when the user asks to run tests, lint, type checks, build checks, quality gates, or mentions `/devflow:check`.
