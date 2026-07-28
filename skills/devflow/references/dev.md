@@ -22,7 +22,7 @@ Use this when implementing a GitHub issue and preparing a pull request.
 7. Implement in small steps following existing code patterns.
 8. Add or update focused tests for changed behavior.
 9. Run quick validation during development and full validation before PR. Use [check.md](check.md).
-10. When OpenSpec is configured, archive the completed change before opening the PR. See [openspec.md](openspec.md).
+10. When OpenSpec is configured, archive the completed change before opening the PR by delegating to the `openspec-archive-change` skill. See [openspec.md](openspec.md).
 11. Create a PR with summary, tests, linked issue, and OPSX/OpenSpec change name when relevant.
 
 ## Worktree Convention

@@ -50,7 +50,7 @@ Reusable templates live in [assets/templates](assets/templates). Load a template
 
 ## Gotchas
 
-- Do not assume slash commands exist in every client. In Codex and other Agent Skills clients, execute the referenced workflow directly. This applies to `/opsx:*` as well: Codex gets OpenSpec Agent Skills only, so drive OpenSpec through its CLI.
+- Do not assume slash commands exist in every client. In Codex and other Agent Skills clients, execute the referenced workflow directly. This applies to `/opsx:*` as well: Codex gets OpenSpec Agent Skills only, so delegate to the `openspec-*` skills.
 - Claude Code wrappers may expose `/devflow:*` commands, but this skill is the canonical source of behavior.
 - `allowed-tools`, `argument-hints`, `Task`, `AskUserQuestion`, web tool names, and `${CLAUDE_PLUGIN_ROOT}` are Claude Code plugin details; do not rely on them in portable workflows.
 - Network access, GitHub authentication, and local dependency installation vary by client. Verify availability before depending on them.

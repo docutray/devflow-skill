@@ -12,78 +12,77 @@ Use this when a repository has OpenSpec configured and a DevFlow workflow needs 
 | Node.js | `>=20.19.0` |
 | Repository marker | `openspec/config.yaml` |
 
-Install with `npm install -g @fission-ai/openspec@latest`.
-
 The bare `openspec` name on npm is an unrelated abandoned package stuck at `0.0.0`. Never recommend `npm install -g openspec`.
 
-Before relying on any command below, confirm the installed version with `openspec --version`. If it falls outside the supported range, run `openspec --help` and adapt rather than assuming this document is still accurate.
+## Assumptions
 
-## The CLI Is The Contract
+1. **The `openspec` CLI is installed globally** and available on `PATH`, via `npm install -g @fission-ai/openspec@latest`. DevFlow never installs it. Confirm with `openspec --version`, and if the version falls outside the supported range, run `openspec --help` and adapt rather than trusting this document.
+2. **The repository has been initialized** with `openspec init --tools <clients>`, so the generated skills are committed in-repo.
+3. **DevFlow delegates to OpenSpec Skills**, never to slash commands. Skills carry the same names on Claude Code and Codex, so they are the only portable handle.
+4. **`/opsx:*` slash commands are optional and Claude Code only.** A user may install them for their own use in other projects; that is their choice and DevFlow must not depend on it, require it, or ask them to change their profile.
 
-**Drive OpenSpec through the `openspec` CLI, never through client-specific wrappers.** The CLI is identical on every client; the wrappers are not.
+## Why Skills, Not Slash Commands
 
-`openspec init` generates a different surface per tool. With `--tools claude,codex` on 1.6.0:
+`openspec init` generates a different surface per client. On 1.6.0 with `--tools claude,codex`:
 
 | Client | Slash commands | Agent Skills |
 |---|---|---|
-| Claude Code | `.claude/commands/opsx/` (6) | `.claude/skills/openspec-*` (6) |
-| Codex | none | `.codex/skills/openspec-*` (6) |
+| Claude Code | `.claude/commands/opsx/` | `.claude/skills/openspec-*` |
+| Codex | none | `.codex/skills/openspec-*` |
 
-Names differ across the two surfaces, so no single identifier works everywhere:
+Codex gets no slash commands at all, and the two surfaces use different names (`/opsx:apply` versus `openspec-apply-change`). Skills are generated identically for every configured client, so delegating to a skill is the one approach that works everywhere.
 
-| Workflow | Claude Code command | Skill name |
+Delegating also keeps DevFlow thin: each skill already encodes OpenSpec's current procedure and guardrails, and `openspec update` refreshes it. DevFlow does not need to restate that flow or track its changes.
+
+## Skills DevFlow Delegates To
+
+The default `core` profile installs the first six. The rest exist only if the user selected them via `openspec config profile`.
+
+| Purpose | Skill | In `core` |
 |---|---|---|
-| Propose | `/opsx:propose` | `openspec-propose` |
-| Explore | `/opsx:explore` | `openspec-explore` |
-| Apply | `/opsx:apply` | `openspec-apply-change` |
-| Update | `/opsx:update` | `openspec-update-change` |
-| Sync | `/opsx:sync` | `openspec-sync-specs` |
-| Archive | `/opsx:archive` | `openspec-archive-change` |
+| Create a change with all artifacts | `openspec-propose` | yes |
+| Explore options before planning | `openspec-explore` | yes |
+| Implement the change's tasks | `openspec-apply-change` | yes |
+| Revise artifacts on a change | `openspec-update-change` | yes |
+| Preview merging specs | `openspec-sync-specs` | yes |
+| Finalize a completed change | `openspec-archive-change` | yes |
+| Scaffold an empty change | `openspec-new-change` | no |
+| Resume a partially planned change | `openspec-continue-change` | no |
+| Plan and implement in one pass | `openspec-ff-change` | no |
+| Verify implementation against specs | `openspec-verify-change` | no |
+| Archive several changes at once | `openspec-bulk-archive-change` | no |
+| Guided introduction | `openspec-onboard` | no |
 
-Every generated wrapper declares `allowed-tools: Bash(openspec:*)` and its body is a sequence of `openspec` CLI calls. Nothing is lost by calling the CLI directly.
+Check which skills are actually present before naming one, and never assume a non-core skill exists.
 
-Two consequences for DevFlow:
+## CLI Fallback And Gates
 
-- Never make a `/opsx:*` command a required step, and never assume a skill name is installed. If the user invokes one, follow it; otherwise run the CLI sequence yourself.
-- The workflow profile (`core` by default, or `custom` via `openspec config profile`) only controls **which wrappers get generated**. It does not change the CLI, so it does not change DevFlow's behavior. Do not ask the user to change their profile.
+Every generated skill declares `allowed-tools: Bash(openspec:*)` and its body is a sequence of CLI calls, so the CLI reaches everything the skills do. Use it directly in two cases:
 
-## Detection
-
-Treat OpenSpec as configured only when `openspec/config.yaml` exists. Do not infer it from a stray `openspec/` directory alone, and do not run `openspec init` unless the user explicitly asks to enable OpenSpec.
-
-`openspec/config.yaml` declares the workflow schema (`schema: spec-driven` by default) and may carry project `context:` and per-artifact `rules:`. Read it before generating artifacts; it tells you which artifacts a change requires.
-
-## Client-Agnostic Command Sequence
+- **Deterministic gates.** A validation entry in `.claude/details/commands/check.md` must be a shell command, so use `openspec validate <change> --strict`.
+- **No skills available.** If the repository was never initialized for the current client, or the user's global `delivery` setting is `commands` (which suppresses skill generation), drive the CLI yourself.
 
 ```bash
 openspec --version                          # confirm compatibility first
 openspec list                               # active changes (--specs for specs)
-openspec status --change <name> --json      # artifact state, and applyRequires
-openspec instructions <artifact> --change <name> --json
-openspec instructions apply --change <name> --json
+openspec status --change <name> --json      # artifact state, including applyRequires
+openspec instructions <artifact> --change <name> --json   # template, rules, output path
+openspec instructions apply --change <name> --json        # task list and context files
 openspec validate <name> --strict           # pre-PR gate
 openspec archive <name> [-y] [--skip-specs]
 ```
 
-**Planning.** `openspec new change <name>` scaffolds the change. `openspec status --change <name> --json` returns `applyRequires` (artifacts needed before implementation), each artifact's status and dependencies, and the resolved paths. Loop over the ready artifacts: call `openspec instructions <artifact> --change <name> --json`, which returns `template` (the structure to write), `instruction` (schema guidance), `dependencies` (completed artifacts to read first), and `resolvedOutputPath` (where to write). Write the file there, then re-run `status` until every `applyRequires` artifact is `done`.
-
-`context` and `rules` in that JSON are constraints on what you write, not content to copy into the artifact.
-
-**Implementation.** `openspec instructions apply --change <name> --json` returns `contextFiles` (artifact id to file paths), task list, and progress. Read the context files, implement each task, and tick `- [ ]` to `- [x]` in the tasks file as you go.
-
-**Validation and handoff.** `openspec validate <name> --strict` is the pre-PR gate. `openspec archive <name>` merges the change into the main specs.
-
-The default `spec-driven` schema has artifacts `proposal → specs → design → tasks`. Other schemas exist; read the artifact list from `status` rather than hardcoding those names.
+For the fallback flow: `openspec new change <name>` scaffolds the change, `status --json` reports which artifacts `applyRequires`, and `instructions <artifact> --json` returns the `template` to write, the `dependencies` to read first, and the `resolvedOutputPath` to write to. Loop until every required artifact is `done`. The `context` and `rules` fields constrain what you write; never copy them into the artifact.
 
 Notes:
 
 - There is **no** `openspec workflow` command in any 1.x release.
 - `openspec change list` is deprecated in favor of `openspec list`.
-- `--json` is available on most read commands and is the right choice for scripted checks.
+- The default `spec-driven` schema uses `proposal → specs → design → tasks`. Other schemas exist, so read the artifact list from `status` instead of hardcoding names.
 
 ## Use Within DevFlow Workflows
 
-- **Feature planning**: OpenSpec is not required. If the user wants specs before code, use the planning sequence above; the GitHub issue stays the source of truth for scope.
-- **Implementation**: after selecting the branch, create or continue the change, then implement its tasks. The change name usually matches the branch slug.
+- **Feature planning**: OpenSpec is not required. If the user wants specs before code, delegate to `openspec-propose`; the GitHub issue stays the source of truth for scope.
+- **Implementation**: after selecting the branch, delegate to `openspec-apply-change`. The change name usually matches the branch slug.
 - **Validation**: add `openspec validate --strict` as an extra gate only when the repository has OpenSpec configured. Report it alongside tests, lint, typecheck, and build.
-- **Before the PR**: archive the completed change so the main specs reflect merged behavior, and reference the change name in the PR body.
+- **Before the PR**: delegate to `openspec-archive-change` so the main specs reflect merged behavior, and reference the change name in the PR body.
