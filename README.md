@@ -1,10 +1,10 @@
 # DevFlow Skill
 
-Portable Agent Skill for agile development workflows with GitHub integration. DevFlow works with skills-compatible agents via `npx skills` and keeps Claude Code slash commands through a compatibility plugin.
+Portable Agent Skill for agile development workflows with GitHub integration. The skill is the product: Codex, Claude Code, and any other Agent Skills client are equally supported and behave identically.
 
 ## Installation
 
-### Agent Skills
+### Any Agent Skills Client (Codex, and others)
 
 ```bash
 npx skills add https://github.com/docutray/devflow-skill --skill devflow
@@ -12,16 +12,16 @@ npx skills add https://github.com/docutray/devflow-skill --skill devflow
 
 ### Claude Code
 
+Claude Code can install the skill the same way as above. The marketplace plugin installs that same skill and adds optional `/devflow:*` slash command shortcuts:
+
 ```bash
 /plugin marketplace add docutray/devflow-skill
 /plugin install devflow@docutray-skills
 ```
 
-This installs the `devflow` skill and exposes compatibility slash commands such as `/devflow:feat`, `/devflow:dev`, `/devflow:check`, and `/devflow:review-pr`.
-
 ## Version
 
-Current version: `2.0.1`
+Current version: `2.1.0`
 
 ## What DevFlow Provides
 
@@ -31,42 +31,18 @@ DevFlow provides a structured workflow from research and planning through implem
 
 ```mermaid
 flowchart LR
-    setup["/devflow:devflow-setup"] --> feat["/devflow:feat"]
+    setup["Setup"] --> feat["Feature planning"]
     feat --> issue["GitHub issue"]
-    issue --> dev["/devflow:dev"]
+    issue --> dev["Implementation"]
     dev --> pr["Pull request"]
-    dev --> check["/devflow:check"]
+    dev --> check["Validation"]
     check --> pr
-    pr --> review["/devflow:review-pr"]
+    pr --> review["PR review"]
 ```
-
-```bash
-# Claude Code command UX
-/devflow:devflow-setup
-/devflow:feat feature-name
-/devflow:dev issue#123
-/devflow:check
-/devflow:review-pr 45
-```
-
-In Codex and other Agent Skills clients, ask naturally: "Use DevFlow to implement issue #123" or "Use DevFlow to review PR #45".
 
 ## Example Usage
 
-### Claude Code
-
-After installing the Claude Code marketplace plugin, use the namespaced slash commands:
-
-```bash
-/devflow:devflow-setup
-/devflow:feat add-invoice-export --type=feat --priority=high
-/devflow:dev issue#123 --worktree --full-validation
-/devflow:review-pr 45 --fix-issues
-```
-
-### Codex
-
-After installing the skill with `npx skills`, ask Codex to use DevFlow in natural language:
+DevFlow is a skill, so you invoke it in natural language. This works the same in Codex, Claude Code, and any other Agent Skills client:
 
 ```text
 Use DevFlow to configure this repository.
@@ -75,17 +51,30 @@ Use DevFlow to implement issue #123 in an isolated worktree and run full validat
 Use DevFlow to review PR #45 and fix any blocking issues.
 ```
 
-## Commands And Workflows
+### Optional Claude Code Shortcuts
 
-| Command | Description |
-|---------|-------------|
-| `/devflow:devflow-setup` | Configure DevFlow for your project |
-| `/devflow:feat` | Create feature specifications and GitHub issues |
-| `/devflow:dev` | Implement features from GitHub issues |
-| `/devflow:check` | Run parallel validations (tests, lint, types, build) |
-| `/devflow:review-pr` | Perform comprehensive PR reviews |
-| `/devflow:research` | Research topics before planning |
-| `/devflow:epic` | Plan major initiatives with multiple phases |
+Installing the Claude Code plugin additionally registers namespaced slash commands. They are thin wrappers over the same skill and add no behavior, so they are entirely optional:
+
+```bash
+/devflow:devflow-setup
+/devflow:feat add-invoice-export --type=feat --priority=high
+/devflow:dev issue#123 --worktree --full-validation
+/devflow:review-pr 45 --fix-issues
+```
+
+## Workflows
+
+| Workflow | Description | Claude Code shortcut |
+|---|---|---|
+| Setup | Configure DevFlow for your project | `/devflow:devflow-setup` |
+| Feature planning | Create feature specifications and GitHub issues | `/devflow:feat` |
+| Implementation | Implement features from GitHub issues | `/devflow:dev` |
+| Validation | Run parallel validations (tests, lint, types, build) | `/devflow:check` |
+| PR review | Perform comprehensive PR reviews | `/devflow:review-pr` |
+| Research | Research topics before planning | `/devflow:research` |
+| Epic planning | Plan major initiatives with multiple phases | `/devflow:epic` |
+
+Ask for a workflow by name in any client. The shortcuts exist only in Claude Code.
 
 ## Repository Structure
 

@@ -28,4 +28,4 @@ Use the `devflow` skill as the source of truth.
 2. Read `@${CLAUDE_PLUGIN_ROOT}/skills/devflow/references/epic.md`.
 3. Treat `$ARGUMENTS` as the epic planning request.
 4. Follow the epic planning workflow exactly, using Claude Code tools only where allowed by this wrapper.
-5. Recommend the first `/devflow:dev issue#<number>` workflow after creating sub-issues.
+5. After creating sub-issues, follow the skill's workflow handoff and recommend the DevFlow development workflow for the first issue, offering `/devflow:dev issue#<number>` as the Claude Code shortcut.

@@ -42,4 +42,4 @@ Approve / Request changes / Comment only
 
 ## Completion
 
-Report the final recommendation and any commands run. If approved or commented via GitHub, include the PR action taken.
+Report the final recommendation and any commands run. If approved or commented via GitHub, include the PR action taken. Then hand off: merge when approved and surface any post-merge tasks recorded in the PR body, or return to the DevFlow development workflow when changes were requested.

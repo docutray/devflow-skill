@@ -6,6 +6,8 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-07-28
+
 ### Added
 - `skills/devflow/references/openspec.md`: documents the supported OpenSpec version
   (`@fission-ai/openspec` 1.x, verified against 1.6.0, Node >= 20.19.0), the CLI surface
@@ -18,6 +20,13 @@ This project follows Semantic Versioning.
   unrelated and abandoned at `0.0.0`.
 
 ### Changed
+- DevFlow is now skill-first, with Codex and Claude Code as equally supported clients. The
+  skill is the interface and is driven in natural language; `/devflow:*` slash commands are
+  documented as optional Claude Code shortcuts that add no behavior.
+- Added a `Workflow Handoffs` table to `SKILL.md`. Every workflow now recommends the next one
+  by workflow name rather than by slash command, so the guidance works in any client.
+- Reframed the README, framework templates, and worktree guide around workflow names instead
+  of command names.
 - OpenSpec integration is now client-agnostic and delegates to the `openspec-*` Agent Skills,
   which carry identical names on Claude Code and Codex. `/opsx:*` slash commands are Claude Code
   only and are treated as an optional user preference DevFlow never depends on. The `openspec`

@@ -1,6 +1,6 @@
-# Check Command Configuration - Python
+# DevFlow Validation Configuration - Python
 
-This file configures the `/devflow:check` command validations for Python projects.
+This file configures the DevFlow validation workflow for Python projects. It applies in any client, whether DevFlow is invoked in natural language or through the optional `/devflow:check` command.
 
 ## Validation Configuration
 

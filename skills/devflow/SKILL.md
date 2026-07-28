@@ -1,16 +1,25 @@
 ---
 name: devflow
-description: Agile development workflow for AI coding agents. Use for GitHub issue planning, feature specifications, implementation from issues, validation checks, PR review, research, epic planning, or when the user mentions DevFlow commands such as /devflow:feat, /devflow:dev, /devflow:check, /devflow:review-pr, /devflow:research, or /devflow:epic.
+description: Agile development workflow for AI coding agents, usable from Codex, Claude Code, and any Agent Skills client. Use when the user asks to plan a GitHub issue, write a feature or bug specification, implement an issue, run validation checks, review a pull request, research a topic, or plan an epic. Also triggered by phrasing such as "use DevFlow to ..." or by the optional Claude Code commands /devflow:feat, /devflow:dev, /devflow:check, /devflow:review-pr, /devflow:research, /devflow:epic, and /devflow:devflow-setup.
 license: MIT
 compatibility: Works with Agent Skills compatible clients including Codex and Claude Code. Requires git for repository workflows, GitHub CLI for issue/PR workflows, and optional web access for research. OPSX/OpenSpec support is optional and targets @fission-ai/openspec 1.x.
 metadata:
   author: docutray
-  version: "2.0.1"
+  version: "2.1.0"
 ---
 
 # DevFlow
 
 DevFlow is a portable workflow for turning ideas into GitHub issues, implementing them, validating changes, and reviewing pull requests with a consistent engineering process.
+
+## Invocation And Clients
+
+This skill is the interface. Codex and Claude Code are equally supported: every workflow below behaves identically in either, driven by natural language.
+
+- **Any Agent Skills client, including Codex**: state the intent, for example "Use DevFlow to implement issue #123".
+- **Claude Code**: the same natural language works. The `/devflow:*` slash commands are an optional convenience wrapper that reads this skill and adds no behavior of its own.
+
+Never require a slash command, never treat one as a workflow's canonical name, and never tell a user something is unavailable because their client has no `/devflow:*` commands.
 
 ## Workflow Map
 
@@ -22,6 +31,22 @@ DevFlow is a portable workflow for turning ideas into GitHub issues, implementin
 - **Research**: read [references/research.md](references/research.md) when the user asks to investigate a technology, architecture, requirement, or mentions `/devflow:research`.
 - **Epic planning**: read [references/epic.md](references/epic.md) when the user asks to plan a large initiative, split work into phases/issues, or mentions `/devflow:epic`.
 - **OpenSpec/OPSX**: read [references/openspec.md](references/openspec.md) before running any `openspec` or `/opsx:*` command, or when configuring OpenSpec for a repository.
+
+## Workflow Handoffs
+
+Every workflow ends by recommending what comes next. Name the DevFlow workflow, never a slash command:
+
+| Finished | Recommend next |
+|---|---|
+| Setup | Feature planning, or implementation if issues already exist |
+| Research | Feature planning, or epic planning for a large initiative |
+| Epic planning | Feature planning for the first phase, then implementation |
+| Feature planning | Implementation for the issue just created |
+| Implementation | PR review for the pull request just opened |
+| Validation | Return to the calling workflow; on failure, give concrete next actions |
+| PR review | Merge, or implementation again when changes were requested |
+
+Phrase the handoff so it works in any client: "Next: use the DevFlow development workflow for issue #123." In Claude Code you may append the `/devflow:dev issue#123` shortcut in parentheses, but never as the only form.
 
 ## Core Principles
 
@@ -51,6 +76,6 @@ Reusable templates live in [assets/templates](assets/templates). Load a template
 ## Gotchas
 
 - Do not assume slash commands exist in every client. In Codex and other Agent Skills clients, execute the referenced workflow directly. This applies to `/opsx:*` as well: Codex gets OpenSpec Agent Skills only, so delegate to the `openspec-*` skills.
-- Claude Code wrappers may expose `/devflow:*` commands, but this skill is the canonical source of behavior.
+- Claude Code wrappers may expose `/devflow:*` commands, but this skill is the canonical source of behavior. The wrappers are optional; a repository configured for DevFlow works the same without them.
 - `allowed-tools`, `argument-hints`, `Task`, `AskUserQuestion`, web tool names, and `${CLAUDE_PLUGIN_ROOT}` are Claude Code plugin details; do not rely on them in portable workflows.
 - Network access, GitHub authentication, and local dependency installation vary by client. Verify availability before depending on them.

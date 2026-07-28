@@ -90,19 +90,20 @@ git worktree prune
 
 ## Parallel Development Example
 
-```bash
-# Terminal 1: Implement feature
-claude --worktree
-> /devflow:dev issue#123 --worktree
+Run each stream in its own terminal and worktree. Ask for the workflow in natural language, which works in Codex and Claude Code alike:
+
+```text
+# Terminal 1: Implement a feature
+Use DevFlow to implement issue #123 in an isolated worktree.
 
 # Terminal 2: Review a PR (simultaneously)
-claude --worktree
-> /devflow:review-pr 45 --worktree
+Use DevFlow to review PR #45 in an isolated worktree.
 
 # Terminal 3: Implement another feature (simultaneously)
-claude --worktree
-> /devflow:dev issue#456 --worktree
+Use DevFlow to implement issue #456 in an isolated worktree.
 ```
+
+In Claude Code the optional slash commands are equivalent shortcuts: `/devflow:dev issue#123 --worktree`, `/devflow:review-pr 45 --worktree`.
 
 ## Troubleshooting
 

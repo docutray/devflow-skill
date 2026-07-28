@@ -12,7 +12,7 @@ This is a **portable Agent Skill repository** maintained by the Docutray organiz
 
 | Skill | Version | Description | Category |
 |--------|---------|-------------|----------|
-| `devflow` | 2.0.1 | Complete agile development workflow with GitHub integration | development |
+| `devflow` | 2.1.0 | Complete agile development workflow with GitHub integration | development |
 
 ## Repository Structure
 
@@ -114,7 +114,7 @@ Version 2 does not use per-plugin `plugin.json`. `.claude-plugin/marketplace.jso
         {
             "name": "devflow",
             "source": "./",
-            "version": "2.0.1",
+            "version": "<current version>",
             "skills": ["./skills/devflow"]
         }
     ]

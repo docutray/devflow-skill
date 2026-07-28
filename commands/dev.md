@@ -27,4 +27,4 @@ Use the `devflow` skill as the source of truth.
 3. Treat `$ARGUMENTS` as the issue implementation request.
 4. If validation is needed, read `@${CLAUDE_PLUGIN_ROOT}/skills/devflow/references/check.md`.
 5. Follow the development workflow exactly, using Claude Code tools only where allowed by this wrapper.
-6. After creating the PR, recommend `/devflow:review-pr <pr-number>`.
+6. After creating the PR, follow the skill's workflow handoff and recommend the DevFlow PR review workflow, offering `/devflow:review-pr <pr-number>` as the Claude Code shortcut.
