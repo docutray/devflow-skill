@@ -18,6 +18,10 @@ This project follows Semantic Versioning.
   unrelated and abandoned at `0.0.0`.
 
 ### Changed
+- OpenSpec integration is now CLI-first and client-agnostic. `openspec init` generates a
+  different surface per tool (Claude Code gets `/opsx:*` commands plus Agent Skills; Codex gets
+  Agent Skills only, under different names), so DevFlow targets the `openspec` CLI, which is
+  identical everywhere. The workflow profile no longer affects DevFlow.
 - OpenSpec detection now keys strictly on `openspec/config.yaml`.
 - `dev.md` makes archiving a completed change an explicit pre-PR step.
 
