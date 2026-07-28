@@ -6,6 +6,62 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-07-28
+
+### Added
+- `skills/devflow/references/openspec.md`: documents the supported OpenSpec version
+  (`@fission-ai/openspec` 1.x, verified against 1.6.0, Node >= 20.19.0), the CLI surface
+  DevFlow relies on, and the `core` vs. expanded `/opsx:*` command profiles.
+
+### Fixed
+- Resolved a contradiction in the `.devflow/` migration rules: the setup workflow said to
+  update legacy files in place while `SKILL.md` said the legacy location is never written.
+  The rule is now that no new file is created there, but an existing one is edited in place so
+  a repository keeps a single source of truth.
+- `.devflow/` holds committed configuration next to an ignored `worktrees/` subdirectory, so
+  the guidance now says to ignore `.devflow/worktrees/` specifically. Ignoring `.devflow/`
+  wholesale would silently drop the project's configuration.
+- PR review now verifies what the development workflow produces: that post-merge tasks really
+  cannot be done before merge, and that an OpenSpec change was archived with its specs synced.
+- Archiving no longer contradicts the post-merge task rule. `openspec archive` blocks on
+  unchecked tasks, so `dev.md` now says to confirm the only unchecked items are post-merge
+  ones and acknowledge the warning, never to tick them or to bypass a genuine blocker.
+- `dev.md` no longer directs work to `openspec-continue-change` unconditionally. That skill is
+  outside the default OpenSpec profile, so it is used only after confirming it exists.
+- Replaced `openspec workflow verify` in the Python and TypeScript check templates with
+  `openspec validate <change> --strict`. No `openspec workflow` command exists in any 1.x release.
+- Documented `@fission-ai/openspec` as the package name. The bare `openspec` npm package is
+  unrelated and abandoned at `0.0.0`.
+
+### Changed
+- **Project-local configuration moved to a client-neutral `.devflow/` directory.** Writing
+  `.claude/` into a repository contradicted treating Codex as a first-class client. The legacy
+  `.claude/details/commands/` location is still read for backward compatibility and is never
+  written; existing repositories keep working and are not migrated automatically. Worktrees
+  follow the same rule, preferring `.devflow/worktrees/`.
+- DevFlow is now skill-first, with Codex and Claude Code as equally supported clients. The
+  skill is the interface and is driven in natural language; `/devflow:*` slash commands are
+  documented as optional Claude Code shortcuts that add no behavior.
+- Added a `Workflow Handoffs` table to `SKILL.md`. Every workflow now recommends the next one
+  by workflow name rather than by slash command, so the guidance works in any client.
+- Reframed the README, framework templates, and worktree guide around workflow names instead
+  of command names.
+- OpenSpec integration is now client-agnostic and delegates to the `openspec-*` Agent Skills,
+  which carry identical names on Claude Code and Codex. `/opsx:*` slash commands are Claude Code
+  only and are treated as an optional user preference DevFlow never depends on. The `openspec`
+  CLI remains the fallback and the way to express shell validation gates.
+- DevFlow now states its OpenSpec assumptions explicitly: the CLI is installed globally, the
+  repository was initialized with `openspec init --tools <clients>`, and the user's workflow
+  profile and delivery settings are left untouched.
+- OpenSpec detection now keys strictly on `openspec/config.yaml`.
+- `dev.md` now requires OpenSpec whenever `openspec/config.yaml` is present, rather than
+  treating it as optional once configured.
+- `dev.md` makes archiving with spec synchronization an explicit pre-PR step. `--skip-specs`
+  is reserved for tooling and documentation changes.
+- `dev.md` excludes post-merge work (deployment, production verification, monitoring,
+  rollout, post-release sign-off) from implementation. Those tasks are recorded in a new
+  `## Post-Merge Tasks` section of the PR body and must not block archiving.
+
 ## [2.0.1] - 2026-05-07
 
 ### Added

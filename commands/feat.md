@@ -26,4 +26,4 @@ Use the `devflow` skill as the source of truth.
 2. Read `@${CLAUDE_PLUGIN_ROOT}/skills/devflow/references/feat.md`.
 3. Treat `$ARGUMENTS` as the feature-planning request.
 4. Follow the feature planning workflow exactly, using Claude Code tools only where allowed by this wrapper.
-5. After creating the issue, recommend `/devflow:dev issue#<number>`.
+5. After creating the issue, follow the skill's workflow handoff and recommend the DevFlow development workflow, offering `/devflow:dev issue#<number>` as the Claude Code shortcut.

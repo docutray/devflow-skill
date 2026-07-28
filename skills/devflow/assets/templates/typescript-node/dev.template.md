@@ -1,6 +1,6 @@
 # Development Workflow - TypeScript/Node.js
 
-This file configures the `/devflow:dev` command workflow for TypeScript/Node.js projects.
+This file configures the DevFlow development workflow for TypeScript/Node.js projects. It applies in any client, whether DevFlow is invoked in natural language or through the optional `/devflow:dev` command.
 
 ## Environment Setup
 

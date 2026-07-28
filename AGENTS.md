@@ -12,7 +12,7 @@ This is a **portable Agent Skill repository** maintained by the Docutray organiz
 
 | Skill | Version | Description | Category |
 |--------|---------|-------------|----------|
-| `devflow` | 2.0.0 | Complete agile development workflow with GitHub integration | development |
+| `devflow` | 2.1.0 | Complete agile development workflow with GitHub integration | development |
 
 ## Repository Structure
 
@@ -74,7 +74,9 @@ npx skills add . --skill devflow
 
 1. **Modify canonical skill files** in `skills/devflow/`
 2. **Keep wrappers thin** in `commands/`
-3. **Update version** in `skills/devflow/SKILL.md` and `.claude-plugin/marketplace.json`
+3. **Update version** in all four places that carry it: `skills/devflow/SKILL.md`,
+   `.claude-plugin/marketplace.json`, `README.md` (`Current version:`), and the plugin table
+   in this file
 4. **Test locally** using the steps above
 5. **Update CHANGELOG.md** with notable changes
 
@@ -114,7 +116,7 @@ Version 2 does not use per-plugin `plugin.json`. `.claude-plugin/marketplace.jso
         {
             "name": "devflow",
             "source": "./",
-            "version": "2.0.0",
+            "version": "<current version>",
             "skills": ["./skills/devflow"]
         }
     ]
@@ -160,21 +162,7 @@ description: "Must include trigger terms for auto-activation"
 ---
 ```
 
-Skills auto-activate when user queries match trigger terms in the description.
-
-### Agents
-
-Agents are specialized prompts for autonomous tasks, defined in `agents/<agent-name>.md`:
-
-```markdown
----
-name: agent-name
-description: "When to trigger this agent"
-whenToUse: "Detailed trigger conditions"
-tools: ["Bash", "Read", ...]
-model: sonnet
----
-```
+Skills auto-activate when user queries match trigger terms in the description. The description is the only trigger surface in clients without slash commands, so it must lead with natural-language intent rather than command names.
 
 ## Code Style Guidelines
 
@@ -193,11 +181,23 @@ model: sonnet
 
 ### Integration Testing
 
-```bash
-# Agent Skills
-npx skills add . --skill devflow
+Test both clients. Codex is a first-class target, not an afterthought.
 
-# In Claude Code, test each command
+```bash
+npx skills add . --skill devflow
+```
+
+In Codex, verify the skill auto-activates from natural language alone, since Codex has no slash commands:
+
+```text
+Use DevFlow to create a GitHub issue for a test feature.
+Use DevFlow to implement issue #1.
+Use DevFlow to run validation checks.
+```
+
+In Claude Code, verify the same phrasing works, then verify the optional wrappers:
+
+```bash
 /devflow:feat test-feature --type=feat
 /devflow:dev issue#1
 /devflow:check
@@ -241,7 +241,7 @@ allowed-tools: "*"
 ## Release Process
 
 1. **Update version** in `skills/devflow/SKILL.md`
-2. **Update version** in root `marketplace.json`
+2. **Update version** in root `marketplace.json`, `README.md`, and the plugin table above
 3. **Update CHANGELOG.md** with changes
 4. **Test locally** with `npx skills add . --skill devflow` and `/plugin marketplace add .`
 5. **Commit changes**: `git commit -am "Release devflow vX.Y.Z"`

@@ -23,4 +23,4 @@ Use the `devflow` skill as the source of truth.
 2. Read `@${CLAUDE_PLUGIN_ROOT}/skills/devflow/references/research.md`.
 3. Treat `$ARGUMENTS` as the research request.
 4. Follow the research workflow exactly, using Claude Code tools only where allowed by this wrapper.
-5. Recommend `/devflow:feat` or `/devflow:epic` when research is complete.
+5. When research is complete, follow the skill's workflow handoff and recommend the DevFlow feature planning or epic planning workflow, offering `/devflow:feat` or `/devflow:epic` as the Claude Code shortcuts.

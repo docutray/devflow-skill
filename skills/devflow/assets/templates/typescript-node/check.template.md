@@ -1,6 +1,6 @@
-# Check Command Configuration - TypeScript/Node.js
+# DevFlow Validation Configuration - TypeScript/Node.js
 
-This file configures the `/devflow:check` command validations for TypeScript/Node.js projects.
+This file configures the DevFlow validation workflow for TypeScript/Node.js projects. It applies in any client, whether DevFlow is invoked in natural language or through the optional `/devflow:check` command.
 
 ## Validation Configuration
 
@@ -134,9 +134,9 @@ You can add custom validations:
       "description": "OPSX: check current change status",
       "enabled": false
     },
-    "opsx_verify": {
-      "command": "CHANGE=$(git branch --show-current | sed 's|.*/||'); test -d openspec/changes/$CHANGE && openspec workflow verify $CHANGE",
-      "description": "OPSX: verify implementation matches specs (pre-PR gate)",
+    "opsx_validate": {
+      "command": "CHANGE=$(git branch --show-current | sed 's|.*/||'); test -d openspec/changes/$CHANGE && openspec validate $CHANGE --strict",
+      "description": "OPSX: validate the change against its specs (pre-PR gate)",
       "enabled": false
     },
     "coverage": {
