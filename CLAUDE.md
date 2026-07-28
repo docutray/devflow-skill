@@ -36,7 +36,20 @@ The root `.claude-plugin/marketplace.json` exposes the `devflow` plugin with `so
 
 - **Skills**: Auto-activated by agents based on trigger terms in the `description` field of `SKILL.md` frontmatter. Located in `skills/<skill-name>/SKILL.md`.
 - **Commands**: Claude Code wrappers in root `commands/`. They delegate to the canonical skill references and may use Claude-specific frontmatter (`allowed-tools`, `argument-hints`).
-- **Agents**: Autonomous task handlers defined in `agents/<name>.md` with frontmatter specifying `tools`, `model`, and `whenToUse`.
+
+### Portability Boundary
+
+This is the constraint that spans the whole repo: `skills/devflow/` must run unchanged in Codex and other Agent Skills clients, so Claude-only constructs live **only** in `commands/` and must never leak into `skills/`:
+
+- `allowed-tools`, `argument-hints`, `${CLAUDE_PLUGIN_ROOT}`, `$ARGUMENTS`/`$1`, `@file` references
+- Claude-specific tool names (`Task`, `AskUserQuestion`, `TodoWrite`, `WebSearch`)
+- Any assumption that slash commands exist at all
+
+Every wrapper follows the same shape: read `@${CLAUDE_PLUGIN_ROOT}/skills/devflow/SKILL.md`, read the matching `references/<workflow>.md`, treat `$ARGUMENTS` as the request, then follow the reference. Behavior changes belong in the reference; only tool permissions and argument hints belong in the wrapper. Claude Code derives the command name from the filename, so `commands/dev.md` → `/devflow:dev`.
+
+### Two Kinds of Config — Don't Confuse Them
+
+`.claude/details/commands/{check,feat,dev,review-pr}.md` is project-local config that DevFlow **reads in the repositories that install it**. It does not exist in this repo and should not be created here. `skills/devflow/assets/templates/` holds the examples `/devflow:devflow-setup` adapts when generating those files in a consumer repo.
 
 ### Distribution
 
@@ -53,11 +66,16 @@ npx skills add https://github.com/docutray/devflow-skill --skill devflow
 
 ## Current Skill
 
-| Skill | Version | Description |
-|-------|---------|-------------|
-| `devflow` | 2.0.0 | Agile development workflow with GitHub integration (feat, dev, check, review-pr, research, epic) |
+`devflow` — agile development workflow with GitHub integration (setup, feat, dev, check, review-pr, research, epic). The version is not restated here on purpose; see the sources of truth below.
 
 ## Build & Test Commands
+
+There is no build step or test suite. Validation is manifest linting plus manual installation testing.
+
+```bash
+jq empty .claude-plugin/marketplace.json    # marketplace JSON must parse
+skills-ref validate ./skills/devflow        # if available: Agent Skill frontmatter check
+```
 
 ### Skill And Plugin Integration Testing
 
@@ -77,9 +95,15 @@ Use `claude --debug` to troubleshoot plugin loading issues.
 
 1. Add or modify canonical skill files in `skills/devflow/`
 2. Keep Claude Code wrappers in `commands/` thin and delegated to the skill
-3. Update version in `skills/devflow/SKILL.md` and `.claude-plugin/marketplace.json`
+3. Bump the version in **all four** places — they drift easily:
+   - `skills/devflow/SKILL.md` (`metadata.version`)
+   - `.claude-plugin/marketplace.json` (`plugins[0].version`)
+   - `README.md` (`Current version:`)
+   - `AGENTS.md` (plugin table)
 4. Update `CHANGELOG.md` with notable changes
 5. Test locally (see commands above)
+
+`AGENTS.md` carries the long-form version of this guidance (marketplace schema, release/tag steps, troubleshooting) for non-Claude agents. When a process changes, update it there too rather than letting the two files diverge.
 
 ### Adding a New Workflow
 
