@@ -14,12 +14,22 @@ This project follows Semantic Versioning.
   DevFlow relies on, and the `core` vs. expanded `/opsx:*` command profiles.
 
 ### Fixed
+- Archiving no longer contradicts the post-merge task rule. `openspec archive` blocks on
+  unchecked tasks, so `dev.md` now says to confirm the only unchecked items are post-merge
+  ones and acknowledge the warning, never to tick them or to bypass a genuine blocker.
+- `dev.md` no longer directs work to `openspec-continue-change` unconditionally. That skill is
+  outside the default OpenSpec profile, so it is used only after confirming it exists.
 - Replaced `openspec workflow verify` in the Python and TypeScript check templates with
   `openspec validate <change> --strict`. No `openspec workflow` command exists in any 1.x release.
 - Documented `@fission-ai/openspec` as the package name. The bare `openspec` npm package is
   unrelated and abandoned at `0.0.0`.
 
 ### Changed
+- **Project-local configuration moved to a client-neutral `.devflow/` directory.** Writing
+  `.claude/` into a repository contradicted treating Codex as a first-class client. The legacy
+  `.claude/details/commands/` location is still read for backward compatibility and is never
+  written; existing repositories keep working and are not migrated automatically. Worktrees
+  follow the same rule, preferring `.devflow/worktrees/`.
 - DevFlow is now skill-first, with Codex and Claude Code as equally supported clients. The
   skill is the interface and is driven in natural language; `/devflow:*` slash commands are
   documented as optional Claude Code shortcuts that add no behavior.

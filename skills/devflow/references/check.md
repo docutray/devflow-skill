@@ -6,11 +6,11 @@ Use this when running DevFlow quality checks: tests, linting, type checking, bui
 
 - Optional `fast`: skip expensive build or full-suite checks.
 - Optional `verbose`: include full command output.
-- Optional project-local configuration in `.claude/details/commands/check.md`.
+- Optional project-local configuration in `.devflow/check.md`, or legacy `.claude/details/commands/check.md`.
 
 ## Process
 
-1. Load `.claude/details/commands/check.md` if present.
+1. Load `.devflow/check.md` if present, otherwise the legacy `.claude/details/commands/check.md`.
 2. If no config exists, infer checks from the repository:
    - Prefer commands already used by the project in package scripts, task files, Makefiles, CI workflows, or documentation.
    - Node/TypeScript: detect the package manager from lockfiles before choosing commands:

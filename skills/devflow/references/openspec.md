@@ -59,7 +59,7 @@ Check which skills are actually present before naming one, and never assume a no
 
 Every generated skill declares `allowed-tools: Bash(openspec:*)` and its body is a sequence of CLI calls, so the CLI reaches everything the skills do. Use it directly in two cases:
 
-- **Deterministic gates.** A validation entry in `.claude/details/commands/check.md` must be a shell command, so use `openspec validate <change> --strict`.
+- **Deterministic gates.** A validation entry in `.devflow/check.md` must be a shell command, so use `openspec validate <change> --strict`.
 - **No skills available.** If the repository was never initialized for the current client, or the user's global `delivery` setting is `commands` (which suppresses skill generation), drive the CLI yourself.
 
 ```bash
@@ -86,4 +86,4 @@ Notes:
 - **Implementation**: after selecting the branch, delegate to `openspec-apply-change`. The change name usually matches the branch slug.
 - **Validation**: add `openspec validate --strict` as an extra gate only when the repository has OpenSpec configured. Report it alongside tests, lint, typecheck, and build.
 - **Before the PR**: delegate to `openspec-archive-change` so the main specs reflect merged behavior, and reference the change name in the PR body. Archiving must include spec synchronization; `openspec archive` merges the delta specs by default, so reserve `--skip-specs` for tooling or documentation changes that own no specs. Commit the resulting spec updates on the branch so the PR carries them.
-- **Post-merge work**: tasks that can only run after the merge, such as deployment and production verification, are not part of implementation and must not hold up archiving. Record them in the PR body instead.
+- **Post-merge work**: tasks that can only run after the merge, such as deployment and production verification, are not part of implementation and must not hold up archiving. Record them in the PR body instead. Archiving does block on unchecked tasks, so confirm the only ones left are post-merge items and then acknowledge the warning. Non-interactively that means `openspec archive <name> -y`. Never tick a post-merge task to unblock the archive.

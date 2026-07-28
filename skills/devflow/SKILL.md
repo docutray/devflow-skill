@@ -23,7 +23,7 @@ Never require a slash command, never treat one as a workflow's canonical name, a
 
 ## Workflow Map
 
-- **Setup/configuration**: read [references/setup.md](references/setup.md) when the user asks to configure DevFlow for a repository, create project-local command details, adapt templates, or mentions `/devflow:devflow-setup`.
+- **Setup/configuration**: read [references/setup.md](references/setup.md) when the user asks to configure DevFlow for a repository, create project-local workflow configuration, adapt templates, or mentions `/devflow:devflow-setup`.
 - **Feature planning**: read [references/feat.md](references/feat.md) when the user asks to create a feature spec, bug spec, GitHub issue, or mentions `/devflow:feat`.
 - **Implementation**: read [references/dev.md](references/dev.md) when the user asks to implement a GitHub issue, open a development branch, create a PR, or mentions `/devflow:dev`.
 - **Validation**: read [references/check.md](references/check.md) when the user asks to run tests, lint, type checks, build checks, quality gates, or mentions `/devflow:check`.
@@ -59,17 +59,24 @@ Phrase the handoff so it works in any client: "Next: use the DevFlow development
 
 ## Configuration
 
-DevFlow can use project-local detail files when present:
+DevFlow reads optional project-local configuration. The canonical location is client-neutral:
 
 ```text
-.claude/details/commands/
+.devflow/
 ├── check.md
 ├── feat.md
 ├── dev.md
 └── review-pr.md
 ```
 
-For non-Claude clients, treat those files as optional DevFlow configuration documents. If they are missing, infer commands from the repository and document the chosen defaults in your response.
+Resolution order, first match wins per file:
+
+1. `.devflow/<workflow>.md` — canonical, works in every client.
+2. `.claude/details/commands/<workflow>.md` — legacy location from DevFlow 2.0 and earlier. Still read for backward compatibility.
+
+Write new configuration to `.devflow/` only. When a repository already uses the legacy location, keep reading it and do not migrate or duplicate the files unless the user asks. If neither exists, infer commands from the repository and state the chosen defaults in your response.
+
+Worktrees follow the same rule: prefer `.devflow/worktrees/`, and respect `.claude/worktrees/` when the repository already uses it.
 
 Reusable templates live in [assets/templates](assets/templates). Load a template only when configuring or adapting DevFlow for that framework.
 
