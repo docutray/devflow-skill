@@ -44,7 +44,7 @@ The default `core` profile installs the first six. The rest exist only if the us
 | Explore options before planning | `openspec-explore` | yes |
 | Implement the change's tasks | `openspec-apply-change` | yes |
 | Revise artifacts on a change | `openspec-update-change` | yes |
-| Preview merging specs | `openspec-sync-specs` | yes |
+| Merge delta specs into main specs without archiving | `openspec-sync-specs` | yes |
 | Finalize a completed change | `openspec-archive-change` | yes |
 | Scaffold an empty change | `openspec-new-change` | no |
 | Resume a partially planned change | `openspec-continue-change` | no |
@@ -85,4 +85,5 @@ Notes:
 - **Feature planning**: OpenSpec is not required. If the user wants specs before code, delegate to `openspec-propose`; the GitHub issue stays the source of truth for scope.
 - **Implementation**: after selecting the branch, delegate to `openspec-apply-change`. The change name usually matches the branch slug.
 - **Validation**: add `openspec validate --strict` as an extra gate only when the repository has OpenSpec configured. Report it alongside tests, lint, typecheck, and build.
-- **Before the PR**: delegate to `openspec-archive-change` so the main specs reflect merged behavior, and reference the change name in the PR body.
+- **Before the PR**: delegate to `openspec-archive-change` so the main specs reflect merged behavior, and reference the change name in the PR body. Archiving must include spec synchronization; `openspec archive` merges the delta specs by default, so reserve `--skip-specs` for tooling or documentation changes that own no specs. Commit the resulting spec updates on the branch so the PR carries them.
+- **Post-merge work**: tasks that can only run after the merge, such as deployment and production verification, are not part of implementation and must not hold up archiving. Record them in the PR body instead.

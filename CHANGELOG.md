@@ -26,7 +26,13 @@ This project follows Semantic Versioning.
   repository was initialized with `openspec init --tools <clients>`, and the user's workflow
   profile and delivery settings are left untouched.
 - OpenSpec detection now keys strictly on `openspec/config.yaml`.
-- `dev.md` makes archiving a completed change an explicit pre-PR step.
+- `dev.md` now requires OpenSpec whenever `openspec/config.yaml` is present, rather than
+  treating it as optional once configured.
+- `dev.md` makes archiving with spec synchronization an explicit pre-PR step. `--skip-specs`
+  is reserved for tooling and documentation changes.
+- `dev.md` excludes post-merge work (deployment, production verification, monitoring,
+  rollout, post-release sign-off) from implementation. Those tasks are recorded in a new
+  `## Post-Merge Tasks` section of the PR body and must not block archiving.
 
 ## [2.0.1] - 2026-05-07
 
