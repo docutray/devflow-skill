@@ -51,7 +51,9 @@ Every wrapper follows the same shape: read `@${CLAUDE_PLUGIN_ROOT}/skills/devflo
 
 `.devflow/{check,feat,dev,review-pr}.md` is project-local config that DevFlow **reads in the repositories that install it**. It does not exist in this repo and should not be created here. `skills/devflow/assets/templates/` holds the examples the setup workflow adapts when generating those files in a consumer repo.
 
-The legacy location is `.claude/details/commands/`, still read for backward compatibility but never written. The canonical path is client-neutral because Codex is a first-class target and must not have a `.claude/` directory written into its repositories.
+The legacy location is `.claude/details/commands/`, still read for backward compatibility. New files are never created there; an existing one may be edited in place so a repository keeps a single source of truth. The canonical path is client-neutral because Codex is a first-class target and must not have a `.claude/` directory written into its repositories.
+
+`.devflow/` mixes committed configuration with an ignored `.devflow/worktrees/` scratch directory, so ignore rules must name the worktrees path specifically.
 
 ### Distribution
 

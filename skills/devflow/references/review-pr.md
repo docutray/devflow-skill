@@ -15,11 +15,13 @@ Use this when reviewing a pull request for technical quality, test coverage, imp
    - Prefer an isolated worktree when requested or when the current branch has unrelated work.
    - Do not discard local changes.
 4. Inspect changed files for correctness, regressions, missing tests, security issues, and maintainability risks.
-5. Run technical validation using [check.md](check.md). Use full validation when requested or when the PR has broad impact.
-6. Run functional tests only when configured or explicitly requested.
-7. If `fix-issues` intent is present, make focused fixes, re-run relevant checks, and document what changed.
-8. Produce review findings first, ordered by severity, with file/line references when available.
-9. Approve only when the user requested approval behavior and there are no blocking findings.
+5. Check the PR's post-merge tasks, when it lists any. Confirm each one genuinely cannot be done before merge. Work that is deliverable in the branch, such as a test, a migration script, or documentation, is a finding: it was deferred incorrectly and belongs in this PR.
+6. When the repository has OpenSpec configured, confirm the change was archived with spec synchronization and that the resulting main spec updates are part of the diff. A PR that implements a change but leaves it unarchived, or archives it with `--skip-specs` without cause, is a blocking finding. See [openspec.md](openspec.md).
+7. Run technical validation using [check.md](check.md). Use full validation when requested or when the PR has broad impact.
+8. Run functional tests only when configured or explicitly requested.
+9. If `fix-issues` intent is present, make focused fixes, re-run relevant checks, and document what changed.
+10. Produce review findings first, ordered by severity, with file/line references when available.
+11. Approve only when the user requested approval behavior and there are no blocking findings.
 
 ## Review Output
 
@@ -34,6 +36,11 @@ Use this when reviewing a pull request for technical quality, test coverage, imp
 - Lint:
 - Typecheck:
 - Build:
+- OpenSpec change archived with specs synced: yes / no / not applicable
+
+## Post-Merge Tasks
+
+- Carried forward as listed / reclassified as blocking / none
 
 ## Recommendation
 

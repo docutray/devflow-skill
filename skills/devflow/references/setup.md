@@ -30,9 +30,9 @@ Use this when configuring DevFlow for a repository, creating project-local workf
 
    Create only the files that are useful for the current repository. It is acceptable to start with `check.md` and `dev.md`.
 
-   Write new configuration to `.devflow/`, which works in every client. If the repository already uses the legacy `.claude/details/commands/` location, update those files in place instead of creating a second copy, and offer migration rather than performing it.
+   Write new configuration to `.devflow/`, which works in every client. Never create a new file under the legacy `.claude/details/commands/` location. When a workflow's configuration already lives there, edit that file in place rather than adding a second copy that would shadow it, and offer migration to `.devflow/` rather than performing it.
 5. Use templates from [assets/templates](../assets/templates) only as examples. Adapt them to the repository's actual tools and conventions.
-6. When worktree usage is configured, ensure the worktree root is ignored: `.devflow/worktrees/`, or `.claude/worktrees/` when the repository already uses it. Use [assets/templates/worktree-guide.md](../assets/templates/worktree-guide.md) for detailed worktree procedures when needed.
+6. When worktree usage is configured, ensure the worktree root is ignored: `.devflow/worktrees/`, or `.claude/worktrees/` when the repository already uses it. Ignore that subdirectory specifically and never `.devflow/` as a whole, since the DevFlow configuration alongside it must stay in version control. Use [assets/templates/worktree-guide.md](../assets/templates/worktree-guide.md) for detailed worktree procedures when needed.
 7. Do not install dependencies or run destructive setup commands unless the user explicitly asks. Prefer documenting commands to run.
    - This includes OpenSpec. Configure it only on explicit request, and follow [openspec.md](openspec.md): the package is `@fission-ai/openspec` (1.x, Node >= 20.19.0), installed with `npm install -g @fission-ai/openspec@latest` and initialized with `openspec init`.
    - DevFlow assumes the CLI is already installed globally. Verify with `openspec --version` and report the install command rather than running it.

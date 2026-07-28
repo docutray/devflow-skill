@@ -74,9 +74,13 @@ Resolution order, first match wins per file:
 1. `.devflow/<workflow>.md` — canonical, works in every client.
 2. `.claude/details/commands/<workflow>.md` — legacy location from DevFlow 2.0 and earlier. Still read for backward compatibility.
 
-Write new configuration to `.devflow/` only. When a repository already uses the legacy location, keep reading it and do not migrate or duplicate the files unless the user asks. If neither exists, infer commands from the repository and state the chosen defaults in your response.
+The file names match the workflows: `check.md` for validation, `dev.md` for implementation, `feat.md` for feature planning, `review-pr.md` for PR review.
+
+Never create a new file in the legacy location. When a repository already keeps a workflow's configuration there, edit that file in place so the repository keeps a single source of truth, and offer migration to `.devflow/` rather than performing it. Everything else goes to `.devflow/`. If neither location has the file, infer commands from the repository and state the chosen defaults in your response.
 
 Worktrees follow the same rule: prefer `.devflow/worktrees/`, and respect `.claude/worktrees/` when the repository already uses it.
+
+`.devflow/` holds both committed configuration and ignored scratch space, so scope the ignore rule precisely. Ignore `.devflow/worktrees/`, never `.devflow/` as a whole, which would drop the project's configuration from version control.
 
 Reusable templates live in [assets/templates](assets/templates). Load a template only when configuring or adapting DevFlow for that framework.
 

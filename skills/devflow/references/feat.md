@@ -24,6 +24,7 @@ Use this when creating a feature, fix, refactor, docs, test, or chore specificat
    - Dependencies and risks
    - Definition of done
 5. Present the draft for user approval before creating the issue.
+   - OpenSpec is not required for feature planning. When the repository has it configured and the user wants specs before implementation, delegate to `openspec-propose` and keep the GitHub issue as the source of truth for scope. See [openspec.md](openspec.md).
 6. If using GitHub, verify labels with `gh label list` and create missing labels only when appropriate.
 7. Create the issue after approval and report the issue number plus the recommended next workflow.
 

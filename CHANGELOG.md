@@ -14,6 +14,15 @@ This project follows Semantic Versioning.
   DevFlow relies on, and the `core` vs. expanded `/opsx:*` command profiles.
 
 ### Fixed
+- Resolved a contradiction in the `.devflow/` migration rules: the setup workflow said to
+  update legacy files in place while `SKILL.md` said the legacy location is never written.
+  The rule is now that no new file is created there, but an existing one is edited in place so
+  a repository keeps a single source of truth.
+- `.devflow/` holds committed configuration next to an ignored `worktrees/` subdirectory, so
+  the guidance now says to ignore `.devflow/worktrees/` specifically. Ignoring `.devflow/`
+  wholesale would silently drop the project's configuration.
+- PR review now verifies what the development workflow produces: that post-merge tasks really
+  cannot be done before merge, and that an OpenSpec change was archived with its specs synced.
 - Archiving no longer contradicts the post-merge task rule. `openspec archive` blocks on
   unchecked tasks, so `dev.md` now says to confirm the only unchecked items are post-merge
   ones and acknowledge the warning, never to tick them or to bypass a genuine blocker.

@@ -45,4 +45,4 @@ Use this when running DevFlow quality checks: tests, linting, type checking, bui
 
 ## Completion
 
-Return a concise pass/fail summary. Include exact failing commands and actionable next steps when anything fails.
+Return a concise pass/fail summary. Include exact failing commands and actionable next steps when anything fails. Validation is a step inside other workflows, so hand control back to the workflow that invoked it rather than recommending a new one; when run on its own, recommend the workflow that fits the result.

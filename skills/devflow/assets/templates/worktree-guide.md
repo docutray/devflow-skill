@@ -4,7 +4,9 @@ Reference document for worktree operations in DevFlow commands. Read this when a
 
 ## Path Convention
 
-Worktrees are created under `.devflow/worktrees/` in the repository root. Branch names are sanitized (slashes → hyphens) for directory names:
+Worktrees are created under `.devflow/worktrees/` in the repository root. If the repository already uses the legacy `.claude/worktrees/` root, keep using it and substitute that path throughout this guide.
+
+Branch names are sanitized (slashes → hyphens) for directory names:
 
 | Branch | Worktree Directory |
 |--------|-------------------|
@@ -19,6 +21,8 @@ Ensure `.devflow/worktrees/` is in the project's `.gitignore`:
 # Check if already ignored
 grep -q "\.devflow/worktrees" .gitignore 2>/dev/null || echo -e "\n# DevFlow worktrees\n.devflow/worktrees/" >> .gitignore
 ```
+
+Ignore the `worktrees` subdirectory only. `.devflow/` also holds the project's DevFlow configuration, which belongs in version control, so ignoring `.devflow/` as a whole would silently drop it.
 
 ## Worktree Detection
 
