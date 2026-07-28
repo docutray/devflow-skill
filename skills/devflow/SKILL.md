@@ -2,7 +2,7 @@
 name: devflow
 description: Agile development workflow for AI coding agents. Use for GitHub issue planning, feature specifications, implementation from issues, validation checks, PR review, research, epic planning, or when the user mentions DevFlow commands such as /devflow:feat, /devflow:dev, /devflow:check, /devflow:review-pr, /devflow:research, or /devflow:epic.
 license: MIT
-compatibility: Works with Agent Skills compatible clients including Codex and Claude Code. Requires git for repository workflows, GitHub CLI for issue/PR workflows, and optional web access for research. OPSX/OpenSpec support is optional.
+compatibility: Works with Agent Skills compatible clients including Codex and Claude Code. Requires git for repository workflows, GitHub CLI for issue/PR workflows, and optional web access for research. OPSX/OpenSpec support is optional and targets @fission-ai/openspec 1.x.
 metadata:
   author: docutray
   version: "2.0.1"
@@ -21,6 +21,7 @@ DevFlow is a portable workflow for turning ideas into GitHub issues, implementin
 - **PR review**: read [references/review-pr.md](references/review-pr.md) when the user asks to review a pull request, validate a PR branch, approve/request changes, or mentions `/devflow:review-pr`.
 - **Research**: read [references/research.md](references/research.md) when the user asks to investigate a technology, architecture, requirement, or mentions `/devflow:research`.
 - **Epic planning**: read [references/epic.md](references/epic.md) when the user asks to plan a large initiative, split work into phases/issues, or mentions `/devflow:epic`.
+- **OpenSpec/OPSX**: read [references/openspec.md](references/openspec.md) before running any `openspec` or `/opsx:*` command, or when configuring OpenSpec for a repository.
 
 ## Core Principles
 
@@ -29,7 +30,7 @@ DevFlow is a portable workflow for turning ideas into GitHub issues, implementin
 3. Keep generated plans and issues implementation-ready: motivation, acceptance criteria, technical approach, affected areas, test strategy, and definition of done.
 4. Protect user work. Do not discard uncommitted changes. If branch changes are needed and the workspace is dirty, pause for a concrete user decision or use an isolated worktree when requested.
 5. Validate before handoff. Run the configured checks for the project, report failures with specific next actions, and fix issues when the user requested implementation.
-6. Use OPSX/OpenSpec only when the repository clearly has it configured (`openspec/config.yaml` or existing `openspec/` workflow) or when the user explicitly asks to enable it.
+6. Use OPSX/OpenSpec only when the repository clearly has it configured (`openspec/config.yaml`) or when the user explicitly asks to enable it. Follow [references/openspec.md](references/openspec.md) for the supported version and command surface.
 
 ## Configuration
 

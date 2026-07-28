@@ -134,9 +134,9 @@ You can add custom validations:
       "description": "OPSX: check current change status",
       "enabled": false
     },
-    "opsx_verify": {
-      "command": "CHANGE=$(git branch --show-current | sed 's|.*/||'); test -d openspec/changes/$CHANGE && openspec workflow verify $CHANGE",
-      "description": "OPSX: verify implementation matches specs (pre-PR gate)",
+    "opsx_validate": {
+      "command": "CHANGE=$(git branch --show-current | sed 's|.*/||'); test -d openspec/changes/$CHANGE && openspec validate $CHANGE --strict",
+      "description": "OPSX: validate the change against its specs (pre-PR gate)",
       "enabled": false
     },
     "coverage": {

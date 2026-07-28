@@ -32,6 +32,7 @@ Use this when configuring DevFlow for a repository, creating project-local comma
 5. Use templates from [assets/templates](../assets/templates) only as examples. Adapt them to the repository's actual tools and conventions.
 6. When worktree usage is configured, ensure `.claude/worktrees/` is ignored. Use [assets/templates/worktree-guide.md](../assets/templates/worktree-guide.md) for detailed worktree procedures when needed.
 7. Do not install dependencies or run destructive setup commands unless the user explicitly asks. Prefer documenting commands to run.
+   - This includes OpenSpec. Configure it only on explicit request, and follow [openspec.md](openspec.md): the package is `@fission-ai/openspec` (1.x, Node >= 20.19.0), installed with `npm install -g @fission-ai/openspec@latest` and initialized with `openspec init`.
 8. Validate generated Markdown for clarity and report the resulting DevFlow commands.
 
 ## Recommended Configuration Content
@@ -42,7 +43,8 @@ For `check.md`, include:
 - Lint command when available.
 - Typecheck command when available.
 - Build command when available.
-- Optional format, security, coverage, OPSX/OpenSpec, or CI gates only when configured in the project.
+- Optional format, security, coverage, or CI gates only when configured in the project.
+- OPSX/OpenSpec gates only when `openspec/config.yaml` exists. See [openspec.md](openspec.md) for the supported version and the exact commands.
 
 For `dev.md`, include:
 

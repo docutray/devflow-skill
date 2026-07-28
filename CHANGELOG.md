@@ -6,6 +6,21 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+### Added
+- `skills/devflow/references/openspec.md`: documents the supported OpenSpec version
+  (`@fission-ai/openspec` 1.x, verified against 1.6.0, Node >= 20.19.0), the CLI surface
+  DevFlow relies on, and the `core` vs. expanded `/opsx:*` command profiles.
+
+### Fixed
+- Replaced `openspec workflow verify` in the Python and TypeScript check templates with
+  `openspec validate <change> --strict`. No `openspec workflow` command exists in any 1.x release.
+- Documented `@fission-ai/openspec` as the package name. The bare `openspec` npm package is
+  unrelated and abandoned at `0.0.0`.
+
+### Changed
+- OpenSpec detection now keys strictly on `openspec/config.yaml`.
+- `dev.md` makes archiving a completed change an explicit pre-PR step.
+
 ## [2.0.1] - 2026-05-07
 
 ### Added
