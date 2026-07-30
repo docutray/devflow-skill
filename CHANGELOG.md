@@ -6,6 +6,27 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [2.1.1] - 2026-07-30
+
+### Fixed
+- `dev.md` step 4 could name only skills that do not exist. It hardcoded `openspec-propose`
+  and `openspec-update-change` as guaranteed and warned that `openspec-continue-change` might
+  be missing, but OpenSpec's `custom` profile selects an arbitrary subset of workflows, so the
+  documented ordering can be exactly inverted and every named path can fail. The step now says
+  to list the `openspec-*` skills actually present, match one by purpose, and otherwise use the
+  CLI fallback. The remaining delegations in `dev.md` and `feat.md` follow the same rule.
+- The documented pre-PR gate passed without validating anything. `check.md` and `openspec.md`
+  described it as bare `openspec validate --strict`, but the item name is optional in the CLI
+  signature, so that form selects nothing, prints a hint, and exits `0`. Both now require an
+  explicit target, `openspec validate <change> --strict`, with `--changes` / `--all` for gates
+  not tied to a single change. The check templates were already correct.
+
+### Added
+- `openspec.md` documents why no `openspec-*` skill is guaranteed: `openspec config` writes to a
+  global XDG-based file and `--scope` accepts only `global`, so the installed skill set is
+  per-machine, not per-repository. Two contributors on one repository can commit different sets,
+  and the committed set may not match what the current profile would generate.
+
 ## [2.1.0] - 2026-07-28
 
 ### Added

@@ -10,7 +10,7 @@
             "name": "devflow",
             "source": "./",
             "description": "Portable agile development workflow skill for AI coding agents. Includes GitHub issue planning, implementation, validation, PR review, research, and epic planning.",
-            "version": "2.1.0",
+            "version": "2.1.1",
             "category": "development",
             "strict": false,
             "skills": [
