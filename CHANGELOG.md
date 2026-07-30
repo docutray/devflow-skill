@@ -6,6 +6,27 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-07-30
+
+### Added
+- Validation inference now covers Ruby and the JVM, so `check.md` can derive a working gate for
+  those projects with no project-local configuration. Ruby runs through `bundle exec` when a
+  `Gemfile` is present, so the gems resolved in `Gemfile.lock` are the ones that run, and picks
+  the suite the project actually configures. The JVM entry covers Gradle, Maven, and sbt, and
+  prefers a committed wrapper over a system install, mirroring the existing lockfile-based
+  package manager detection for Node.
+- The JVM defaults distinguish the full gate from the `fast` path rather than prescribing both.
+  `./gradlew build` already runs `check`, and `./mvnw verify` already runs the `test` phase, so
+  pairing either with a separate test invocation would run the suite twice.
+
+### Changed
+- The Go inference entry adds `go vet ./...` as its own check, since `go test` runs only a
+  high-confidence subset of the vet checks.
+
+Requested in #1, which asked for per-language template directories for Ruby, Java, and Go.
+Extending inference covers the same need without adding template trees that would restate
+ecosystem commands and drift; Go was already inferred before this release.
+
 ## [2.1.1] - 2026-07-30
 
 ### Fixed

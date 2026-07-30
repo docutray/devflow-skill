@@ -5,7 +5,7 @@ license: MIT
 compatibility: Works with Agent Skills compatible clients including Codex and Claude Code. Requires git for repository workflows, GitHub CLI for issue/PR workflows, and optional web access for research. OPSX/OpenSpec support is optional and targets @fission-ai/openspec 1.x.
 metadata:
   author: docutray
-  version: "2.1.1"
+  version: "2.2.0"
 ---
 
 # DevFlow
