@@ -58,19 +58,24 @@ The `core` preset installs the first six. The rest exist only if the user select
 The table above says which skills the `core` preset installs, not which ones exist here. **Never treat any `openspec-*` skill as guaranteed, including the six in `core`.** Two facts make this a normal case rather than an edge case:
 
 - `custom` is a first-class profile value. `openspec config profile` accepts it, and it selects an arbitrary subset of the workflows — possibly one that omits `propose`, `update`, or both.
-- **The profile is per-machine, not per-repository.** `openspec config` writes to a global XDG-based config file, and `--scope` accepts only `global` in 1.x. The profile belongs to whoever ran `openspec init`, not to the project. So two contributors on the same repository can commit different `openspec-*` skill sets, and the set already committed may not match what your own profile would generate.
+- **The profile that decides which skills are generated is per-machine.** `openspec config` writes to a global XDG-based config file, and `--scope` accepts only `global` on 1.6.0. The generated skills themselves are written into the repository and committed, but the profile that produced them belongs to whoever ran `openspec init` or `openspec update`. So two contributors on the same repository can commit different `openspec-*` sets, and the set already committed may not match what your own profile would generate.
 
 Because of this, a DevFlow step must never hardcode a skill name as its primary path. Resolve the skill at run time instead:
 
-1. List the `openspec-*` skills actually available in this repository and client.
-2. Match one to the purpose you need using the table above — purpose is the stable handle, the name is not.
-3. If nothing matches, use the CLI fallback flow below. The CLI is the only always-available surface, and it reaches everything the skills do.
+1. **List what is actually present.** OpenSpec writes each skill to `<client-dir>/skills/openspec-<workflow>/SKILL.md`, where the client directory is `.claude` for Claude Code, `.codex` for Codex, `.cursor` for Cursor, and so on. Listing them is one command in any client:
 
-State which skill you resolved to, or that you fell back to the CLI, so the user can see which path ran.
+   ```bash
+   ls -d .*/skills/openspec-* 2>/dev/null
+   ```
+
+2. **Match by purpose, not by name.** Use the table above to map the purpose you need onto one of the names you just listed. Purpose is the stable handle; the name is only stable within a profile.
+3. **Fall back to the CLI** when nothing matches. It is the only always-available surface.
+
+State which skill you resolved to, or that you fell back to the CLI, so the user can see which path ran. Resolve every delegation this way, not just the first one in a workflow: a profile that installs `propose` may still omit `apply` or `archive`.
 
 ## CLI Fallback And Gates
 
-Every generated skill declares `allowed-tools: Bash(openspec:*)` and its body is a sequence of CLI calls, so the CLI reaches everything the skills do. Use it directly in two cases:
+Every generated skill drives the same CLI, so the CLI reaches every artifact and state transition the skills produce. It does not reproduce their prompting: a skill body also carries stance and procedure that shape how the agent works, most visibly in `openspec-explore`. Treat the CLI as a complete fallback for outcomes, not as an equivalent of the skill. Use it directly in two cases:
 
 - **Deterministic gates.** A validation entry in `.devflow/check.md` must be a shell command, so use `openspec validate <change> --strict`.
 - **No skills available.** If the repository was never initialized for the current client, or the user's global `delivery` setting is `commands` (which suppresses skill generation), drive the CLI yourself.
@@ -89,7 +94,7 @@ For the fallback flow: `openspec new change <name>` scaffolds the change, `statu
 
 Notes:
 
-- **`openspec validate` always needs an explicit target.** The item name is optional in the CLI signature, so bare `openspec validate --strict` selects nothing, prints a hint, and exits `0`. A gate written that way reports success without validating anything. Always pass a change name, or `--changes` / `--specs` / `--all` when the gate is not tied to a single change.
+- **`openspec validate` always needs an explicit target.** The item name is optional in the CLI signature, and with no name and no `--all` / `--changes` / `--specs` the command never validates anything: non-interactively it prints a hint and exits `1`, interactively it opens a picker and waits. Neither is usable as a gate — one fails on every run regardless of the specs, the other blocks. Always pass a change name, or `--changes` / `--specs` / `--all` when the gate is not tied to a single change.
 - There is **no** `openspec workflow` command in any 1.x release.
 - `openspec change list` is deprecated in favor of `openspec list`.
 - The default `spec-driven` schema uses `proposal → specs → design → tasks`. Other schemas exist, so read the artifact list from `status` instead of hardcoding names.

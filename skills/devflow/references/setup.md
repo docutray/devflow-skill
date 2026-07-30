@@ -37,7 +37,7 @@ Use this when configuring DevFlow for a repository, creating project-local workf
    - This includes OpenSpec. Configure it only on explicit request, and follow [openspec.md](openspec.md): the package is `@fission-ai/openspec` (1.x, Node >= 20.19.0), installed with `npm install -g @fission-ai/openspec@latest` and initialized with `openspec init`.
    - DevFlow assumes the CLI is already installed globally. Verify with `openspec --version` and report the install command rather than running it.
    - When initializing OpenSpec, pass `--tools` for every client the team actually uses, for example `openspec init --tools claude,codex`. Each tool gets its own generated surface, and Codex receives Agent Skills only, with no slash commands.
-   - Do not configure DevFlow around `/opsx:*` commands. Those are Claude Code only and the user may install them for unrelated projects. Reference the portable `openspec-*` skills, and record `openspec` CLI commands in `check.md` where a shell gate is required. Leave the user's workflow profile and delivery settings alone.
+   - Do not configure DevFlow around `/opsx:*` commands. Those are Claude Code only and the user may install them for unrelated projects. Reference the portable `openspec-*` skills that `init` actually generated for this repository rather than a name from the `core` table, and record `openspec` CLI commands in `check.md` where a shell gate is required. Leave the user's workflow profile and delivery settings alone.
 8. Validate generated Markdown for clarity and report the resulting DevFlow workflows.
 
 ## Recommended Configuration Content
