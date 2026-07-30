@@ -6,6 +6,35 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [2.1.1] - 2026-07-30
+
+### Fixed
+- `dev.md` step 4 could name only skills that do not exist. It hardcoded `openspec-propose`
+  and `openspec-update-change` as guaranteed and warned that `openspec-continue-change` might
+  be missing, but OpenSpec's `custom` profile selects an arbitrary subset of workflows, so the
+  documented ordering can be exactly inverted and every named path can fail. The step now says
+  to list what is present with `ls -d .*/skills/openspec-* 2>/dev/null`, match one by purpose,
+  and otherwise use the CLI fallback. The listing is reused for the apply and archive
+  delegations in `dev.md`, since a profile that installs `propose` can still omit those.
+- The documented pre-PR gate never validated anything. `check.md` and `openspec.md` described it
+  as bare `openspec validate --strict`, but the item name is optional in the CLI signature, and
+  with no name and no bulk flag the command validates nothing: non-interactively it prints a hint
+  and exits `1`, interactively it opens a picker and waits. Both now require an explicit target,
+  `openspec validate <change> --strict`, with `--changes` / `--all` for gates not tied to a
+  single change. The check templates were already correct.
+
+### Added
+- `openspec.md` documents why no `openspec-*` skill is guaranteed: `custom` is a first-class
+  profile selecting an arbitrary subset of workflows, and the profile that decides what gets
+  generated is per-machine, since `openspec config` writes to a global XDG-based file and
+  `--scope` accepts only `global`. The skills themselves are committed in-repo, but the set
+  reflects whoever ran `openspec init`, so two contributors can commit different ones.
+
+### Changed
+- `openspec.md` no longer presents the CLI fallback as equivalent to a skill. It reaches every
+  artifact and state transition the skills produce, but not their prompting; `openspec-explore`
+  is mostly stance rather than CLI calls.
+
 ## [2.1.0] - 2026-07-28
 
 ### Added
