@@ -36,28 +36,21 @@ This project follows Semantic Versioning.
 
 ### Fixed
 - PR review validated whatever the current checkout held: on a clean `main` it validated `main`.
-  It now always validates in a detached worktree at the PR's exact commit (`git fetch origin
+  It now validates in a detached worktree at the PR's exact commit (`git fetch origin
   pull/<number>/head`, then `git worktree add --detach … <headRefOid>`), never in a checkout the
-  user works in, works for fork PRs, and avoids branch-name collisions and stale local
-  branches. Each review starts from a fresh worktree; one left from an earlier review is removed
-  first, and the review stops if it holds uncommitted changes. A push during the review repeats
-  the metadata and diff fetch so the reviewed and validated commits match. `fix-issues` commits
-  its fixes locally on a `review-pr-<number>-fixes` branch that outlives the worktree, and pushes
-  only when asked and only a same-repository PR's fixes (`git push origin HEAD:<headRefName>`);
-  a fork PR's fixes are handed over with `git format-patch` or as suggestions. The report names
-  the PR commit and, separately, the fixes commit, and local secrets such
-  as `.env` are never copied into a fork's review worktree. Without PR
-  metadata, or without a resolvable main checkout, the review is
-  static. The wrapper drops `--worktree`, since every review now uses one. The report
-  names the commit and whether it was validated.
+  user works in, which also covers fork PRs and stale local branches. A worktree left from an
+  earlier review is removed first, and the review stops if it holds uncommitted changes. Without
+  PR metadata, or without a resolvable main checkout, the review is static. `fix-issues` leaves
+  its fixes uncommitted, commits or pushes only when asked, and never pushes a fork PR's fixes.
+  The wrapper drops `--worktree`, since every review now uses one. The report names the commit
+  and whether it was validated.
 - PR review consent is explicit, in a new Consent section that project configuration cannot
   relax: approve only when the user asked, nothing is blocking, and every validation that
   applies, configured or inferred, ran and passed (one held back, declined, or denied blocks
   approval; a check the project lacks, a disabled entry, a `fast` skip, or a skip the user asked
-  for does not); post a review
-  or comment only when asked, which the Claude Code wrapper exposes as `--post`, a request for
-  approval being a request to post it; never merge, only recommend it. `fix-issues`
-  fixes are committed locally in the review worktree and pushed only when the user asks.
+  for does not); post a review or comment only when asked, which the Claude Code wrapper exposes
+  as `--post`, a request for approval being a request to post it; never merge, only recommend
+  it.
 
 ## [2.3.0] - 2026-10-13
 
