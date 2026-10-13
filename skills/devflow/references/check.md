@@ -18,7 +18,7 @@ Use this when running DevFlow quality checks: tests, linting, type checking, bui
      - `bun.lock` or `bun.lockb` -> `bun` / `bunx`
      - `package-lock.json` or no alternative lockfile -> `npm` / `npx`
      Run only scripts that exist, such as `<pm> run test`, `<pm> run lint`, `<pm> run typecheck` or `<pm> run type-check`, and `<pm> run build`. Use the project TypeScript script when available; otherwise use the matching exec command for `tsc --noEmit` only when TypeScript is configured.
-   - Python: `pytest`, configured linter/type checker when present.
+   - Python: `pytest`, plus the configured linter and type checker (such as `ruff check` or `mypy`) when present. Run them through the project environment: `uv run <command>` when `uv.lock` exists, `poetry run <command>` when `poetry.lock` exists.
    - Go: `go build ./...`, `go test ./...`, and `go vet ./...`. Keep vet as its own check:
      `go test` runs only a high-confidence subset of the vet checks.
    - Ruby: prefix every command with `bundle exec` when a `Gemfile` is present, so the gems
@@ -43,9 +43,9 @@ Use this when running DevFlow quality checks: tests, linting, type checking, bui
      `cargo clippy -- -D warnings` only when clippy is installed (`cargo clippy --version`
      succeeds). `cargo test` alone is the `fast` path.
 3. Run independent validations in parallel when the client supports parallel tool execution. Otherwise run them sequentially and preserve the same report format.
-4. Include the OpenSpec validation gate only when `openspec/config.yaml` is present, and skip it when its configured entry is disabled. It validates the branch's change, or the main specs and every active change when the branch names none, and exits `2` for broken configuration rather than `1`; [The Validation Gate](openspec.md#the-validation-gate) defines how it picks its target and how to report each exit code.
+4. Include the OpenSpec validation gate only when `openspec/config.yaml` is present, and skip it when its configured entry is disabled. It validates the branch's change, only the main specs once that change is archived, or the main specs and every active change when the branch names none, and exits `2` for broken configuration rather than `1`; [The Validation Gate](openspec.md#the-validation-gate) defines how it picks its target and how to report each exit code.
 5. Summarize each validation as `pass`, `warning`, `fail`, or `skipped`.
-6. If failures occur and the user requested implementation or autofix, fix them and re-run the relevant checks.
+6. If failures occur and the user requested implementation or autofix, fix only failures the current branch's changes caused, never another person's OpenSpec change or a spec the branch did not touch, and re-run the relevant checks. Stop after two fix attempts per check and report what still fails.
 
 ## Configuration Format
 
@@ -76,7 +76,7 @@ Use this when running DevFlow quality checks: tests, linting, type checking, bui
 }
 ```
 
-Prose around the block may add project notes; follow them. The framework examples in [assets/templates](../assets/templates) show fuller configurations as several blocks: the main configuration plus optional entries and variants (additional validations, environments, frameworks). When adapting them, merge the entries that apply into the single `validations` block; never copy the alternatives as extra blocks. The configuration is the first block holding `validations`. Files written before 2.3.0 may also follow a template's layout and keep an added check, such as `opsx_validate`, in a later block. Do not run later blocks, since the templates' later blocks are alternatives for other setups; instead, when a later block defines an enabled check that the first block lacks, report that check as `skipped` with a warning naming it, and recommend setup to consolidate the file. Setup offers that consolidation.
+Prose around the block may add project notes; follow them. The framework examples in [assets/templates](../assets/templates) show fuller configurations as several blocks: the main configuration plus optional entries and variants (additional validations, environments, frameworks). When adapting them, merge the entries that apply into the single `validations` block; never copy the alternatives as extra blocks. The configuration is the first block holding `validations`. Files written before 2.3.0 may also follow a template's layout and keep an added check, such as `opsx_validate`, in a later block. Do not run later blocks, since the templates' later blocks are alternatives for other setups; instead, when a later block defines an enabled check that the first block lacks, report that check as `skipped` with a warning naming it, and recommend setup to consolidate the file. The OpenSpec gate is the exception: [The Validation Gate](openspec.md#the-validation-gate) treats such an enabled `opsx_validate` as absent and applies its rules by hand. Setup offers that consolidation.
 
 ## Report Template
 

@@ -1,6 +1,6 @@
 # Git Worktrees
 
-Use this when a DevFlow workflow runs in an isolated worktree, for example when the user asks to implement an issue or review a PR "in a worktree", or when a worktree is the safest way to avoid disturbing uncommitted work.
+Use this when a DevFlow workflow runs in an isolated worktree, for example when the user asks to implement an issue or review a PR "in a worktree", or when the workspace has uncommitted changes and [core principle 4](../SKILL.md#core-principles) calls for one.
 
 ## Location
 
@@ -45,11 +45,13 @@ Work in place only when the current checkout already is the worktree for the bra
 
 ```bash
 git -C "<root>" fetch origin
-# New branch from the base branch
-git -C "<root>" worktree add "<root>/.devflow/worktrees/<sanitized-branch>" -b <branch> origin/<base-branch>
+# New branch from the base branch, not tracking it
+git -C "<root>" worktree add --no-track "<root>/.devflow/worktrees/<sanitized-branch>" -b <branch> origin/<base-branch>
 # Existing branch
 git -C "<root>" worktree add "<root>/.devflow/worktrees/<sanitized-branch>" <existing-branch>
 ```
+
+Keep `--no-track` on a new branch. Without it the branch tracks `origin/<base-branch>`, so a bare `git push` refuses to push, or with `push.default=upstream` pushes the work onto the base branch. Push the new branch the first time with `git push -u origin <branch>`.
 
 A PR under review gets a detached worktree at the reviewed commit instead, as [review-pr.md](review-pr.md) describes, so it works for forks and never competes with a branch checked out elsewhere.
 
