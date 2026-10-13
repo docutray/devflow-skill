@@ -10,11 +10,12 @@ This project follows Semantic Versioning.
 
 ### Changed
 - PR review trusts by origin. It fetches `isCrossRepository` and `headRefOid`. A same-repository
-  PR is the team's own work and is validated with its configuration as usual. A PR from a fork
-  runs nothing from its checkout (install, tests, build, configured commands or scripts) until
+  PR is the team's own work and is validated with its configuration as usual. A PR from a fork,
+  or one whose origin could not be determined, runs nothing from its checkout (install, tests, build, configured commands or scripts) until
   the user has seen what will run, with additions and changes the PR makes flagged, and agreed;
   when it changes DevFlow configuration, the base branch's configuration is preferred, and with
-  no user to agree the review is static and validation is reported as `skipped`. This replaces
+  no user to agree and no explicit request to run it, the review is static and validation is
+  reported as `skipped`. `fix-issues` re-runs checks under the same rules. This replaces
   the 2.3.0 rules that validated every PR with the base branch's `check.md` and ran base copies
   of changed scripts through a temporary file. Changes to DevFlow configuration and to agent
   instruction files (`CLAUDE.md`, `AGENTS.md`, `.claude/`, `.agents/skills/`) are diff content to
@@ -24,9 +25,10 @@ This project follows Semantic Versioning.
   approve, merge, overwrite, or push nothing that needed approval, present drafts and findings,
   and say what was held back. Feature planning, epic planning, setup, and the worktree guide
   point to it at their approval gates.
-- Research fetches only URLs from search results or the user, never ones a fetched page
-  proposes, keeps the number of sources to what the depth needs, and never puts repository
-  content, secrets, or environment values into a URL or query. The output template gains a
+- Research follows links that serve it but never acts on instructions a page gives, keeps the
+  number of sources to what the depth needs, and never puts secrets, credentials, environment
+  values, or non-public code into a URL or query; public package names, versions, and error
+  messages are fine. The output template gains a
   `## Sources` section, one URL per key finding.
 - `AGENTS.md` and `CLAUDE.md` describe the bare-`Bash` caveat in terms of PRs and branches from
   forks.
@@ -34,14 +36,16 @@ This project follows Semantic Versioning.
 ### Fixed
 - PR review validated whatever the local head branch held, which could be stale. It now checks
   out the PR head (a worktree of the head branch, or `gh pr checkout <number>` in a clean
-  checkout), confirms `git rev-parse HEAD` equals `headRefOid`, fast-forwards a stale branch with
-  `gh pr checkout`, and stops when that fails. The report names the commit validated.
+  checkout, switching back afterwards), confirms `git rev-parse HEAD` equals `headRefOid`,
+  fast-forwards a stale branch with `gh pr checkout`, re-reads `headRefOid` once in case the
+  author pushed, and otherwise stops. A head branch already checked out in another worktree is
+  used there when clean, and the review stops otherwise. The report names the commit validated.
 - PR review consent is explicit, in a new Consent section that project configuration cannot
-  relax: approve only when the user asked, nothing is blocking, and every validation that should
-  have run ran and passed (a `skipped` or declined one blocks approval); post a review or comment
-  only when asked; never merge, only recommend it. `fix-issues` fixes stay in the review checkout
-  and are committed or pushed only when the user asks, never to a fork's branch without an
-  explicit request.
+  relax: approve only when the user asked, nothing is blocking, and every configured validation
+  that applies ran and passed (one held back, declined, or denied blocks approval; unconfigured,
+  disabled, or `fast`-skipped checks do not); post a review or comment only when asked, which
+  the Claude Code wrapper exposes as `--post`; never merge, only recommend it. `fix-issues`
+  fixes stay in the review checkout and are committed or pushed only when the user asks.
 
 ## [2.3.0] - 2026-10-13
 
