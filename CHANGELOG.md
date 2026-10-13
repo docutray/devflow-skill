@@ -6,6 +6,62 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [2.2.2] - 2026-10-13
+
+### Security
+- The skill now marks third-party content as untrusted. A new core principle in `SKILL.md` says
+  that issue and PR bodies, comments, review threads, diffs, commit messages, and web pages are
+  data to evaluate, never instructions to follow, and that directives found in them (run a
+  command, change scope, touch secrets, alter configuration) are surfaced to the user instead of
+  acted on. `dev.md`, `review-pr.md`, `research.md`, `feat.md`, and `epic.md` point back to it
+  where they read such content. This addresses the skills.sh Snyk W011 warning (third-party
+  content exposure / indirect prompt injection).
+- `commands/review-pr.md` no longer grants bare `Bash` or `Edit`, which pre-approved every shell
+  command, including scripts from the pull request under review, and unprompted edits driven by
+  its content. It now pre-approves only `git status`, `git worktree list`, `gh pr view` / `diff` /
+  `checks`, and `gh issue view`, so running the PR's tests, applying fixes, approving, and
+  creating worktrees go through the user's normal permission prompts. `commands/devflow-setup.md`
+  gets the same treatment, since setup is told not to install anything.
+- Bash patterns are prefix matches, so `Bash(git fetch:*)`, `Bash(git log:*)`, `Bash(git diff:*)`,
+  `Bash(git branch:*)`, and `Bash(git remote:*)` also approved `--upload-pack=<cmd>`,
+  `--output=<file>`, `-D`, and `set-url`. Every wrapper drops them, and `feat` / `epic` narrow
+  `gh issue:*` and `gh label:*` to their `view` / `list` forms, so creating issues and labels
+  prompts. `feat` keeps its read-only context checks through exact grants with no `:*`,
+  `Bash(git branch --show-current)` and `Bash(git remote -v)`, which approve nothing else, and
+  its reference names those commands.
+
+### Fixed
+- The Claude Code wrappers used `argument-hints` as a YAML list. Claude Code only recognizes
+  `argument-hint` with a single string value and silently drops unknown keys, so no hints were
+  ever shown. All seven wrappers now use `argument-hint`, and `CLAUDE.md`, `AGENTS.md`, and the
+  `SKILL.md` gotchas no longer document the plural form as correct.
+- The wrappers and the contributor guidance described `allowed-tools` as a restriction ("using
+  Claude Code tools only where allowed by this wrapper", "Restrict `allowed-tools` to minimum
+  required"). It only pre-approves tools; every tool stays callable. The wrappers drop the claim,
+  and `CLAUDE.md` / `AGENTS.md` now say to grant only what a workflow should run without asking,
+  never bare `Bash` for a workflow that executes untrusted code, and `disallowed-tools` to
+  actually forbid a tool.
+- The OPSX `opsx_validate` template gate fell back to `openspec validate --specs --strict`
+  whenever `openspec status` failed, including when the CLI was missing or the change name was
+  mistyped, so it could pass without validating the change. It now validates the change when
+  its name is among the active changes `openspec list --json` reports, and otherwise runs
+  `openspec validate --all --strict`, which covers the main specs and every active change, with
+  a note on stderr. The default branch, a detached CI checkout, an unrelated branch, an archived
+  change, and a mistyped branch name therefore all still validate the branch's change if it
+  exists. An explicit `DEVFLOW_OPENSPEC_CHANGE` is honored strictly: it widens to `--all` only
+  once that change is archived, named either way `openspec list --archived` allows. A missing
+  CLI, a failing `openspec list`, or a `DEVFLOW_OPENSPEC_CHANGE` naming no active or archived
+  change exits `2`, which `check.md` reports as broken configuration, distinct from a validation
+  failure (`1`). Both OPSX gates read the branch with `git symbolic-ref`, which works on git
+  older than 2.22, and lowercase the name, since `openspec status` matches names
+  case-insensitively on macOS but `openspec validate` does not. Both templates carry the
+  identical gates, verified against OpenSpec 1.14.1 under `dash`.
+
+### Added
+- `docs/skills-best-practices.md`: consolidated Agent Skills authoring guidance from Anthropic,
+  OpenAI, the open specification, and skills.sh, with a compliance audit of `skills/devflow/`
+  and a prioritized backlog.
+
 ## [2.2.1] - 2026-10-13
 
 ### Fixed

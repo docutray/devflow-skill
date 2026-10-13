@@ -12,7 +12,7 @@ This is a **portable Agent Skill repository** maintained by the Docutray organiz
 
 | Skill | Version | Description | Category |
 |--------|---------|-------------|----------|
-| `devflow` | 2.2.1 | Complete agile development workflow with GitHub integration | development |
+| `devflow` | 2.2.2 | Complete agile development workflow with GitHub integration | development |
 
 ## Repository Structure
 
@@ -132,15 +132,15 @@ Claude Code wrapper commands are defined in root `commands/` with YAML frontmatt
 description: "Command description"
 allowed-tools:
   - Read
-  - Bash
+  - Bash(git status:*)
   - WebSearch
-argument-hints:
-  - "<arg1>"
-  - "<arg2>"
+argument-hint: "<arg1> [--flag]"
 ---
 
 # Command content (Claude prompt)
 ```
+
+`argument-hint` is singular and takes one string: required arguments bare or in `<>`, optional ones in `[]`. Claude Code silently drops unknown frontmatter keys, so a misspelled or pluralized key shows no hint and raises no error.
 
 **Special syntax in commands**:
 - `$ARGUMENTS` - All arguments passed to command
@@ -225,18 +225,23 @@ claude --debug
 - Commands can execute arbitrary bash commands - review carefully
 
 ### Command Allowed Tools
-Restrict `allowed-tools` in command frontmatter to minimum required:
+`allowed-tools` pre-approves tools; it does not restrict them. Every tool stays callable while a command runs, and the listed ones simply skip the permission prompt. Grant only what the workflow should run without asking, and scope Bash grants to command patterns:
 
 ```yaml
-# Good - minimal permissions
+# Good - pre-approves read-only inspection; anything else still prompts
 allowed-tools:
   - Read
   - Bash(git status:*)
-  - Bash(gh issue:*)
+  - Bash(gh pr view:*)
 
-# Avoid - overly permissive
-allowed-tools: "*"
+# Avoid - pre-approves every shell command, including scripts from an untrusted PR
+allowed-tools:
+  - Bash
 ```
+
+A pattern such as `Bash(git log:*)` is a prefix match and approves every flag that follows it. Some read-looking commands take flags that execute code or write files (`git fetch --upload-pack=<cmd>`, `git log --output=<file>`, `git diff --output=<file>`, `git branch -D`), so pre-approve a command by prefix only when none of its flags can do that, such as `git status`, `gh pr view`, `gh pr diff`, `gh issue view`, or `gh label list`. For a command that has such flags, grant the exact invocation without `:*`, such as `Bash(git branch --show-current)` or `Bash(git remote -v)`, which approves nothing else.
+
+Never grant bare `Bash` or `Edit` to a workflow that handles untrusted content, such as reviewing someone else's pull request: running the PR's tests or applying fixes should go through the user's normal permission prompts. `dev` and `check` keep bare `Bash` because they run the project's own commands on request; that is only as trustworthy as the checked-out branch, so after checking out someone else's branch, run them with prompts on. To actually forbid a tool, use `disallowed-tools`.
 
 ## Release Process
 
@@ -267,7 +272,7 @@ npx skills add https://github.com/docutray/devflow-skill --skill devflow
 ### Adding a Slash Command
 
 1. Create file: `commands/command-name.md`
-2. Add YAML frontmatter with description and allowed-tools
+2. Add YAML frontmatter with `description`, a scoped `allowed-tools` pre-approval list, and a single-string `argument-hint`
 3. Delegate command behavior to `skills/devflow/SKILL.md` and a reference file
 4. Update versions and changelog
 
@@ -286,7 +291,8 @@ npx skills add https://github.com/docutray/devflow-skill --skill devflow
 - Use `claude --debug` for detailed errors
 
 ### Command Not Working
-- Verify allowed-tools includes required tools
+- `allowed-tools` only removes permission prompts; a tool missing from it still works after the user approves it
+- Check that the hint key is `argument-hint` (singular, one string); misspelled keys are ignored silently
 - Check for typos in `$ARGUMENTS` or variable references
 - Test bash commands directly in terminal
 

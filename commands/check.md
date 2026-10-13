@@ -4,9 +4,7 @@ allowed-tools:
   - Task
   - Bash
   - Read
-argument-hints:
-  - "--fast"
-  - "--verbose"
+argument-hint: "[--fast] [--verbose]"
 ---
 
 # DevFlow Check Wrapper
