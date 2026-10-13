@@ -32,9 +32,6 @@ This project follows Semantic Versioning.
   place only when the current checkout is the worktree for the branch needed. The ignore check
   uses `git check-ignore -v` and `--no-index`, so a rule that ignores `.devflow/` as a whole, or
   one that exists only in a personal excludes file, is reported instead of silently accepted.
-  A PR under review gets a detached `review-pr-<number>` worktree from `refs/pull/<number>/head`,
-  fetched into a private `refs/devflow/` ref, which works for forks and for re-reviews after a
-  force-push.
 - The OpenSpec gate mechanics live only in `references/openspec.md`, under "The Validation Gate".
   `check.md` and `dev.md` summarize and link to it instead of restating it.
 - The `opsx_validate` template gate is now a shared POSIX script,

@@ -49,12 +49,9 @@ git -C "<root>" fetch origin
 git -C "<root>" worktree add "<root>/.devflow/worktrees/<sanitized-branch>" -b <branch> origin/<base-branch>
 # Existing branch
 git -C "<root>" worktree add "<root>/.devflow/worktrees/<sanitized-branch>" <existing-branch>
-# PR under review, including one from a fork: fetch its head to a private ref, check it out detached
-git -C "<root>" fetch origin "+refs/pull/<number>/head:refs/devflow/review-pr-<number>"
-git -C "<root>" worktree add --detach "<root>/.devflow/worktrees/review-pr-<number>" refs/devflow/review-pr-<number>
+# PR under review: its head branch, in the directory the Location table gives
+git -C "<root>" worktree add "<root>/.devflow/worktrees/review-pr-<number>" <head-branch>
 ```
-
-To re-review after the author pushes, including a force-push, run the same fetch and then `git -C "<root>/.devflow/worktrees/review-pr-<number>" checkout --detach refs/devflow/review-pr-<number>`. No local branch is involved, so neither step conflicts with the existing worktree.
 
 `<root>` is the absolute path the Main Checkout snippet printed. Substitute it literally; a shell variable does not survive from one command to the next.
 
@@ -79,7 +76,6 @@ After the PR is merged or the work is abandoned:
 git -C "<root>" worktree list
 git -C "<root>" worktree remove "<root>/.devflow/worktrees/<name>"
 git -C "<root>" worktree prune
-git -C "<root>" update-ref -d refs/devflow/review-pr-<number>   # after a PR review
 ```
 
 `git worktree remove` refuses when the worktree has uncommitted or untracked changes. Do not override that on your own: show the user what would be lost (`git -C <path> status --short`) and run `git worktree remove --force <path>` only when they explicitly ask for it. Run `git worktree prune` when git reports a worktree directory that no longer exists.
