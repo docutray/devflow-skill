@@ -115,7 +115,7 @@ jq empty .claude-plugin/marketplace.json
 If available, validate the Agent Skill:
 
 ```bash
-skills-ref validate ./skills/devflow
+uvx --from skills-ref agentskills validate ./skills/devflow
 ```
 
 ## References

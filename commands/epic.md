@@ -5,12 +5,9 @@ allowed-tools:
   - Glob
   - Grep
   - Bash(git status:*)
-  - Bash(git diff:*)
-  - Bash(git branch:*)
-  - Bash(git log:*)
-  - Bash(git remote:*)
-  - Bash(gh label:*)
-  - Bash(gh issue:*)
+  - Bash(gh label list:*)
+  - Bash(gh issue view:*)
+  - Bash(gh issue list:*)
   - WebSearch
   - Task
 argument-hint: "<epic-name> [--priority=low|medium|high|critical] [--target-version=X.Y.Z] [--worktree]"

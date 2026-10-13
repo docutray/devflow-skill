@@ -6,9 +6,6 @@ allowed-tools:
   - Glob
   - Grep
   - Bash(git status:*)
-  - Bash(git log:*)
-  - Bash(git branch:*)
-  - Bash(git remote:*)
   - Bash(git ls-files:*)
   - Bash(ls:*)
   - Bash(openspec --version)

@@ -16,11 +16,17 @@ This project follows Semantic Versioning.
   acted on. `dev.md`, `review-pr.md`, `research.md`, `feat.md`, and `epic.md` point back to it
   where they read such content. This addresses the skills.sh Snyk W011 warning (third-party
   content exposure / indirect prompt injection).
-- `commands/review-pr.md` no longer grants bare `Bash`, which pre-approved every shell command,
-  including scripts from the pull request under review. It now pre-approves only read-only `git`
-  and `gh pr view` / `diff` / `checks` / `gh issue view` patterns, so running the PR's tests goes
-  through the user's normal permission prompts. `commands/devflow-setup.md` gets the same
-  treatment, since setup is told not to install anything: its grant covers read-only inspection.
+- `commands/review-pr.md` no longer grants bare `Bash` or `Edit`, which pre-approved every shell
+  command, including scripts from the pull request under review, and unprompted edits driven by
+  its content. It now pre-approves only `git status`, `git worktree list`, `gh pr view` / `diff` /
+  `checks`, and `gh issue view`, so running the PR's tests, applying fixes, approving, and
+  creating worktrees go through the user's normal permission prompts. `commands/devflow-setup.md`
+  gets the same treatment, since setup is told not to install anything.
+- Bash patterns are prefix matches, so `Bash(git fetch:*)`, `Bash(git log:*)`, `Bash(git diff:*)`,
+  `Bash(git branch:*)`, and `Bash(git remote:*)` also approved `--upload-pack=<cmd>`,
+  `--output=<file>`, `-D`, and `set-url`. Every wrapper drops them, and `feat` / `epic` narrow
+  `gh issue:*` and `gh label:*` to their `view` / `list` forms, so creating issues and labels
+  prompts.
 
 ### Fixed
 - The Claude Code wrappers used `argument-hints` as a YAML list. Claude Code only recognizes
@@ -36,10 +42,12 @@ This project follows Semantic Versioning.
 - The OPSX `opsx_validate` template gate fell back to `openspec validate --specs --strict`
   whenever `openspec status` failed, including when the CLI was missing or the change name was
   mistyped, so it could pass without validating the change. It now falls back only when
-  `openspec list --archived --json` confirms the change was archived, and otherwise prints the
-  reason to stderr and exits non-zero, which `check.md` reports as broken configuration. Both
-  templates carry the identical gate, verified against OpenSpec 1.14.1 for an active change, an
-  archived change, an unknown change name, and a missing CLI.
+  `openspec list --archived --json` confirms the change was archived (an exact match, so regex
+  characters in a branch name cannot fake one), or when no change is active at all, as on the
+  default branch after a merge. A missing CLI, an empty name from a detached HEAD, or a name that
+  matches no change while others are active exits `2` with the reason on stderr, which `check.md`
+  reports as broken configuration, distinct from a validation failure (`1`). Both templates carry
+  the identical gate, verified against OpenSpec 1.14.1 under `dash`.
 
 ### Added
 - `docs/skills-best-practices.md`: consolidated Agent Skills authoring guidance from Anthropic,

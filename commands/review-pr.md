@@ -2,15 +2,9 @@
 description: "Review a pull request using the portable DevFlow PR review workflow"
 allowed-tools:
   - Read
-  - Edit
   - Glob
   - Grep
   - Bash(git status:*)
-  - Bash(git diff:*)
-  - Bash(git log:*)
-  - Bash(git branch:*)
-  - Bash(git fetch:*)
-  - Bash(git remote:*)
   - Bash(git worktree list:*)
   - Bash(gh pr view:*)
   - Bash(gh pr diff:*)

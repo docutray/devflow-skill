@@ -78,7 +78,7 @@ There is no build step or test suite. Validation is manifest linting plus manual
 
 ```bash
 jq empty .claude-plugin/marketplace.json    # marketplace JSON must parse
-skills-ref validate ./skills/devflow        # if available: Agent Skill frontmatter check
+uvx --from skills-ref agentskills validate ./skills/devflow  # Agent Skill frontmatter check (PyPI build names the CLI `agentskills`)
 ```
 
 ### Skill And Plugin Integration Testing
@@ -119,7 +119,7 @@ Use `claude --debug` to troubleshoot plugin loading issues.
 ### Adding Commands and Skills
 
 - **Command**: Create `.md` file in `commands/` with YAML frontmatter and delegate behavior to the skill. `argument-hint` is singular and takes one string (`"<pr-number> [--worktree]"`); Claude Code silently drops unknown keys, so a misspelled field just shows no hint.
-- **`allowed-tools` pre-approves, it does not restrict.** Every tool stays callable; the listed ones only skip the permission prompt. Grant only what the workflow should run without asking, scope Bash to command patterns (`Bash(gh pr view:*)`), and never grant bare `Bash` to a workflow that executes untrusted code, such as reviewing someone else's PR. Use `disallowed-tools` to actually forbid a tool.
+- **`allowed-tools` pre-approves, it does not restrict.** Every tool stays callable; the listed ones only skip the permission prompt. Grant only what the workflow should run without asking, scope Bash to command patterns (`Bash(gh pr view:*)`), and never grant bare `Bash` to a workflow that executes untrusted code, such as reviewing someone else's PR. A pattern is a prefix match, so it also approves every flag after it: never pre-approve a command whose flags can execute code or write files, such as `git fetch` (`--upload-pack`) or `git log`/`git diff` (`--output`). Use `disallowed-tools` to actually forbid a tool.
 - **Skill**: Create `skills/<skill-name>/SKILL.md` with `name` (lowercase-hyphen, max 64 chars) and `description` (must include trigger terms, max 1024 chars).
 
 ## Code Style

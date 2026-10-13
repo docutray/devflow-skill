@@ -239,7 +239,9 @@ allowed-tools:
   - Bash
 ```
 
-Never grant bare `Bash` to a workflow that executes untrusted code, such as reviewing someone else's pull request: running the PR's tests should go through the user's normal permission prompts. Bare `Bash` is acceptable only where the workflow runs the user's own project commands on request (`dev`, `check`). To actually forbid a tool, use `disallowed-tools`.
+A pattern such as `Bash(git log:*)` is a prefix match and approves every flag that follows it. Some read-looking commands take flags that execute code or write files (`git fetch --upload-pack=<cmd>`, `git log --output=<file>`, `git diff --output=<file>`, `git branch -D`), so pre-approve only commands with no such flags: `git status`, `gh pr view`, `gh pr diff`, `gh issue view`.
+
+Never grant bare `Bash` or `Edit` to a workflow that handles untrusted content, such as reviewing someone else's pull request: running the PR's tests or applying fixes should go through the user's normal permission prompts. `dev` and `check` keep bare `Bash` because they run the project's own commands on request; that is only as trustworthy as the checked-out branch, so after checking out someone else's branch, run them with prompts on. To actually forbid a tool, use `disallowed-tools`.
 
 ## Release Process
 

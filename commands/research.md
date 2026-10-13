@@ -5,7 +5,6 @@ allowed-tools:
   - Glob
   - Grep
   - Bash(git status:*)
-  - Bash(git log:*)
   - WebSearch
   - WebFetch
   - Task

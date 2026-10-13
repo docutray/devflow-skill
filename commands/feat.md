@@ -5,12 +5,9 @@ allowed-tools:
   - Glob
   - Grep
   - Bash(git status:*)
-  - Bash(git diff:*)
-  - Bash(git branch:*)
-  - Bash(git log:*)
-  - Bash(git remote:*)
-  - Bash(gh label:*)
-  - Bash(gh issue:*)
+  - Bash(gh label list:*)
+  - Bash(gh issue view:*)
+  - Bash(gh issue list:*)
   - WebSearch
 argument-hint: "<feature-name> [--type=feat|fix|docs|refactor|test|chore] [--priority=low|medium|high|critical]"
 ---
