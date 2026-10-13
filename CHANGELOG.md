@@ -36,13 +36,14 @@ This project follows Semantic Versioning.
 ### Fixed
 - PR review validated whatever the current checkout held: on a clean `main` it validated `main`.
   It now always validates in a detached worktree at the PR's exact commit (`git fetch origin
-  pull/<number>/head`, then `git worktree add --detach … <headRefOid>`), which never touches the
-  user's checkouts, works for fork PRs, and avoids branch-name collisions and stale local
-  branches. A re-review moves a clean existing review worktree to the new `headRefOid`, and a
-  push during the review repeats the metadata and diff fetch so the reviewed and validated
-  commits match. `fix-issues` commits and pushes (`git push origin HEAD:<headRefName>`) only when
-  the user asks. A missing ignore rule goes to the local exclude file, not the tracked
-  `.gitignore`. Without PR metadata, or without a resolvable main checkout, the review is
+  pull/<number>/head`, then `git worktree add --detach … <headRefOid>`), never in a checkout the
+  user works in, works for fork PRs, and avoids branch-name collisions and stale local
+  branches. A re-review moves an existing review worktree to the new `headRefOid` only when it is
+  clean and holds no commits missing from the PR, and a push during the review repeats the
+  metadata and diff fetch so the reviewed and validated commits match. `fix-issues` commits
+  only when the user asks and pushes only a same-repository PR's fixes (`git push origin
+  HEAD:<headRefName>`); a fork PR's fixes are handed over as a patch or suggestions. Without PR
+  metadata, or without a resolvable main checkout, the review is
   static. The wrapper drops `--worktree`, since every review now uses one. The report
   names the commit and whether it was validated.
 - PR review consent is explicit, in a new Consent section that project configuration cannot
