@@ -110,10 +110,10 @@ Notes:
 
 ## The Validation Gate
 
-`openspec validate <change> --strict` is the pre-PR gate. In `.devflow/check.md` it is the `opsx_validate` entry, which runs `sh .devflow/scripts/opsx-validate.sh`; setup copies that script into the repository from [assets/scripts/opsx-validate.sh](../assets/scripts/opsx-validate.sh). Without a configured gate, apply the same rules yourself. Configurations written before DevFlow 2.3.0 carry the gate as one inline command instead. Recognize it by its text, not by version:
+`openspec validate <change> --strict` is the pre-PR gate. In `.devflow/check.md` it is the `opsx_validate` entry, which runs `sh .devflow/scripts/opsx-validate.sh`; setup copies that script into the repository from [assets/scripts/opsx-validate.sh](../assets/scripts/opsx-validate.sh). Without a configured gate, apply the same rules yourself. Configurations written before DevFlow 2.3.0 carry the gate as one inline command instead. Recognize it by its text, not by version. This applies only to entries that validate; `opsx_status`, which only displays a change's status, is current and stays inline:
 
 - An inline command that resolves the name with `openspec list --json` and runs `openspec validate --all --strict` when no change matches is the 2.2.2 gate. It behaves exactly like the script.
-- Any other OpenSpec gate, inline or under another name such as `opsx_verify`, is outdated: earlier versions shipped commands that pass without validating the change, call a target-less `openspec validate`, or run commands that no longer exist. Report its result with a warning that the gate is outdated, and recommend re-running setup to replace it with the script.
+- Any other entry that runs `openspec validate`, or the old `opsx_verify` entry, is an outdated gate: earlier versions shipped commands that pass without validating the change, call a target-less `openspec validate`, or run commands that no longer exist. Report its result with a warning that the gate is outdated, and recommend re-running setup to replace it with the script.
 
 The gate picks its target as follows:
 

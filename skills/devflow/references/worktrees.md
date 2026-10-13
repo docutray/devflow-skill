@@ -47,8 +47,11 @@ Work in place only when the current checkout already is the worktree for the bra
 git -C "<root>" fetch origin
 # New branch from the base branch
 git -C "<root>" worktree add "<root>/.devflow/worktrees/<sanitized-branch>" -b <branch> origin/<base-branch>
-# Existing branch, such as a PR under review
+# Existing branch
 git -C "<root>" worktree add "<root>/.devflow/worktrees/<sanitized-branch>" <existing-branch>
+# PR under review, including one from a fork: fetch its head into a local branch first
+git -C "<root>" fetch origin "pull/<number>/head:review-pr-<number>"
+git -C "<root>" worktree add "<root>/.devflow/worktrees/review-pr-<number>" review-pr-<number>
 ```
 
 `<root>` is the absolute path the Main Checkout snippet printed. Substitute it literally; a shell variable does not survive from one command to the next.

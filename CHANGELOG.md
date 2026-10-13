@@ -32,6 +32,8 @@ This project follows Semantic Versioning.
   place only when the current checkout is the worktree for the branch needed. The ignore check
   uses `git check-ignore -v` and `--no-index`, so a rule that ignores `.devflow/` as a whole, or
   one that exists only in a personal excludes file, is reported instead of silently accepted.
+  A PR under review gets a `review-pr-<number>` worktree from `pull/<number>/head`, which also
+  works for pull requests from forks.
 - The OpenSpec gate mechanics live only in `references/openspec.md`, under "The Validation Gate".
   `check.md` and `dev.md` summarize and link to it instead of restating it.
 - The `opsx_validate` template gate is now a shared POSIX script,
@@ -39,11 +41,12 @@ This project follows Semantic Versioning.
   command it replaces. Setup copies it to `.devflow/scripts/opsx-validate.sh`, committed with the
   configuration, whenever `check.md` carries an `opsx_validate` entry, enabled or not, and both
   templates run `sh .devflow/scripts/opsx-validate.sh`. The 2.2.2 inline command behaves like
-  the script and may stay. Any other OpenSpec gate from an earlier version, inline or named
-  `opsx_verify`, is recognized by its text, reported with an outdated-gate warning, and setup
-  recommends replacing it. A missing script or CLI (`127`) and a gate that runs
-  `openspec validate` with no target are reported as broken configuration. Verified against OpenSpec 1.14.1 under `dash`, case by case against the 2.2.2
-  inline command.
+  the script and may stay. Any other entry that runs `openspec validate`, or the old
+  `opsx_verify` entry, is recognized by its text, reported with an outdated-gate warning, and
+  setup recommends replacing it; the inline `opsx_status` display is current and exempt. A
+  missing script or CLI (`127`) and a gate that runs `openspec validate` with no target are
+  reported as broken configuration. Verified against OpenSpec 1.14.1 under `dash`, case by case
+  against the 2.2.2 inline command.
 
 ### Fixed
 - Every workflow with a configuration file now resolves it first. `feat` and `review-pr` never
