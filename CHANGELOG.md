@@ -12,8 +12,9 @@ This project follows Semantic Versioning.
 - The development workflow wrote a change's OpenSpec artifacts before preparing the branch, so
   they landed in whatever checkout was current and a fresh worktree did not see them. It now
   settles the change name first, prepares the branch, and writes the artifacts there; a change
-  the feature workflow left uncommitted is carried onto the branch (kept by an in-place switch,
-  copied into a worktree). Feature planning creates the change only after approval, names it in
+  the feature workflow left uncommitted for this issue, and only it, is carried onto the branch
+  (kept by an in-place switch, moved into a worktree). The OpenSpec skills are still listed from
+  the main checkout, where ignored generated skills live. Feature planning creates the change only after approval, names it in
   the issue (editing the body when the issue had to exist first), and leaves it uncommitted. An
   in-place switch happens only in the main checkout; inside another branch's worktree, dev
   creates a new worktree.
