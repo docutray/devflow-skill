@@ -24,7 +24,7 @@ root=$(cd "$common" && cd "$(git config --file config core.worktree || echo ..)"
 if [ "$(cd "$root" && cd "$(git rev-parse --git-common-dir 2>/dev/null)" 2>/dev/null && pwd)" = "$common" ]; then echo "$root"; else echo "main checkout not found" >&2; fi
 ```
 
-If it reports `main checkout not found`, as with a repository created with `--separate-git-dir`, ask the user where the main checkout is rather than guessing.
+If it reports `main checkout not found`, as with a repository created with `--separate-git-dir`, ask the user where the main checkout is rather than guessing, or stop and report it when no one can answer.
 
 ## Ignore Rule
 

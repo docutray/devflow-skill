@@ -17,7 +17,7 @@ Use this when configuring DevFlow for a repository, creating project-local workf
    - existing test, lint, typecheck, build, format, and CI conventions;
    - existing `.devflow/` files, and legacy `.claude/details/commands/` files.
 2. Infer the primary framework and package manager from repository evidence. Prefer existing scripts and CI commands over generic defaults.
-3. If configuration already exists, summarize the current files and ask before overwriting unless the user explicitly requested force/update behavior.
+3. If configuration already exists, summarize the current files and ask before overwriting unless the user explicitly requested force/update behavior. In a non-interactive run, leave existing files unchanged and report what you would change; see [Core Principles](../SKILL.md#core-principles).
 4. Create or update project-local DevFlow configuration under:
 
    ```text

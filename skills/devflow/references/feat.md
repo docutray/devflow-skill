@@ -24,7 +24,7 @@ Use this when creating a feature, fix, refactor, docs, test, or chore specificat
    - Testing strategy
    - Dependencies and risks
    - Definition of done
-6. Present the draft for user approval before creating the issue.
+6. Present the draft for user approval before creating the issue. In a non-interactive run, present it without creating anything; see [Core Principles](../SKILL.md#core-principles).
    - OpenSpec is not required for feature planning. When the repository has it configured and the user wants specs before implementation, delegate to the skill present for creating a change (usually `openspec-propose`) and keep the GitHub issue as the source of truth for scope. Name the change in the issue body, so the development workflow continues that change and derives the branch from its name instead of creating a second change. See [openspec.md](openspec.md) for resolving the skill and for the CLI fallback.
 7. If using GitHub, verify labels with `gh label list` and create missing labels only when appropriate.
 8. Create the issue after approval and report the issue number plus the recommended next workflow.
