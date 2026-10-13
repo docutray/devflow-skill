@@ -11,7 +11,7 @@ allowed-tools:
   - Bash(gh pr checks:*)
   - Bash(gh issue view:*)
   - Task
-argument-hint: "<pr-number> [--fix-issues] [--run-full-suite] [--auto-approve] [--functional-tests] [--skip-functional] [--worktree]"
+argument-hint: "<pr-number> [--fix-issues] [--run-full-suite] [--auto-approve] [--post] [--functional-tests] [--skip-functional]"
 ---
 
 # DevFlow PR Review Wrapper

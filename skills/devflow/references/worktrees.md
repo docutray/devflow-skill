@@ -24,7 +24,7 @@ root=$(cd "$common" && cd "$(git config --file config core.worktree || echo ..)"
 if [ "$(cd "$root" && cd "$(git rev-parse --git-common-dir 2>/dev/null)" 2>/dev/null && pwd)" = "$common" ]; then echo "$root"; else echo "main checkout not found" >&2; fi
 ```
 
-If it reports `main checkout not found`, as with a repository created with `--separate-git-dir`, ask the user where the main checkout is rather than guessing.
+If it reports `main checkout not found`, as with a repository created with `--separate-git-dir`, ask the user where the main checkout is rather than guessing. When no one can answer, use the calling workflow's fallback if it has one, or stop and report it.
 
 ## Ignore Rule
 
@@ -49,9 +49,9 @@ git -C "<root>" fetch origin
 git -C "<root>" worktree add "<root>/.devflow/worktrees/<sanitized-branch>" -b <branch> origin/<base-branch>
 # Existing branch
 git -C "<root>" worktree add "<root>/.devflow/worktrees/<sanitized-branch>" <existing-branch>
-# PR under review: its head branch, in the directory the Location table gives
-git -C "<root>" worktree add "<root>/.devflow/worktrees/review-pr-<number>" <head-branch>
 ```
+
+A PR under review gets a detached worktree at the reviewed commit instead, as [review-pr.md](review-pr.md) describes, so it works for forks and never competes with a branch checked out elsewhere.
 
 `<root>` is the absolute path the Main Checkout snippet printed. Substitute it literally; a shell variable does not survive from one command to the next.
 

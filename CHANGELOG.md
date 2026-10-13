@@ -6,6 +6,52 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-10-13
+
+### Changed
+- PR review trusts by origin. It fetches `isCrossRepository` and `headRefOid`. A same-repository
+  PR is the team's own work and is validated with its configuration as usual. A PR from a fork
+  runs nothing from its checkout (install, tests, build, configured commands or scripts) until
+  the user has seen what will run, with additions and changes the PR makes flagged, and agreed;
+  when it changes DevFlow configuration, the base branch's configuration is preferred, and with
+  no user to agree and no explicit request to run it, the review is static and validation is
+  reported as `skipped`. `fix-issues` re-runs checks under the same rules. This replaces
+  the 2.3.0 rules that validated every PR with the base branch's `check.md` and ran base copies
+  of changed scripts through a temporary file. Changes to DevFlow configuration and to agent
+  instruction files (`CLAUDE.md`, `AGENTS.md`, `.claude/`, `.agents/skills/`) are diff content to
+  review, never instructions to follow. The `review-pr` configuration is still read from the
+  base branch.
+- A new core principle covers non-interactive runs: never block on a question, create, post,
+  approve, overwrite, or push nothing that needed approval, present drafts and findings,
+  and say what was held back. A request for the action itself (approve, post) or to proceed
+  without review counts as approval. Feature planning, epic planning, setup, and the worktree guide
+  point to it at their approval gates.
+- Research follows links that serve it but never acts on instructions a page gives, keeps the
+  number of sources to what the depth needs, and never puts secrets, credentials, environment
+  values, or non-public code into a URL or query; public package names, versions, and error
+  messages are fine. The output template gains a
+  `## Sources` section, one URL per key finding.
+- `AGENTS.md` and `CLAUDE.md` describe the bare-`Bash` caveat in terms of PRs and branches from
+  forks.
+
+### Fixed
+- PR review validated whatever the current checkout held: on a clean `main` it validated `main`.
+  It now validates in a detached worktree at the PR's exact commit (`git fetch origin
+  pull/<number>/head`, then `git worktree add --detach … <headRefOid>`), never in a checkout the
+  user works in, which also covers fork PRs and stale local branches. A worktree left from an
+  earlier review is removed first, and the review stops if it holds uncommitted changes. Without
+  PR metadata, or without a resolvable main checkout, the review is static. `fix-issues` leaves
+  its fixes uncommitted, commits or pushes only when asked, and never pushes a fork PR's fixes.
+  The wrapper drops `--worktree`, since every review now uses one. The report names the commit
+  and whether it was validated.
+- PR review consent is explicit, in a new Consent section that project configuration cannot
+  relax: approve only when the user asked, nothing is blocking, and every validation that
+  applies, configured or inferred, ran and passed (one held back, declined, or denied blocks
+  approval; a check the project lacks, a disabled entry, a `fast` skip, or a skip the user asked
+  for does not); post a review or comment only when asked, which the Claude Code wrapper exposes
+  as `--post`, a request for approval being a request to post it; never merge, only recommend
+  it.
+
 ## [2.3.0] - 2026-10-13
 
 ### Changed

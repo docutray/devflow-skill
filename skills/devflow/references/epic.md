@@ -23,7 +23,7 @@ Use this for large initiatives that need phases, multiple issues, dependency tra
    - Risks and mitigations
    - Testing and release strategy
    - Success criteria
-5. Present the plan for approval before creating GitHub issues or branches.
+5. Present the plan for approval before creating GitHub issues or branches. In a non-interactive run, follow [core principle 8](../SKILL.md#core-principles): without an explicit request to create it, present it and create nothing.
 6. If approved and GitHub is available, create the epic issue and sub-issues.
 7. Create an epic branch like `epic/<epic-name>` only when the team workflow requires it or the user requested it. For worktree isolation, follow [worktrees.md](worktrees.md).
 

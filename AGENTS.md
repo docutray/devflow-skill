@@ -12,7 +12,7 @@ This is a **portable Agent Skill repository** maintained by the Docutray organiz
 
 | Skill | Version | Description | Category |
 |--------|---------|-------------|----------|
-| `devflow` | 2.3.0 | Complete agile development workflow with GitHub integration | development |
+| `devflow` | 2.4.0 | Complete agile development workflow with GitHub integration | development |
 
 ## Repository Structure
 
@@ -250,14 +250,14 @@ allowed-tools:
   - Bash(git status:*)
   - Bash(gh pr view:*)
 
-# Avoid - pre-approves every shell command, including scripts from an untrusted PR
+# Avoid - pre-approves every shell command, including scripts from a fork's PR
 allowed-tools:
   - Bash
 ```
 
 A pattern such as `Bash(git log:*)` is a prefix match and approves every flag that follows it. Some read-looking commands take flags that execute code or write files (`git fetch --upload-pack=<cmd>`, `git log --output=<file>`, `git diff --output=<file>`, `git branch -D`), so pre-approve a command by prefix only when none of its flags can do that, such as `git status`, `gh pr view`, `gh pr diff`, `gh issue view`, or `gh label list`. For a command that has such flags, grant the exact invocation without `:*`, such as `Bash(git branch --show-current)` or `Bash(git remote -v)`, which approves nothing else.
 
-Never grant bare `Bash` or `Edit` to a workflow that handles untrusted content, such as reviewing someone else's pull request: running the PR's tests or applying fixes should go through the user's normal permission prompts. `dev` and `check` keep bare `Bash` because they run the project's own commands on request; that is only as trustworthy as the checked-out branch, so after checking out someone else's branch, run them with prompts on. To actually forbid a tool, use `disallowed-tools`.
+Never grant bare `Bash` or `Edit` to a workflow that may handle untrusted content, such as PR review, which can check out a pull request from a fork: running the PR's tests or applying fixes should go through the user's normal permission prompts. `dev` and `check` keep bare `Bash` because they run the project's own commands on request; that is only as trustworthy as the checked-out branch, so after checking out a branch from a fork, run them with prompts on. To actually forbid a tool, use `disallowed-tools`.
 
 ## Release Process
 
