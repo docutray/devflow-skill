@@ -5,8 +5,6 @@ allowed-tools:
   - Glob
   - Grep
   - Bash(git status:*)
-  - Bash(git branch --show-current)
-  - Bash(git remote -v)
   - Bash(gh label list:*)
   - Bash(gh issue view:*)
   - Bash(gh issue list:*)
