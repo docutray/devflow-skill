@@ -6,6 +6,46 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-10-13
+
+### Changed
+- Epic planning hands off to the development workflow for the first sub-issue; the handoff
+  table no longer routes it through feature planning first.
+- Epic planning resolves the `feat` configuration: its label and title conventions apply to the
+  epic and every sub-issue, its issue body template to the sub-issues. Its draft list now matches the output template.
+- Epic branches are created only when the user asks for one: `epic/<name>` is created without a
+  checkout, pushed, and named as the base branch in every sub-issue body, which the development
+  workflow now honors after a base the user names. Sub-issues merged into it are closed by hand
+  or listed in the epic branch's final PR, since closing keywords only act on the default branch. The epic
+  `--worktree` hint is replaced by `--epic-branch`.
+- Workflow routing: a request to open a PR for work already committed on the current branch goes
+  to the development workflow's PR step, after full validation, without requiring an issue. If
+  that branch is the base, the work first moves to a new branch; if it belongs to an issue or an
+  active OpenSpec change, the issue is linked and the change archived.
+- Core principle 2 now says issues and labels are created only after the user approves the
+  draft, regardless of the client's permission prompts.
+
+### Added
+- Epic sub-issues get an implementation-ready body built from the feature planning template, and
+  are linked with `gh issue create --parent` and ordered with `--blocked-by`, falling back to a
+  task list in the epic body and `Blocked by #<n>` when the installed `gh` lacks those flags.
+- Feature and epic planning search for existing issues on the same topic and surface likely
+  duplicates in the draft. A re-run of epic planning after a partial failure reuses the epic and
+  creates only the missing sub-issues.
+- Advertised inputs now have defined behavior: feature `--type` (title prefix or label per
+  convention, not GitHub's issue type) and `--priority` (a priority label only when the repository
+  has them); epic milestone (only an existing one, never created); research `--depth` and
+  `--output` (only `report` writes a file); development `--draft` (`gh pr create --draft`).
+
+### Fixed
+- Label checks use `gh label list --limit 1000 --json name`, since the default lists only 30 and
+  an existing label could look missing. Labels to add or create are part of the approved draft,
+  and `gh label create --force`, which recolors an existing label, is never used.
+- Removed the unused `--auto-tests` and `--full-validation` development hints: tests for changed
+  behavior and full validation before the PR are already the default.
+- Removed Claude Code tool names from the portable skill's gotchas, and the unused `WebSearch`
+  pre-approval from the feature and epic wrappers.
+
 ## [2.4.1] - 2026-10-13
 
 ### Fixed

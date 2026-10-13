@@ -10,7 +10,6 @@ allowed-tools:
   - Bash(gh label list:*)
   - Bash(gh issue view:*)
   - Bash(gh issue list:*)
-  - WebSearch
 argument-hint: "<feature-name> [--type=feat|fix|docs|refactor|test|chore] [--priority=low|medium|high|critical]"
 ---
 

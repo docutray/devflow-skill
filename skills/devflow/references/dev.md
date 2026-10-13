@@ -1,14 +1,16 @@
 # Development Workflow
 
-Use this when implementing a GitHub issue and preparing a pull request.
+Use this when implementing a GitHub issue and preparing a pull request, or when opening a pull request for work already on the current branch.
 
 ## Inputs
 
-- Required issue reference, such as "issue #123". The `issue#123` form is equivalent.
+- Required issue reference, such as "issue #123". The `issue#123` form is equivalent. Not needed when the user only wants a PR for work already on the current branch; see Process.
 - Optional branch name.
-- Optional flags or user intent: draft PR, auto tests, full validation, worktree isolation.
+- Optional flags or user intent: draft PR, worktree isolation.
 
 ## Process
+
+If the user only asks to open a PR for work already committed on the current branch, no issue is needed: resolve the base branch as in step 7, and when the current branch is that base, first move the work to a new branch (`git switch -c <branch>`) so nothing is pushed to the base. Run full validation as in step 12. When the branch belongs to an issue or an active OpenSpec change, link that issue and archive the change as in step 13; otherwise omit the Linked Issue section. Then go to step 14.
 
 1. Resolve the `dev` configuration as described in [Configuration](../SKILL.md#configuration). Its branch naming, install commands, and PR expectations override the defaults below.
 2. Inspect git status, current branch, current diff, recent commits, and remote URL.
@@ -18,7 +20,7 @@ Use this when implementing a GitHub issue and preparing a pull request.
    - The change name must equal the last path segment of the branch from step 7, because [the validation gate](openspec.md#the-validation-gate) derives the change from the branch. If a change for this issue already exists, keep its name: the issue body names it when the feature workflow created one, and otherwise look in `openspec list`. For a new change, use the lowercased last segment of the branch the user provided or the configured convention yields, or `issue-<number>-<slug>`, the segment the default branch uses. OpenSpec requires kebab-case; the gate lowercases the segment, so a branch that differs only in case still supplies the name, but one that is otherwise not kebab-case cannot; see step 7.
 6. Separate delivery work from post-merge work before implementing. Any task that can only happen after the pull request merges is out of scope here: deployments, production or staging verification, monitoring and alerting checks, data migrations run against production, feature-flag rollout, and post-release sign-off. Do not implement them, do not mark them complete, and do not let them block the change from being archived. Carry them verbatim into the PR body as post-merge tasks. Implement only what can be verified in the branch.
 7. Prepare the workspace:
-   - Base branch: the one the user named, otherwise the one the `dev` configuration names, otherwise the repository default, from `gh repo view --json defaultBranchRef -q .defaultBranchRef.name` or, without `gh`, `git symbolic-ref --short refs/remotes/origin/HEAD` minus its `origin/` prefix (run `git remote set-head origin --auto` first when that ref is missing). Run `git fetch origin` and always branch from `origin/<base>`, never from whatever is checked out.
+   - Base branch: the one the user named, otherwise the one the issue names (an epic sub-issue may name its epic branch), otherwise the one the `dev` configuration names, otherwise the repository default, from `gh repo view --json defaultBranchRef -q .defaultBranchRef.name` or, without `gh`, `git symbolic-ref --short refs/remotes/origin/HEAD` minus its `origin/` prefix (run `git remote set-head origin --auto` first when that ref is missing). Run `git fetch origin` and always branch from `origin/<base>`, never from whatever is checked out.
    - Use the branch the user provided, otherwise the configured convention, otherwise `feat/issue-<number>-<slug>`. When OpenSpec is configured, the branch must end in the change name from step 5, ignoring case, so a change that already existed gives `feat/<change-name>`.
    - If the branch name cannot end in the change name, keep it and say that the OpenSpec gate then needs `DEVFLOW_OPENSPEC_CHANGE=<change-name>` set in the environment to target that change; without it the gate validates the main specs and every active change instead of the change alone.
    - If the workspace has uncommitted changes other than this issue's OpenSpec change, follow [core principle 4](../SKILL.md#core-principles). Otherwise create the branch in a new worktree, following [worktrees.md](worktrees.md), when requested or when running inside another branch's linked worktree; in any other case, create it in place in the main checkout with `git switch --no-track -c <branch> origin/<base>`. `--no-track` keeps the branch from tracking the base, so push it the first time with `git push -u origin <branch>`.
@@ -30,7 +32,7 @@ Use this when implementing a GitHub issue and preparing a pull request.
 12. Run quick validation during development and full validation before PR. Use [check.md](check.md).
 13. When OpenSpec is configured, archive the completed change **with spec synchronization** before opening the PR, delegating to the skill for finalizing a change (usually `openspec-archive-change`), resolved against the step 8 listing, or to `openspec archive <name> --yes` when it is absent. The archive must merge the change's delta specs into the main specs. Never use `--skip-specs`: a tooling or documentation change that owns no specs declares `skip_specs: true` in its `.openspec.yaml`, at any point before archiving. Archive only after the branch's own validations pass; failures the branch did not cause are reported in the PR, not blockers. After archiving, run `openspec validate --specs --strict` to catch a placeholder `## Purpose` on any capability the change created. Fix failures in specs this change touched; report failures in other specs without fixing them. Commit the resulting spec updates as part of the branch. In a store-backed repository the spec updates land in the store instead; see [openspec.md](openspec.md).
     - Archiving asks for confirmation before updating the main specs and while tasks are unchecked; `--yes` answers both, and a non-interactive run fails without it. Post-merge tasks stay unchecked by design, so before confirming, check that every remaining unchecked task is one of the post-merge items from step 6. Never tick a post-merge task just to unblock the archive, and never confirm past the block while genuine delivery work is unfinished. See [openspec.md](openspec.md).
-14. Create a PR with summary, tests, linked issue, the OpenSpec change name when relevant, and the post-merge tasks identified in step 6.
+14. Push the branch (`git push -u origin <branch>` the first time) and create the PR with `gh pr create --base <base> --title "<title>" --body-file <file>`, adding `--draft` when the user asked for a draft PR. The body follows the PR Body Template: summary, tests, linked issue, the OpenSpec change name when relevant, and the post-merge tasks identified in step 6.
 
 ## PR Body Template
 
