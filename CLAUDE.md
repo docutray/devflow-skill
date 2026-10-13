@@ -16,7 +16,9 @@ devflow-skill/
 │   └── devflow/              # Canonical Agent Skill
 │       ├── SKILL.md
 │       ├── references/
-│       └── assets/templates/
+│       └── assets/
+│           ├── templates/    # .devflow/ config examples
+│           └── scripts/      # helpers setup copies into consumer repos
 ├── commands/                 # Claude Code slash command wrappers
 ├── AGENTS.md                 # Detailed context for AI coding agents
 └── CHANGELOG.md              # Version history
@@ -26,7 +28,7 @@ devflow-skill/
 
 ### Canonical Skill
 
-`skills/devflow/SKILL.md` is the source of truth. Keep it concise and move detailed workflows to `skills/devflow/references/`. Templates and reusable resources live under `skills/devflow/assets/`.
+`skills/devflow/SKILL.md` is the source of truth. Keep it concise and move detailed workflows to `skills/devflow/references/`, linked one level deep from `SKILL.md`. Templates and reusable resources live under `skills/devflow/assets/`; procedures never do.
 
 ### Marketplace (`marketplace.json`)
 
@@ -49,11 +51,11 @@ Every wrapper follows the same shape: read `@${CLAUDE_PLUGIN_ROOT}/skills/devflo
 
 ### Two Kinds of Config — Don't Confuse Them
 
-`.devflow/{check,feat,dev,review-pr}.md` is project-local config that DevFlow **reads in the repositories that install it**. It does not exist in this repo and should not be created here. `skills/devflow/assets/templates/` holds the examples the setup workflow adapts when generating those files in a consumer repo.
+`.devflow/{check,feat,dev,review-pr}.md` is project-local config that DevFlow **reads in the repositories that install it**. It does not exist in this repo and should not be created here. `skills/devflow/assets/templates/` holds the examples the setup workflow adapts when generating those files in a consumer repo. `skills/devflow/assets/scripts/` holds helpers, such as the OpenSpec gate `opsx-validate.sh`, that setup copies into the consumer repo's `.devflow/scripts/`, because a check command cannot know where the skill is installed. Scripts there must be POSIX `sh` (test under `dash`).
 
 The legacy location is `.claude/details/commands/`, still read for backward compatibility. New files are never created there; an existing one may be edited in place so a repository keeps a single source of truth. The canonical path is client-neutral because Codex is a first-class target and must not have a `.claude/` directory written into its repositories.
 
-`.devflow/` mixes committed configuration with an ignored `.devflow/worktrees/` scratch directory, so ignore rules must name the worktrees path specifically.
+`.devflow/` mixes committed configuration and scripts with an ignored `.devflow/worktrees/` scratch directory, so ignore rules must name the worktrees path specifically.
 
 ### Distribution
 
@@ -78,8 +80,12 @@ There is no build step or test suite. Validation is manifest linting plus manual
 
 ```bash
 jq empty .claude-plugin/marketplace.json    # marketplace JSON must parse
+claude plugin validate --strict .           # marketplace and plugin manifests
 uvx --from skills-ref agentskills validate ./skills/devflow  # Agent Skill frontmatter check (PyPI build names the CLI `agentskills`)
+uvx --with pyyaml python ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py ./skills/devflow  # Codex: no `compatibility` key
 ```
+
+All of them must pass. The Codex validator rejects frontmatter keys outside `name`, `description`, `license`, `allowed-tools`, and `metadata`, so requirements go in the `SKILL.md` body, not in a `compatibility` field. `docs/skills-best-practices.md` lists the full toolchain, including the Anthropic skill-creator validator.
 
 ### Skill And Plugin Integration Testing
 

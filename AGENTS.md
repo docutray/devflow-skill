@@ -12,7 +12,7 @@ This is a **portable Agent Skill repository** maintained by the Docutray organiz
 
 | Skill | Version | Description | Category |
 |--------|---------|-------------|----------|
-| `devflow` | 2.2.2 | Complete agile development workflow with GitHub integration | development |
+| `devflow` | 2.3.0 | Complete agile development workflow with GitHub integration | development |
 
 ## Repository Structure
 
@@ -24,7 +24,9 @@ devflow-skill/
 │   └── devflow/                  # Canonical Agent Skill
 │       ├── SKILL.md
 │       ├── references/
-│       └── assets/templates/
+│       └── assets/
+│           ├── templates/        # .devflow/ config examples
+│           └── scripts/          # helpers setup copies into consumer repos
 ├── commands/                     # Claude Code slash command wrappers
 ├── README.md                     # Skill and marketplace documentation
 ├── CLAUDE.md                     # Claude Code guidance
@@ -41,8 +43,9 @@ devflow-skill/
 
 ### DevFlow Skill
 - **Type**: Agent Skill with Claude Code command wrappers
-- **Format**: `SKILL.md` with YAML frontmatter plus Markdown references
+- **Format**: `SKILL.md` with YAML frontmatter plus Markdown references. Keep `SKILL.md` concise and put detailed workflows and procedures in `skills/devflow/references/`, linked one level deep from `SKILL.md`; `assets/` holds templates and scripts, never procedures.
 - **Templates**: Framework-specific configuration examples under `skills/devflow/assets/templates/`
+- **Scripts**: POSIX `sh` helpers under `skills/devflow/assets/scripts/`, such as the OpenSpec gate `opsx-validate.sh`. Setup copies them into the consumer repository's `.devflow/scripts/`, since a check command cannot know where the skill is installed. Test them under `dash`.
 - **Dependencies**: GitHub CLI (`gh`), project-specific tools
 
 ## Build and Development Commands
@@ -178,6 +181,19 @@ Skills auto-activate when user queries match trigger terms in the description. T
 - Sort keys alphabetically where logical
 
 ## Testing Instructions
+
+### Validation
+
+Every validator must pass before a release:
+
+```bash
+jq empty .claude-plugin/marketplace.json
+claude plugin validate --strict .
+uvx --from skills-ref agentskills validate ./skills/devflow
+uvx --with pyyaml python ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py ./skills/devflow
+```
+
+The Codex skill-creator validator accepts only `name`, `description`, `license`, `allowed-tools`, and `metadata` in the frontmatter, so environment requirements live in the `SKILL.md` body rather than in a `compatibility` field. See `docs/skills-best-practices.md` for the full toolchain.
 
 ### Integration Testing
 

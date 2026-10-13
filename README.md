@@ -21,7 +21,7 @@ Claude Code can install the skill the same way as above. The marketplace plugin 
 
 ## Version
 
-Current version: `2.2.2`
+Current version: `2.3.0`
 
 ## What DevFlow Provides
 
@@ -86,7 +86,7 @@ devflow-skill/
 │   └── devflow/              # Canonical Agent Skill
 │       ├── SKILL.md
 │       ├── references/
-│       └── assets/templates/
+│       └── assets/           # Config templates and helper scripts
 ├── commands/                 # Claude Code slash command wrappers
 └── README.md
 ```
