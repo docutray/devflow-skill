@@ -84,13 +84,13 @@ You can add custom validations:
   "validations": {
     "...": "...",
     "opsx_status": {
-      "command": "CHANGE=$(git branch --show-current | sed 's|.*/||'); test -d openspec/changes/$CHANGE && openspec status --change $CHANGE",
+      "command": "CHANGE=${DEVFLOW_OPENSPEC_CHANGE:-$(git branch --show-current | sed 's|.*/||')}; if openspec status --change \"$CHANGE\" --json >/dev/null 2>&1; then openspec status --change \"$CHANGE\"; else echo \"No active OpenSpec change named $CHANGE\"; fi",
       "description": "OPSX: check current change status",
       "enabled": false
     },
     "opsx_validate": {
-      "command": "CHANGE=$(git branch --show-current | sed 's|.*/||'); test -d openspec/changes/$CHANGE && openspec validate $CHANGE --strict",
-      "description": "OPSX: validate the change against its specs (pre-PR gate)",
+      "command": "CHANGE=${DEVFLOW_OPENSPEC_CHANGE:-$(git branch --show-current | sed 's|.*/||')}; if openspec status --change \"$CHANGE\" --json >/dev/null 2>&1; then openspec validate \"$CHANGE\" --strict; else openspec validate --specs --strict; fi",
+      "description": "OPSX: validate the active change, or the main specs once it is archived (pre-PR gate)",
       "enabled": false
     },
     "security": {
