@@ -9,7 +9,7 @@ allowed-tools:
   - Bash
   - Task
   - TodoWrite
-argument-hint: "issue#<number> [--branch=name] [--draft] [--auto-tests] [--full-validation] [--worktree]"
+argument-hint: "issue#<number> [--branch=name] [--draft] [--worktree]"
 ---
 
 # DevFlow Development Wrapper

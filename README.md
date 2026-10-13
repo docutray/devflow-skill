@@ -21,7 +21,7 @@ Claude Code can install the skill the same way as above. The marketplace plugin 
 
 ## Version
 
-Current version: `2.4.1`
+Current version: `2.5.0`
 
 ## What DevFlow Provides
 
@@ -58,7 +58,7 @@ Installing the Claude Code plugin additionally registers namespaced slash comman
 ```bash
 /devflow:devflow-setup
 /devflow:feat add-invoice-export --type=feat --priority=high
-/devflow:dev issue#123 --worktree --full-validation
+/devflow:dev issue#123 --worktree --draft
 /devflow:review-pr 45 --fix-issues
 ```
 

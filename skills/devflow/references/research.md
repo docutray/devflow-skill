@@ -5,8 +5,8 @@ Use this before planning features or epics, or when evaluating technologies, arc
 ## Inputs
 
 - Topic or decision to research.
-- Optional depth: shallow, medium, deep.
-- Optional output style: summary, detailed, report.
+- Optional depth: shallow, medium, deep. It sets how many sources and options to cover: shallow checks the repository and a few primary sources for one likely answer, deep compares several options across many sources. Default: medium.
+- Optional output style: summary, detailed, report. `summary` gives only the key findings, recommendation, and sources; `detailed` fills the whole Output Template; both are replies in the conversation. `report` writes the full template to a file at a path the user names or agrees to; no other style writes a file. Default: detailed.
 
 ## Process
 

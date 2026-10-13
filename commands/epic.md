@@ -8,9 +8,8 @@ allowed-tools:
   - Bash(gh label list:*)
   - Bash(gh issue view:*)
   - Bash(gh issue list:*)
-  - WebSearch
   - Task
-argument-hint: "<epic-name> [--priority=low|medium|high|critical] [--target-version=X.Y.Z] [--worktree]"
+argument-hint: "<epic-name> [--priority=low|medium|high|critical] [--target-version=X.Y.Z] [--epic-branch]"
 ---
 
 # DevFlow Epic Wrapper
@@ -21,4 +20,4 @@ Use the `devflow` skill as the source of truth.
 2. Read `@${CLAUDE_PLUGIN_ROOT}/skills/devflow/references/epic.md`.
 3. Treat `$ARGUMENTS` as the epic planning request.
 4. Follow the epic planning workflow exactly.
-5. After creating sub-issues, follow the skill's workflow handoff and recommend the DevFlow development workflow for the first issue, offering `/devflow:dev issue#<number>` as the Claude Code shortcut.
+5. After creating sub-issues, follow the skill's workflow handoff and recommend the DevFlow development workflow for the first sub-issue, offering `/devflow:dev issue#<number>` as the Claude Code shortcut.

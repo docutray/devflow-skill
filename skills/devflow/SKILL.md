@@ -4,7 +4,7 @@ description: GitHub development workflow for planning, implementing, validating,
 license: MIT
 metadata:
   author: docutray
-  version: "2.4.1"
+  version: "2.5.0"
 ---
 
 # DevFlow
@@ -17,7 +17,7 @@ Requirements: git, and the GitHub CLI (`gh`) for issue and PR workflows. Optiona
 
 - **Setup/configuration**: read [references/setup.md](references/setup.md) when the user asks to configure DevFlow for a repository, create project-local workflow configuration, or adapt templates.
 - **Feature planning**: read [references/feat.md](references/feat.md) when the user asks to create a feature spec, bug spec, or GitHub issue.
-- **Implementation**: read [references/dev.md](references/dev.md) when the user asks to implement a GitHub issue, open a development branch, or create a PR.
+- **Implementation**: read [references/dev.md](references/dev.md) when the user asks to implement a GitHub issue or open a development branch for one, or to open a PR for work already committed on the current branch, which needs no issue.
 - **Validation**: read [references/check.md](references/check.md) when the user asks to run tests, lint, type checks, build checks, or quality gates.
 - **PR review**: read [references/review-pr.md](references/review-pr.md) when the user asks to review a pull request, validate a PR branch, or approve/request changes.
 - **Research**: read [references/research.md](references/research.md) when the user asks to investigate a technology, architecture, or requirement before planning.
@@ -33,7 +33,7 @@ Every workflow ends by recommending what comes next:
 |---|---|
 | Setup | Feature planning, or implementation if issues already exist |
 | Research | Feature planning, or epic planning for a large initiative |
-| Epic planning | Feature planning for the first phase, then implementation |
+| Epic planning | Implementation for the first sub-issue |
 | Feature planning | Implementation for the issue just created |
 | Implementation | PR review for the pull request just opened |
 | Validation | Return to the calling workflow; on failure, give concrete next actions |
@@ -44,7 +44,7 @@ Name the DevFlow workflow so the handoff works in any client: "Next: use the Dev
 ## Core Principles
 
 1. Start from the current repository state. Inspect git status, project structure, manifests, CI config, and existing conventions before proposing or changing anything.
-2. Prefer GitHub as the planning source of truth when issue/PR workflows are requested. Use `gh` when available and ask for permission or fallback only when required by the client.
+2. Prefer GitHub as the planning source of truth when issue/PR workflows are requested. Use `gh` when available, and present the drafts instead when it is not. Issues and labels are created only after the user approves the draft, whatever the client's own permission prompts allow.
 3. Keep generated plans and issues implementation-ready: motivation, acceptance criteria, technical approach, affected areas, test strategy, and definition of done.
 4. Protect user work. Never stash, discard, or commit the user's uncommitted changes; only the OpenSpec change for the issue being implemented counts as part of that task. When a workflow needs another branch and the workspace has such changes, either create a worktree, which leaves those changes alone and so needs no permission, or stop and ask; in a non-interactive run, use a worktree and say in the output that the uncommitted changes were left out. See [references/worktrees.md](references/worktrees.md).
 5. Validate before handoff. Run the configured checks for the project, report failures with specific next actions, and fix issues when the user requested implementation.
@@ -64,7 +64,7 @@ DevFlow reads optional project-local configuration. The canonical location is cl
 └── review-pr.md
 ```
 
-The file names match the workflows: `check.md` for validation, `dev.md` for implementation, `feat.md` for feature planning, `review-pr.md` for PR review. A workflow that has a file resolves it before the steps it shapes, so the project's conventions (commands, branch naming, labels, review rules) apply throughout; PR review reads it from the PR's base branch once that is known. Resolution order, first match wins per file:
+The file names match the workflows: `check.md` for validation, `dev.md` for implementation, `feat.md` for feature and epic planning, `review-pr.md` for PR review. A workflow that has a file resolves it before the steps it shapes, so the project's conventions (commands, branch naming, labels, review rules) apply throughout; PR review reads it from the PR's base branch once that is known. Resolution order, first match wins per file:
 
 1. `.devflow/<workflow>.md` — canonical, works in every client.
 2. `.claude/details/commands/<workflow>.md` — legacy location from DevFlow 2.0 and earlier. Still read for backward compatibility.
@@ -78,5 +78,5 @@ Reusable templates live in [assets/templates](assets/templates), and helper scri
 ## Gotchas
 
 - Slash commands are optional and exist only in Claude Code, where `/devflow:*` wrappers read this skill and add no behavior. Never require one, never treat one as a workflow's canonical name, and never call a workflow unavailable because the client has none; a handoff may add a shortcut next to the workflow name, never instead of it. The same holds for `/opsx:*`: Codex gets OpenSpec Agent Skills only, so delegate to whichever `openspec-*` skills the repository actually has, and to the `openspec` CLI when it has none.
-- `allowed-tools`, `argument-hint`, `Task`, `AskUserQuestion`, web tool names, and `${CLAUDE_PLUGIN_ROOT}` are Claude Code plugin details; do not rely on them in portable workflows.
+- Use whatever question, approval, and subagent mechanisms the client offers; no workflow depends on a particular one.
 - Network access, GitHub authentication, and local dependency installation vary by client. Verify availability before depending on them.
