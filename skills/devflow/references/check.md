@@ -6,11 +6,10 @@ Use this when running DevFlow quality checks: tests, linting, type checking, bui
 
 - Optional `fast`: skip expensive build or full-suite checks.
 - Optional `verbose`: include full command output.
-- Optional project-local configuration in `.devflow/check.md`, or legacy `.claude/details/commands/check.md`.
 
 ## Process
 
-1. Load `.devflow/check.md` if present, otherwise the legacy `.claude/details/commands/check.md`.
+1. Resolve the `check` configuration as described in [Configuration](../SKILL.md#configuration). When it exists, run its enabled validations as described in [Configuration Format](#configuration-format).
 2. If no config exists, infer checks from the repository:
    - Prefer commands already used by the project in package scripts, task files, Makefiles, CI workflows, or documentation.
    - Node/TypeScript: detect the package manager from lockfiles before choosing commands:
@@ -40,10 +39,44 @@ Use this when running DevFlow quality checks: tests, linting, type checking, bui
      - sbt -> `sbt test`, or `sbt compile` when only a build check is wanted.
      - No wrapper -> `gradle`, `mvn`, or `sbt` according to `build.gradle`/`build.gradle.kts`,
        `pom.xml`, or `build.sbt`.
+   - Rust (`Cargo.toml`): `cargo build`, `cargo test`, and `cargo fmt --check`, plus
+     `cargo clippy -- -D warnings` only when clippy is installed (`cargo clippy --version`
+     succeeds). `cargo test` alone is the `fast` path.
 3. Run independent validations in parallel when the client supports parallel tool execution. Otherwise run them sequentially and preserve the same report format.
-4. Include optional OPSX/OpenSpec checks only when `openspec/config.yaml` is present. Use the commands in [openspec.md](openspec.md); `openspec validate <change> --strict` is the pre-PR gate. The target is mandatory: with no change name and no `--changes` / `--specs` / `--all`, the command validates nothing at all — it exits `1` with a hint when run non-interactively, and opens a picker when run in a terminal. Report such a gate as broken configuration, never as a validation failure. The templates take the change name from `DEVFLOW_OPENSPEC_CHANGE` when it is set, otherwise from the branch's last path segment; [dev.md](dev.md) names changes so that the two agree. The name is lowercased, because OpenSpec change names are lowercase kebab-case and `openspec validate` matches them exactly. Resolve the name through the CLI, never by testing `openspec/changes/<name>` on disk, which misses store-backed changes: when the name is among those `openspec list --json` reports, validate that change. Extract the names from the JSON rather than matching its line layout, and do not use the `openspec status` exit code to decide, since it also fails for a change whose metadata is broken. Otherwise a branch-derived name names no active change, which covers the default branch, a detached CI checkout, a branch for unrelated work, a change already archived, and a mistyped name; the gate then runs `openspec validate --all --strict`, which checks the main specs and every active change, so it never passes without checking the branch's change. It says so on stderr; when that run exits `0`, report `pass` with a note that no single change was targeted, and when it exits `1`, report `fail` like any other validation failure. A `DEVFLOW_OPENSPEC_CHANGE` is an explicit target, so it widens to `--all` only when it names an archived change, either as `<name>` or as the `YYYY-MM-DD-<name>` id that `openspec list --archived` prints, and fails otherwise. Broken configuration means a missing CLI, `openspec list` failing, or a `DEVFLOW_OPENSPEC_CHANGE` that names no active or archived change: the templates exit `2` for it and `1` for a real validation failure, so report the two differently.
+4. Include the OpenSpec validation gate only when `openspec/config.yaml` is present. It validates the branch's change, or the main specs and every active change when the branch names none, and exits `2` for broken configuration rather than `1`; [The Validation Gate](openspec.md#the-validation-gate) defines how it picks its target and how to report each exit code.
 5. Summarize each validation as `pass`, `warning`, `fail`, or `skipped`.
 6. If failures occur and the user requested implementation or autofix, fix them and re-run the relevant checks.
+
+## Configuration Format
+
+`.devflow/check.md` is Markdown around one fenced JSON block. Each entry under `validations` is one check, keyed by its name:
+
+| Key | Meaning |
+|---|---|
+| `command` | Shell command, run from the repository root. |
+| `description` | What the check covers; use it in the report. |
+| `enabled` | `false` keeps the entry but never runs it. |
+| `skip_on_fast` | Optional. `true` skips the check when `fast` is requested. |
+
+```json
+{
+  "validations": {
+    "tests": {
+      "command": "npm run test",
+      "description": "Unit tests",
+      "enabled": true
+    },
+    "build": {
+      "command": "npm run build",
+      "description": "Production build",
+      "enabled": true,
+      "skip_on_fast": true
+    }
+  }
+}
+```
+
+Prose around the block may add project notes; follow them. The framework examples in [assets/templates](../assets/templates) show fuller configurations.
 
 ## Report Template
 

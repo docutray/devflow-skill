@@ -1,40 +1,33 @@
 ---
 name: devflow
-description: Agile development workflow for AI coding agents, usable from Codex, Claude Code, and any Agent Skills client. Use when the user asks to plan a GitHub issue, write a feature or bug specification, implement an issue, run validation checks, review a pull request, research a topic, or plan an epic. Also triggered by phrasing such as "use DevFlow to ..." or by the optional Claude Code commands /devflow:feat, /devflow:dev, /devflow:check, /devflow:review-pr, /devflow:research, /devflow:epic, and /devflow:devflow-setup.
+description: GitHub development workflow for planning, implementing, validating, and reviewing code changes. Plans a feature or bug as a GitHub issue, implements an issue and opens a pull request, runs a repository's validation checks before a PR, reviews a pull request, plans an epic as phased issues, researches a technical decision before planning a feature, and sets up DevFlow configuration for a repository. Use when the user asks for one of these in a GitHub repository or mentions DevFlow.
 license: MIT
-compatibility: Works with Agent Skills compatible clients including Codex and Claude Code. Requires git for repository workflows, GitHub CLI for issue/PR workflows, and optional web access for research. OPSX/OpenSpec support is optional and targets @fission-ai/openspec 1.x.
 metadata:
   author: docutray
-  version: "2.2.2"
+  version: "2.3.0"
 ---
 
 # DevFlow
 
-DevFlow is a portable workflow for turning ideas into GitHub issues, implementing them, validating changes, and reviewing pull requests with a consistent engineering process.
+DevFlow is a portable workflow for turning ideas into GitHub issues, implementing them, validating changes, and reviewing pull requests with a consistent engineering process. Every workflow is driven by natural language, for example "Use DevFlow to implement issue #123".
 
-## Invocation And Clients
-
-This skill is the interface. Codex and Claude Code are equally supported: every workflow below behaves identically in either, driven by natural language.
-
-- **Any Agent Skills client, including Codex**: state the intent, for example "Use DevFlow to implement issue #123".
-- **Claude Code**: the same natural language works. The `/devflow:*` slash commands are an optional convenience wrapper that reads this skill and adds no behavior of its own.
-
-Never require a slash command, never treat one as a workflow's canonical name, and never tell a user something is unavailable because their client has no `/devflow:*` commands.
+Requirements: git, and the GitHub CLI (`gh`) for issue and PR workflows. Optional: web access for research, and the OpenSpec CLI (`@fission-ai/openspec` 1.x) in repositories that use OpenSpec.
 
 ## Workflow Map
 
-- **Setup/configuration**: read [references/setup.md](references/setup.md) when the user asks to configure DevFlow for a repository, create project-local workflow configuration, adapt templates, or mentions `/devflow:devflow-setup`.
-- **Feature planning**: read [references/feat.md](references/feat.md) when the user asks to create a feature spec, bug spec, GitHub issue, or mentions `/devflow:feat`.
-- **Implementation**: read [references/dev.md](references/dev.md) when the user asks to implement a GitHub issue, open a development branch, create a PR, or mentions `/devflow:dev`.
-- **Validation**: read [references/check.md](references/check.md) when the user asks to run tests, lint, type checks, build checks, quality gates, or mentions `/devflow:check`.
-- **PR review**: read [references/review-pr.md](references/review-pr.md) when the user asks to review a pull request, validate a PR branch, approve/request changes, or mentions `/devflow:review-pr`.
-- **Research**: read [references/research.md](references/research.md) when the user asks to investigate a technology, architecture, requirement, or mentions `/devflow:research`.
-- **Epic planning**: read [references/epic.md](references/epic.md) when the user asks to plan a large initiative, split work into phases/issues, or mentions `/devflow:epic`.
+- **Setup/configuration**: read [references/setup.md](references/setup.md) when the user asks to configure DevFlow for a repository, create project-local workflow configuration, or adapt templates.
+- **Feature planning**: read [references/feat.md](references/feat.md) when the user asks to create a feature spec, bug spec, or GitHub issue.
+- **Implementation**: read [references/dev.md](references/dev.md) when the user asks to implement a GitHub issue, open a development branch, or create a PR.
+- **Validation**: read [references/check.md](references/check.md) when the user asks to run tests, lint, type checks, build checks, or quality gates.
+- **PR review**: read [references/review-pr.md](references/review-pr.md) when the user asks to review a pull request, validate a PR branch, or approve/request changes.
+- **Research**: read [references/research.md](references/research.md) when the user asks to investigate a technology, architecture, or requirement before planning.
+- **Epic planning**: read [references/epic.md](references/epic.md) when the user asks to plan a large initiative or split work into phases/issues.
+- **Worktrees**: read [references/worktrees.md](references/worktrees.md) before creating, working in, or removing a git worktree, such as when a workflow runs in isolation.
 - **OpenSpec/OPSX**: read [references/openspec.md](references/openspec.md) before running any `openspec` or `/opsx:*` command, or when configuring OpenSpec for a repository.
 
 ## Workflow Handoffs
 
-Every workflow ends by recommending what comes next. Name the DevFlow workflow, never a slash command:
+Every workflow ends by recommending what comes next:
 
 | Finished | Recommend next |
 |---|---|
@@ -46,7 +39,7 @@ Every workflow ends by recommending what comes next. Name the DevFlow workflow, 
 | Validation | Return to the calling workflow; on failure, give concrete next actions |
 | PR review | Merge, or implementation again when changes were requested |
 
-Phrase the handoff so it works in any client: "Next: use the DevFlow development workflow for issue #123." In Claude Code you may append the `/devflow:dev issue#123` shortcut in parentheses, but never as the only form.
+Name the DevFlow workflow so the handoff works in any client: "Next: use the DevFlow development workflow for issue #123."
 
 ## Core Principles
 
@@ -70,24 +63,19 @@ DevFlow reads optional project-local configuration. The canonical location is cl
 └── review-pr.md
 ```
 
-Resolution order, first match wins per file:
+The file names match the workflows: `check.md` for validation, `dev.md` for implementation, `feat.md` for feature planning, `review-pr.md` for PR review. A workflow that has a file resolves it before any other step, so the project's conventions (commands, branch naming, labels, review rules) shape everything that follows. Resolution order, first match wins per file:
 
 1. `.devflow/<workflow>.md` — canonical, works in every client.
 2. `.claude/details/commands/<workflow>.md` — legacy location from DevFlow 2.0 and earlier. Still read for backward compatibility.
 
-The file names match the workflows: `check.md` for validation, `dev.md` for implementation, `feat.md` for feature planning, `review-pr.md` for PR review.
-
 Never create a new file in the legacy location. When a repository already keeps a workflow's configuration there, edit that file in place so the repository keeps a single source of truth, and offer migration to `.devflow/` rather than performing it. Everything else goes to `.devflow/`. If neither location has the file, infer commands from the repository and state the chosen defaults in your response.
 
-Worktrees follow the same rule: prefer `.devflow/worktrees/`, and respect `.claude/worktrees/` when the repository already uses it.
+`.devflow/` holds both committed configuration, including any helper scripts setup copies into `.devflow/scripts/`, and ignored scratch space, so scope the ignore rule precisely. Ignore `.devflow/worktrees/`, never `.devflow/` as a whole, which would drop the project's configuration from version control.
 
-`.devflow/` holds both committed configuration and ignored scratch space, so scope the ignore rule precisely. Ignore `.devflow/worktrees/`, never `.devflow/` as a whole, which would drop the project's configuration from version control.
-
-Reusable templates live in [assets/templates](assets/templates). Load a template only when configuring or adapting DevFlow for that framework.
+Reusable templates live in [assets/templates](assets/templates), and helper scripts in [assets/scripts](assets/scripts). Load them only when configuring or adapting DevFlow for a repository.
 
 ## Gotchas
 
-- Do not assume slash commands exist in every client. In Codex and other Agent Skills clients, execute the referenced workflow directly. This applies to `/opsx:*` as well: Codex gets OpenSpec Agent Skills only, so delegate to whichever `openspec-*` skills the repository actually has, and to the `openspec` CLI when it has none.
-- Claude Code wrappers may expose `/devflow:*` commands, but this skill is the canonical source of behavior. The wrappers are optional; a repository configured for DevFlow works the same without them.
+- Slash commands are optional and exist only in Claude Code, where `/devflow:*` wrappers read this skill and add no behavior. Never require one, never treat one as a workflow's canonical name, and never call a workflow unavailable because the client has none; a handoff may add a shortcut next to the workflow name, never instead of it. The same holds for `/opsx:*`: Codex gets OpenSpec Agent Skills only, so delegate to whichever `openspec-*` skills the repository actually has, and to the `openspec` CLI when it has none.
 - `allowed-tools`, `argument-hint`, `Task`, `AskUserQuestion`, web tool names, and `${CLAUDE_PLUGIN_ROOT}` are Claude Code plugin details; do not rely on them in portable workflows.
 - Network access, GitHub authentication, and local dependency installation vary by client. Verify availability before depending on them.

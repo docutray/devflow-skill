@@ -6,6 +6,54 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-10-13
+
+### Changed
+- The skill `description` is rewritten front-loaded and in the third person: what DevFlow does,
+  scoped to GitHub development workflows, then when to use it. It drops the client list and the
+  seven `/devflow:*` command names, which are Claude-only syntax inside the portable skill, and
+  qualifies the catch-all triggers ("research a topic", "run validation checks") as researching
+  a technical decision before planning and running a repository's checks before a PR.
+- The `compatibility` frontmatter key is gone. Its facts (git, `gh` for issue and PR workflows,
+  optional web access, optional OpenSpec 1.x) move to a one-line "Requirements" note in the
+  `SKILL.md` body, so the Codex skill-creator validator, which rejects the key, now passes along
+  with every other validator. `CLAUDE.md` and `AGENTS.md` list all of them.
+- `SKILL.md` keeps a single gotcha about optional slash commands instead of three, and the
+  workflow-map bullets no longer repeat "or mentions `/devflow:X`".
+- The worktree guide moves from `assets/templates/worktree-guide.md` to `references/worktrees.md`,
+  linked from `SKILL.md`, `dev.md`, `review-pr.md`, and `setup.md`. It is host-neutral ("set the
+  working directory explicitly for every command" instead of "Bash tool calls"), uses POSIX
+  snippets, and says new worktrees always go to `.devflow/worktrees/`: existing ones under the
+  legacy `.claude/worktrees/` are used and cleaned up in place, never created there.
+- The OpenSpec gate mechanics live only in `references/openspec.md`, under "The Validation Gate".
+  `check.md` and `dev.md` summarize and link to it instead of restating it.
+- The `opsx_validate` template gate is now a shared POSIX script,
+  `assets/scripts/opsx-validate.sh`, with the same logic, messages, and exit codes as the inline
+  command it replaces. Setup copies it to `.devflow/scripts/opsx-validate.sh`, committed with the
+  configuration, and both templates run `sh .devflow/scripts/opsx-validate.sh`. Existing
+  configurations with the inline command keep working; setup offers to switch them. Verified
+  against OpenSpec 1.14.1 under `dash`, case by case against the inline command.
+
+### Fixed
+- Every workflow with a configuration file now resolves it first. `feat` and `review-pr` never
+  loaded `.devflow/feat.md` / `.devflow/review-pr.md`, and `dev` loaded `.devflow/dev.md` only
+  after choosing the branch name, so a configured branch convention was ignored. The resolution
+  rule, `.devflow/<workflow>.md` then the legacy `.claude/details/commands/<workflow>.md`, is
+  defined once in `SKILL.md`. A review does not follow DevFlow configuration that the PR itself
+  changes.
+- Feature and epic planning asked for a description even when the request already contained one.
+  They, and research, now ask only when the request leaves it unclear.
+- `git worktree remove --force` is run only on the user's explicit request, after showing what it
+  would discard.
+
+### Added
+- `references/check.md` documents the `.devflow/check.md` format (`validations.<name>` with
+  `command`, `description`, `enabled`, `skip_on_fast`) with a minimal example. It was defined only
+  by the templates.
+- Rust inference for validation without configuration: `cargo build`, `cargo test`,
+  `cargo fmt --check`, and `cargo clippy -- -D warnings` when clippy is installed, with
+  `cargo test` alone as the `fast` path. Setup already offered Rust.
+
 ## [2.2.2] - 2026-10-13
 
 ### Security

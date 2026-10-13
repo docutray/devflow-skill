@@ -81,7 +81,7 @@ State which skill you resolved to, or that you fell back to the CLI, so the user
 
 Every generated skill drives the same CLI, so the CLI reaches every artifact and state transition the skills produce. It does not reproduce their prompting: a skill body also carries stance and procedure that shape how the agent works, most visibly in `openspec-explore`. Treat the CLI as a complete fallback for outcomes, not as an equivalent of the skill. Use it directly in two cases:
 
-- **Deterministic gates.** A validation entry in `.devflow/check.md` must be a shell command, so use `openspec validate <change> --strict`.
+- **Deterministic gates.** A validation entry in `.devflow/check.md` must be a shell command, so use [the validation gate](#the-validation-gate), which wraps `openspec validate <change> --strict`.
 - **No skills available.** If the listing finds nothing, drive the CLI yourself. That happens when the repository was never initialized, or when the user's global `delivery` setting is `commands`, which suppresses skills for every tool that has slash commands. Skills-only tools such as Codex still get skills under `commands`, so another client's tree may still be listed; see the delegation note above.
 
 ```bash
@@ -108,13 +108,34 @@ Notes:
 - **`--strict` covers more than the change's deltas.** It also fails on a requirement longer than 500 characters, unrecognized keys in `.openspec.yaml`, and task-numbering problems in `tasks.md`. Over the main specs, it fails on a placeholder `## Purpose`, which is exactly what `openspec archive` writes when a new capability's delta carries no `## Purpose` of its own. Write that section in the delta when a change creates a capability, or replace the placeholder in the main spec after archiving.
 - **`openspec validate --archived` conflicts with post-merge tasks.** It fails on any archived change with an unchecked task, and DevFlow deliberately archives with post-merge tasks unchecked. Do not add it as a gate in a repository that follows the post-merge rule below.
 
+## The Validation Gate
+
+`openspec validate <change> --strict` is the pre-PR gate. In `.devflow/check.md` it is the `opsx_validate` entry, which runs `sh .devflow/scripts/opsx-validate.sh`; setup copies that script into the repository from [assets/scripts/opsx-validate.sh](../assets/scripts/opsx-validate.sh). Configurations written before DevFlow 2.3.0 carry the same logic as one inline command, and it behaves identically. Without a configured gate, apply the same rules yourself.
+
+The gate picks its target as follows:
+
+1. **Name.** `DEVFLOW_OPENSPEC_CHANGE` when it is set, otherwise the last path segment of the current branch. Either way the name is lowercased, because change names are lowercase kebab-case and `openspec validate` matches them exactly. The development workflow names changes so that the branch supplies the name.
+2. **Active change.** When the name is among the changes `openspec list --json` reports, validate that change with `--strict`. Resolve through the CLI, never by testing `openspec/changes/<name>` on disk, which misses store-backed changes. Extract the names from the JSON rather than matching its line layout, and do not decide by the `openspec status` exit code, which also fails for a change whose metadata is broken.
+3. **No active change.** A branch-derived name that matches no active change covers the default branch, a detached CI checkout, a branch for unrelated work, a change already archived, and a mistyped name. The gate then runs `openspec validate --all --strict`, which checks the main specs and every active change, so it never passes without checking the branch's change. It says so on stderr.
+4. **Explicit target.** `DEVFLOW_OPENSPEC_CHANGE` is strict: it widens to `--all` only when it names an archived change, either as `<name>` or as the `YYYY-MM-DD-<name>` id that `openspec list --archived` prints, and fails otherwise.
+
+Report each exit code differently:
+
+| Exit | Meaning | Report |
+|---|---|---|
+| `0` | Validation passed | `pass`; after an `--all` run, note that no single change was targeted |
+| `1` | Validation failed | `fail`, like any other validation failure |
+| `2` | Broken configuration: missing CLI, `openspec list` failing, or a `DEVFLOW_OPENSPEC_CHANGE` that names no active or archived change | broken configuration, never a validation failure |
+
+A gate that runs `openspec validate` with no target validates nothing (see the first note above). Report it as broken configuration as well, never as a validation failure.
+
 ## Use Within DevFlow Workflows
 
 Every delegation below names a skill by its usual `core` name for readability. Resolve it through the discovery steps above before using it, and fall back to the CLI when it is absent.
 
 - **Feature planning**: OpenSpec is not required. If the user wants specs before code, delegate to the skill that creates a change (`openspec-propose`); the GitHub issue stays the source of truth for scope.
-- **Implementation**: after selecting the branch, delegate to the skill that implements a change's tasks (`openspec-apply-change`). The change name equals the branch's last path segment: an existing change gives `feat/<change-name>`, and a new one is named `issue-<number>-<slug>` to match the default `feat/issue-<number>-<slug>` branch. Gates in `.devflow/check.md` derive the change from the branch this way, and read `DEVFLOW_OPENSPEC_CHANGE` instead when it is set, for a branch that cannot follow the rule.
-- **Validation**: add `openspec validate <change> --strict` as an extra gate only when the repository has OpenSpec configured. Pass the change name explicitly, or `--changes` when the gate covers every active change. Report it alongside tests, lint, typecheck, and build.
+- **Implementation**: after selecting the branch, delegate to the skill that implements a change's tasks (`openspec-apply-change`). The change name equals the branch's last path segment: an existing change gives `feat/<change-name>`, and a new one is named `issue-<number>-<slug>` to match the default `feat/issue-<number>-<slug>` branch. [The validation gate](#the-validation-gate) derives the change from the branch this way, and reads `DEVFLOW_OPENSPEC_CHANGE` instead for a branch that cannot follow the rule.
+- **Validation**: add [the validation gate](#the-validation-gate) only when the repository has OpenSpec configured, and report it alongside tests, lint, typecheck, and build.
 - **Before the PR**: delegate to the skill that finalizes a change (`openspec-archive-change`) so the main specs reflect merged behavior, and reference the change name in the PR body. Archiving must include spec synchronization: when the skill offers to archive without syncing, choose to sync. `openspec archive` merges the delta specs by default; a change that owns no specs should already declare `skip_specs: true`, which leaves `--skip-specs` as a rare last resort. After archiving, run `openspec validate --specs --strict` to catch a placeholder `## Purpose` on a newly created capability, then commit the resulting spec updates on the branch so the PR carries them.
 - **Post-merge work**: tasks that can only run after the merge, such as deployment and production verification, are not part of implementation and must not hold up archiving. Record them in the PR body instead. Archiving does block on unchecked tasks, so confirm the only ones left are post-merge items and then acknowledge the warning. Non-interactively that means `openspec archive <name> -y`; without it the command fails and names the flag it needs. Never tick a post-merge task to unblock the archive.
 
@@ -126,6 +147,6 @@ The workflows above change in three places for such a repository:
 
 - `openspec archive` updates the main specs in the store, so the code PR carries no spec diff. The store repository needs its own commit and push, and the PR body should name the store and the change.
 - A review must not report the missing spec diff as a finding. Confirm the change shows as archived with `openspec list --archived` instead.
-- A gate that tests `openspec/changes/<name>` on disk never sees the change. Drive the gate through the CLI, which resolves the store itself.
+- A gate that tests `openspec/changes/<name>` on disk never sees the change, which is why [the validation gate](#the-validation-gate) resolves changes through the CLI.
 
 Only `openspec/config.yaml` marks a repository as using OpenSpec. A machine-wide `defaultStore` makes `openspec list` resolve a store from any directory, including repositories that never adopted OpenSpec, so never infer adoption from a successful CLI call.
