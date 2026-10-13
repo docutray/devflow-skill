@@ -49,9 +49,9 @@ git -C "<root>" fetch origin
 git -C "<root>" worktree add "<root>/.devflow/worktrees/<sanitized-branch>" -b <branch> origin/<base-branch>
 # Existing branch
 git -C "<root>" worktree add "<root>/.devflow/worktrees/<sanitized-branch>" <existing-branch>
-# PR under review: its head branch, in the directory the Location table gives
-git -C "<root>" worktree add "<root>/.devflow/worktrees/review-pr-<number>" <head-branch>
 ```
+
+A PR under review gets a detached worktree at the reviewed commit instead, as [review-pr.md](review-pr.md) describes, so it works for forks and never competes with a branch checked out elsewhere.
 
 `<root>` is the absolute path the Main Checkout snippet printed. Substitute it literally; a shell variable does not survive from one command to the next.
 
