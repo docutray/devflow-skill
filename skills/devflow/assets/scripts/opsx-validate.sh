@@ -2,7 +2,8 @@
 # DevFlow OpenSpec validation gate (the opsx_validate check).
 #
 # DevFlow setup copies this file to .devflow/scripts/opsx-validate.sh in the
-# repository, and .devflow/check.md runs it from the repository root:
+# repository, and .devflow/check.md runs it from the root of the checkout being
+# validated (the worktree when working in one):
 #
 #   sh .devflow/scripts/opsx-validate.sh
 #

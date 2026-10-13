@@ -110,10 +110,10 @@ Notes:
 
 ## The Validation Gate
 
-`openspec validate <change> --strict` is the pre-PR gate. In `.devflow/check.md` it is the `opsx_validate` entry, which runs `sh .devflow/scripts/opsx-validate.sh`; setup copies that script into the repository from [assets/scripts/opsx-validate.sh](../assets/scripts/opsx-validate.sh). Without a configured gate, apply the same rules yourself. Configurations written before DevFlow 2.3.0 carry the gate as one inline command:
+`openspec validate <change> --strict` is the pre-PR gate. In `.devflow/check.md` it is the `opsx_validate` entry, which runs `sh .devflow/scripts/opsx-validate.sh`; setup copies that script into the repository from [assets/scripts/opsx-validate.sh](../assets/scripts/opsx-validate.sh). Without a configured gate, apply the same rules yourself. Configurations written before DevFlow 2.3.0 carry the gate as one inline command instead. Recognize it by its text, not by version:
 
-- DevFlow 2.2.2 wrote the same logic inline (it runs `openspec validate --all --strict` when no change matches), and it behaves exactly like the script.
-- DevFlow 2.1.0 to 2.2.1 wrote a command that falls back to `openspec validate --specs --strict` whenever `openspec status` fails, so a mistyped name or a missing CLI passes without validating the change. When you run such a gate, report its result with a warning that the gate is outdated, and recommend re-running setup to switch to the script.
+- An inline command that resolves the name with `openspec list --json` and runs `openspec validate --all --strict` when no change matches is the 2.2.2 gate. It behaves exactly like the script.
+- Any other OpenSpec gate, inline or under another name such as `opsx_verify`, is outdated: earlier versions shipped commands that pass without validating the change, call a target-less `openspec validate`, or run commands that no longer exist. Report its result with a warning that the gate is outdated, and recommend re-running setup to replace it with the script.
 
 The gate picks its target as follows:
 
@@ -129,7 +129,7 @@ Report each exit code differently:
 | `0` | Validation passed | `pass`; after an `--all` run, note that no single change was targeted |
 | `1` | Validation failed | `fail`, like any other validation failure |
 | `2` | Broken configuration: missing CLI, `openspec list` failing, or a `DEVFLOW_OPENSPEC_CHANGE` that names no active or archived change | broken configuration, never a validation failure |
-| `127` | The shell found no script: `.devflow/scripts/opsx-validate.sh` is missing. Some shells, such as dash, exit `2` for this instead, so after a `2` check that the file exists | broken configuration; re-run setup to copy the script |
+| `127` | The shell found no command: `.devflow/scripts/opsx-validate.sh` is missing, or an outdated inline gate could not find the `openspec` CLI. Some shells, such as dash, exit `2` for a missing script instead, so after a `2` check that the file exists | broken configuration; re-run setup to copy the script, or install the CLI |
 
 A gate that runs `openspec validate` with no target validates nothing (see the first note above), and it exits `1` like a real failure. Inspect a hand-written gate's command before running it: when it calls `openspec validate` without a change name, `--changes`, `--specs`, or `--all`, report it as broken configuration without running it, never as a validation failure.
 

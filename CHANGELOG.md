@@ -39,10 +39,10 @@ This project follows Semantic Versioning.
   command it replaces. Setup copies it to `.devflow/scripts/opsx-validate.sh`, committed with the
   configuration, whenever `check.md` carries an `opsx_validate` entry, enabled or not, and both
   templates run `sh .devflow/scripts/opsx-validate.sh`. The 2.2.2 inline command behaves like
-  the script and may stay. The inline gate from 2.1.0 to 2.2.1 still falls back to `--specs`, so
-  validation reports it with a warning and setup recommends replacing it. A missing script
-  (`127`) and a gate that runs `openspec validate` with no target are reported as broken
-  configuration. Verified against OpenSpec 1.14.1 under `dash`, case by case against the 2.2.2
+  the script and may stay. Any other OpenSpec gate from an earlier version, inline or named
+  `opsx_verify`, is recognized by its text, reported with an outdated-gate warning, and setup
+  recommends replacing it. A missing script or CLI (`127`) and a gate that runs
+  `openspec validate` with no target are reported as broken configuration. Verified against OpenSpec 1.14.1 under `dash`, case by case against the 2.2.2
   inline command.
 
 ### Fixed
@@ -51,7 +51,7 @@ This project follows Semantic Versioning.
   after choosing the branch name, so a configured branch convention was ignored. The resolution
   rule, `.devflow/<workflow>.md` then the legacy `.claude/details/commands/<workflow>.md`, is
   defined once in `SKILL.md`. A review reads its configuration from the PR's base branch, reports
-  changes to `.devflow/` or to the check commands as findings, validates with the base branch's
+  changes to `.devflow/` as findings, validates with the base branch's
   `check.md` (canonical or legacy location), runs the base branch's copy of a script the PR
   changed through a temporary file, so a failed read is broken configuration rather than an
   empty pass, and runs a command the PR added or changed only with the user's agreement. It
@@ -64,8 +64,9 @@ This project follows Semantic Versioning.
 ### Added
 - `references/check.md` documents the `.devflow/check.md` format (one JSON block with
   `validations.<name>` holding `command`, `description`, `enabled`, `skip_on_fast`) with a minimal
-  example, and says to merge the templates' optional blocks into it. Files with several blocks
-  keep working: every block's `validations` is merged, and setup offers to consolidate them. It was defined only by the
+  example, and says to merge the templates' optional blocks into it. In a file with several
+  blocks only the first runs; an enabled check found only in a later block is reported as
+  `skipped` with a warning, and setup offers to consolidate. It was defined only by the
   templates.
 - Rust inference for validation without configuration: `cargo build`, `cargo test`,
   `cargo fmt --check`, and `cargo clippy -- -D warnings` when clippy is installed, with

@@ -53,7 +53,7 @@ Use this when running DevFlow quality checks: tests, linting, type checking, bui
 
 | Key | Meaning |
 |---|---|
-| `command` | Shell command, run from the repository root. |
+| `command` | Shell command, run from the root of the checkout being validated: the worktree when working in one. |
 | `description` | What the check covers; use it in the report. |
 | `enabled` | `false` keeps the entry but never runs it. |
 | `skip_on_fast` | Optional. `true` skips the check when `fast` is requested. |
@@ -76,7 +76,7 @@ Use this when running DevFlow quality checks: tests, linting, type checking, bui
 }
 ```
 
-Prose around the block may add project notes; follow them. The framework examples in [assets/templates](../assets/templates) show fuller configurations as several blocks: the main configuration plus optional entries and variants (additional validations, environments, frameworks). When adapting them, merge the entries that apply into the single `validations` block; never copy the alternatives as extra blocks. Files written before 2.3.0 may follow the templates and keep extra checks, such as `opsx_validate`, in a later block. Merge the `validations` of every block in order; when two blocks define the same check name, use the first definition and report the conflict. Setup offers to consolidate such a file into one block.
+Prose around the block may add project notes; follow them. The framework examples in [assets/templates](../assets/templates) show fuller configurations as several blocks: the main configuration plus optional entries and variants (additional validations, environments, frameworks). When adapting them, merge the entries that apply into the single `validations` block; never copy the alternatives as extra blocks. The configuration is the first block holding `validations`. Files written before 2.3.0 may also follow a template's layout and keep an added check, such as `opsx_validate`, in a later block. Do not run later blocks, since the templates' later blocks are alternatives for other setups; instead, when a later block defines an enabled check that the first block lacks, report that check as `skipped` with a warning naming it, and recommend setup to consolidate the file. Setup offers that consolidation.
 
 ## Report Template
 

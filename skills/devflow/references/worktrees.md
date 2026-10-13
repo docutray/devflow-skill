@@ -4,7 +4,7 @@ Use this when a DevFlow workflow runs in an isolated worktree, for example when 
 
 ## Location
 
-Create worktrees under `.devflow/worktrees/` in the repository root, one directory per branch with slashes replaced by hyphens:
+Create worktrees under `.devflow/worktrees/` in the main checkout's root (see [Main Checkout](#main-checkout)), one directory per branch with slashes replaced by hyphens:
 
 | Branch | Worktree directory |
 |---|---|
