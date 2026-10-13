@@ -9,6 +9,8 @@ This project follows Semantic Versioning.
 ## [2.5.0] - 2026-10-13
 
 ### Changed
+- The worktree guide tells the user that the `.devflow/worktrees/` ignore rule it adds to
+  `.gitignore` is theirs to commit, and the Claude Code `dev` hint marks the issue as optional.
 - Epic planning hands off to the development workflow for the first sub-issue; the handoff
   table no longer routes it through feature planning first.
 - Epic planning resolves the `feat` configuration: its label and title conventions apply to the

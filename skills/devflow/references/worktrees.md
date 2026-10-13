@@ -35,7 +35,7 @@ git -C "<root>" check-ignore -v .devflow/worktrees/x   # prints source:line:patt
 git -C "<root>" check-ignore -q --no-index .devflow/check.md && echo "the DevFlow configuration is ignored"
 ```
 
-- No output from the first command: append the rule, `printf '\n# DevFlow worktrees\n.devflow/worktrees/\n' >> "<root>/.gitignore"`.
+- No output from the first command: append the rule, `printf '\n# DevFlow worktrees\n.devflow/worktrees/\n' >> "<root>/.gitignore"`, and tell the user the `.gitignore` change is theirs to commit.
 - A match that is not the repository's own `.gitignore`, such as a global excludes file, protects only this machine: add the rule to `.gitignore` as well so collaborators get it.
 - If the second command prints its warning, a broader rule such as `.devflow/` hides the configuration. Tell the user which rule it is and propose narrowing it to `.devflow/worktrees/`; do not rewrite their ignore file without agreement.
 
