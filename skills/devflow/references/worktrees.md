@@ -14,6 +14,18 @@ Create worktrees under `.devflow/worktrees/` in the repository root, one directo
 
 `.claude/worktrees/` is the legacy root. Keep working in, and clean up, worktrees that already exist there, but never create a new one there.
 
+## Main Checkout
+
+Run the ignore check, any `.gitignore` edit, and every `git worktree add` from the main checkout's root, never from inside another linked worktree, whose branch must not pick up unrelated changes. This prints that root from any directory, including linked worktrees and submodules:
+
+```bash
+common=$(cd "$(git rev-parse --git-common-dir)" && pwd)
+root=$(cd "$common" && cd "$(git config --file config core.worktree || echo ..)" && pwd)
+if [ "$(cd "$root" && cd "$(git rev-parse --git-common-dir 2>/dev/null)" 2>/dev/null && pwd)" = "$common" ]; then echo "$root"; else echo "main checkout not found" >&2; fi
+```
+
+If it reports `main checkout not found`, as with a repository created with `--separate-git-dir`, ask the user where the main checkout is rather than guessing.
+
 ## Ignore Rule
 
 The worktree root must be ignored before the first worktree is created. Ignore the `worktrees` subdirectory only: `.devflow/` also holds the project's committed DevFlow configuration and scripts, so ignoring `.devflow/` as a whole would silently drop them from version control.
@@ -29,13 +41,7 @@ git check-ignore -q --no-index .devflow/check.md && echo "the DevFlow configurat
 
 ## Create
 
-Work in place only when the current checkout already is the worktree for the branch you need (`git branch --show-current` names it). Otherwise create a new one, even from inside another linked worktree, whose unrelated work must not be disturbed. Create it from the main checkout so worktrees never nest; this prints the main checkout's root from any directory, linked worktrees included:
-
-```bash
-(cd "$(git rev-parse --git-common-dir)/.." && pwd)
-```
-
-From that directory:
+Work in place only when the current checkout already is the worktree for the branch you need (`git branch --show-current` names it). Otherwise create a new one, even from inside another linked worktree, whose unrelated work must not be disturbed. From the main checkout's root:
 
 ```bash
 git fetch origin

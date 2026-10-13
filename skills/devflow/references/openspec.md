@@ -129,7 +129,7 @@ Report each exit code differently:
 | `0` | Validation passed | `pass`; after an `--all` run, note that no single change was targeted |
 | `1` | Validation failed | `fail`, like any other validation failure |
 | `2` | Broken configuration: missing CLI, `openspec list` failing, or a `DEVFLOW_OPENSPEC_CHANGE` that names no active or archived change | broken configuration, never a validation failure |
-| `127` | The shell found no script: `.devflow/scripts/opsx-validate.sh` is missing (dash reports this as `2`, with `Can't open` on stderr) | broken configuration; re-run setup to copy the script |
+| `127` | The shell found no script: `.devflow/scripts/opsx-validate.sh` is missing. Some shells, such as dash, exit `2` for this instead, so after a `2` check that the file exists | broken configuration; re-run setup to copy the script |
 
 A gate that runs `openspec validate` with no target validates nothing (see the first note above), and it exits `1` like a real failure. Inspect a hand-written gate's command before running it: when it calls `openspec validate` without a change name, `--changes`, `--specs`, or `--all`, report it as broken configuration without running it, never as a validation failure.
 

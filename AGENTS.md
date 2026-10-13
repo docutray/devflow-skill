@@ -43,7 +43,7 @@ devflow-skill/
 
 ### DevFlow Skill
 - **Type**: Agent Skill with Claude Code command wrappers
-- **Format**: `SKILL.md` with YAML frontmatter plus Markdown references
+- **Format**: `SKILL.md` with YAML frontmatter plus Markdown references. Keep `SKILL.md` concise and put detailed workflows and procedures in `skills/devflow/references/`, linked one level deep from `SKILL.md`; `assets/` holds templates and scripts, never procedures.
 - **Templates**: Framework-specific configuration examples under `skills/devflow/assets/templates/`
 - **Scripts**: POSIX `sh` helpers under `skills/devflow/assets/scripts/`, such as the OpenSpec gate `opsx-validate.sh`. Setup copies them into the consumer repository's `.devflow/scripts/`, since a check command cannot know where the skill is installed. Test them under `dash`.
 - **Dependencies**: GitHub CLI (`gh`), project-specific tools
