@@ -43,7 +43,7 @@ Use this when running DevFlow quality checks: tests, linting, type checking, bui
      `cargo clippy -- -D warnings` only when clippy is installed (`cargo clippy --version`
      succeeds). `cargo test` alone is the `fast` path.
 3. Run independent validations in parallel when the client supports parallel tool execution. Otherwise run them sequentially and preserve the same report format.
-4. Include the OpenSpec validation gate only when `openspec/config.yaml` is present. It validates the branch's change, or the main specs and every active change when the branch names none, and exits `2` for broken configuration rather than `1`; [The Validation Gate](openspec.md#the-validation-gate) defines how it picks its target and how to report each exit code.
+4. Include the OpenSpec validation gate only when `openspec/config.yaml` is present, and skip it when its configured entry is disabled. It validates the branch's change, or the main specs and every active change when the branch names none, and exits `2` for broken configuration rather than `1`; [The Validation Gate](openspec.md#the-validation-gate) defines how it picks its target and how to report each exit code.
 5. Summarize each validation as `pass`, `warning`, `fail`, or `skipped`.
 6. If failures occur and the user requested implementation or autofix, fix them and re-run the relevant checks.
 

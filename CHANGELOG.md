@@ -32,8 +32,9 @@ This project follows Semantic Versioning.
   place only when the current checkout is the worktree for the branch needed. The ignore check
   uses `git check-ignore -v` and `--no-index`, so a rule that ignores `.devflow/` as a whole, or
   one that exists only in a personal excludes file, is reported instead of silently accepted.
-  A PR under review gets a `review-pr-<number>` worktree from `pull/<number>/head`, which also
-  works for pull requests from forks.
+  A PR under review gets a detached `review-pr-<number>` worktree from `refs/pull/<number>/head`,
+  fetched into a private `refs/devflow/` ref, which works for forks and for re-reviews after a
+  force-push.
 - The OpenSpec gate mechanics live only in `references/openspec.md`, under "The Validation Gate".
   `check.md` and `dev.md` summarize and link to it instead of restating it.
 - The `opsx_validate` template gate is now a shared POSIX script,
@@ -54,7 +55,7 @@ This project follows Semantic Versioning.
   after choosing the branch name, so a configured branch convention was ignored. The resolution
   rule, `.devflow/<workflow>.md` then the legacy `.claude/details/commands/<workflow>.md`, is
   defined once in `SKILL.md`. A review reads its configuration from the PR's base branch, reports
-  changes to `.devflow/` as findings, validates with the base branch's
+  changes to DevFlow configuration (canonical or legacy location) as findings, validates with the base branch's
   `check.md` (canonical or legacy location), runs the base branch's copy of a script the PR
   changed through a temporary file, so a failed read is broken configuration rather than an
   empty pass, and runs a command the PR added or changed only with the user's agreement. It
