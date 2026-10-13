@@ -35,9 +35,9 @@ This project follows Semantic Versioning.
 
 ### Changed
 - One dirty-workspace rule, in core principle 4: never stash, discard, or commit the user's
-  uncommitted changes (a workflow's own artifacts are not theirs); create a worktree (no
-  permission needed) or stop and ask, and use a
-  worktree in a non-interactive run.
+  uncommitted changes (only this issue's OpenSpec change counts as part of the task); create a
+  worktree (no permission needed) or stop and ask, and in a non-interactive run use a worktree
+  and say the uncommitted changes were left out.
 - Validation autofix is bounded: it fixes only failures the branch caused, never another
   person's OpenSpec change or an untouched spec, and stops after two attempts per check. Failures
   in untouched specs after archiving are reported, not fixed, and failures the branch did not
