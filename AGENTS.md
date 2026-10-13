@@ -239,7 +239,7 @@ allowed-tools:
   - Bash
 ```
 
-A pattern such as `Bash(git log:*)` is a prefix match and approves every flag that follows it. Some read-looking commands take flags that execute code or write files (`git fetch --upload-pack=<cmd>`, `git log --output=<file>`, `git diff --output=<file>`, `git branch -D`), so pre-approve only commands with no such flags: `git status`, `gh pr view`, `gh pr diff`, `gh issue view`.
+A pattern such as `Bash(git log:*)` is a prefix match and approves every flag that follows it. Some read-looking commands take flags that execute code or write files (`git fetch --upload-pack=<cmd>`, `git log --output=<file>`, `git diff --output=<file>`, `git branch -D`), so pre-approve a command by prefix only when none of its flags can do that, such as `git status`, `gh pr view`, `gh pr diff`, `gh issue view`, or `gh label list`. For a command that has such flags, grant the exact invocation without `:*`, such as `Bash(git branch --show-current)` or `Bash(git remote -v)`, which approves nothing else.
 
 Never grant bare `Bash` or `Edit` to a workflow that handles untrusted content, such as reviewing someone else's pull request: running the PR's tests or applying fixes should go through the user's normal permission prompts. `dev` and `check` keep bare `Bash` because they run the project's own commands on request; that is only as trustworthy as the checked-out branch, so after checking out someone else's branch, run them with prompts on. To actually forbid a tool, use `disallowed-tools`.
 

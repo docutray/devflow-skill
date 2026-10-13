@@ -26,7 +26,8 @@ This project follows Semantic Versioning.
   `Bash(git branch:*)`, and `Bash(git remote:*)` also approved `--upload-pack=<cmd>`,
   `--output=<file>`, `-D`, and `set-url`. Every wrapper drops them, and `feat` / `epic` narrow
   `gh issue:*` and `gh label:*` to their `view` / `list` forms, so creating issues and labels
-  prompts.
+  prompts. `feat` / `epic` keep their read-only context checks through exact grants with no
+  `:*`, `Bash(git branch --show-current)` and `Bash(git remote -v)`, which approve nothing else.
 
 ### Fixed
 - The Claude Code wrappers used `argument-hints` as a YAML list. Claude Code only recognizes
@@ -41,13 +42,16 @@ This project follows Semantic Versioning.
   actually forbid a tool.
 - The OPSX `opsx_validate` template gate fell back to `openspec validate --specs --strict`
   whenever `openspec status` failed, including when the CLI was missing or the change name was
-  mistyped, so it could pass without validating the change. It now falls back only when
-  `openspec list --archived --json` confirms the change was archived (an exact match, so regex
-  characters in a branch name cannot fake one), or when no change is active at all, as on the
-  default branch after a merge. A missing CLI, an empty name from a detached HEAD, or a name that
-  matches no change while others are active exits `2` with the reason on stderr, which `check.md`
-  reports as broken configuration, distinct from a validation failure (`1`). Both templates carry
-  the identical gate, verified against OpenSpec 1.14.1 under `dash`.
+  mistyped, so it could pass without validating the change. On a feature branch it now falls
+  back only when `openspec list --archived --json` lists a change with that name as archived (an
+  exact match, so regex characters in a branch name cannot fake one), or when no change is active
+  at all. The default branch (`main`, `master`, or `origin/HEAD`) and a detached HEAD carry no
+  change of their own, so they validate the main specs with a note on stderr even while other
+  changes are pending; set `DEVFLOW_OPENSPEC_CHANGE` to validate a specific change there, as in CI.
+  A missing CLI, or a feature-branch name that matches no change while others are active, exits
+  `2` with the reason on stderr, which `check.md` reports as broken configuration, distinct from
+  a validation failure (`1`). Both templates carry the identical gate, verified against OpenSpec
+  1.14.1 under `dash`.
 
 ### Added
 - `docs/skills-best-practices.md`: consolidated Agent Skills authoring guidance from Anthropic,
