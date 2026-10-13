@@ -5,17 +5,16 @@ allowed-tools:
   - Write
   - Glob
   - Grep
-  - Bash
+  - Bash(git status:*)
+  - Bash(git log:*)
+  - Bash(git branch:*)
+  - Bash(git remote:*)
+  - Bash(git ls-files:*)
+  - Bash(ls:*)
+  - Bash(openspec --version)
   - Task
   - AskUserQuestion
-argument-hints:
-  - "--framework=typescript"
-  - "--framework=python"
-  - "--framework=go"
-  - "--framework=ruby"
-  - "--framework=java"
-  - "--framework=rust"
-  - "--force"
+argument-hint: "[--framework=typescript|python|go|ruby|java|rust] [--force]"
 ---
 
 # DevFlow Setup Wrapper

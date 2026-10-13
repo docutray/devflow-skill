@@ -35,17 +35,17 @@ The root `.claude-plugin/marketplace.json` exposes the `devflow` plugin with `so
 ### Key Concepts
 
 - **Skills**: Auto-activated by agents based on trigger terms in the `description` field of `SKILL.md` frontmatter. Located in `skills/<skill-name>/SKILL.md`.
-- **Commands**: Claude Code wrappers in root `commands/`. They delegate to the canonical skill references and may use Claude-specific frontmatter (`allowed-tools`, `argument-hints`).
+- **Commands**: Claude Code wrappers in root `commands/`. They delegate to the canonical skill references and may use Claude-specific frontmatter (`allowed-tools`, `argument-hint`).
 
 ### Portability Boundary
 
 This is the constraint that spans the whole repo: `skills/devflow/` must run unchanged in Codex and other Agent Skills clients, so Claude-only constructs live **only** in `commands/` and must never leak into `skills/`:
 
-- `allowed-tools`, `argument-hints`, `${CLAUDE_PLUGIN_ROOT}`, `$ARGUMENTS`/`$1`, `@file` references
+- `allowed-tools`, `argument-hint`, `${CLAUDE_PLUGIN_ROOT}`, `$ARGUMENTS`/`$1`, `@file` references
 - Claude-specific tool names (`Task`, `AskUserQuestion`, `TodoWrite`, `WebSearch`)
 - Any assumption that slash commands exist at all
 
-Every wrapper follows the same shape: read `@${CLAUDE_PLUGIN_ROOT}/skills/devflow/SKILL.md`, read the matching `references/<workflow>.md`, treat `$ARGUMENTS` as the request, then follow the reference. Behavior changes belong in the reference; only tool permissions and argument hints belong in the wrapper. Claude Code derives the command name from the filename, so `commands/dev.md` → `/devflow:dev`.
+Every wrapper follows the same shape: read `@${CLAUDE_PLUGIN_ROOT}/skills/devflow/SKILL.md`, read the matching `references/<workflow>.md`, treat `$ARGUMENTS` as the request, then follow the reference. Behavior changes belong in the reference; only tool pre-approvals and argument hints belong in the wrapper. Claude Code derives the command name from the filename, so `commands/dev.md` → `/devflow:dev`.
 
 ### Two Kinds of Config — Don't Confuse Them
 
@@ -118,7 +118,8 @@ Use `claude --debug` to troubleshoot plugin loading issues.
 
 ### Adding Commands and Skills
 
-- **Command**: Create `.md` file in `commands/` with YAML frontmatter. Restrict `allowed-tools` to minimum required and delegate behavior to the skill.
+- **Command**: Create `.md` file in `commands/` with YAML frontmatter and delegate behavior to the skill. `argument-hint` is singular and takes one string (`"<pr-number> [--worktree]"`); Claude Code silently drops unknown keys, so a misspelled field just shows no hint.
+- **`allowed-tools` pre-approves, it does not restrict.** Every tool stays callable; the listed ones only skip the permission prompt. Grant only what the workflow should run without asking, scope Bash to command patterns (`Bash(gh pr view:*)`), and never grant bare `Bash` to a workflow that executes untrusted code, such as reviewing someone else's PR. Use `disallowed-tools` to actually forbid a tool.
 - **Skill**: Create `skills/<skill-name>/SKILL.md` with `name` (lowercase-hyphen, max 64 chars) and `description` (must include trigger terms, max 1024 chars).
 
 ## Code Style

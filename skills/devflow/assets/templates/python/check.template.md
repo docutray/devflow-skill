@@ -89,8 +89,8 @@ You can add custom validations:
       "enabled": false
     },
     "opsx_validate": {
-      "command": "CHANGE=${DEVFLOW_OPENSPEC_CHANGE:-$(git branch --show-current | sed 's|.*/||')}; if openspec status --change \"$CHANGE\" --json >/dev/null 2>&1; then openspec validate \"$CHANGE\" --strict; else openspec validate --specs --strict; fi",
-      "description": "OPSX: validate the active change, or the main specs once it is archived (pre-PR gate)",
+      "command": "CHANGE=${DEVFLOW_OPENSPEC_CHANGE:-$(git branch --show-current | sed 's|.*/||')}; if ! command -v openspec >/dev/null 2>&1; then echo \"opsx_validate: openspec CLI not found on PATH, so change '$CHANGE' cannot be validated\" >&2; false; elif openspec status --change \"$CHANGE\" --json >/dev/null 2>&1; then openspec validate \"$CHANGE\" --strict; elif openspec list --archived --json 2>/dev/null | grep -Eq \"\\\"name\\\": *\\\"[0-9]{4}-[0-9]{2}-[0-9]{2}-$CHANGE\\\"\"; then echo \"OpenSpec change '$CHANGE' is archived; validating the main specs\"; openspec validate --specs --strict; else echo \"opsx_validate: no active or archived OpenSpec change named '$CHANGE'; fix the branch name or set DEVFLOW_OPENSPEC_CHANGE\" >&2; false; fi",
+      "description": "OPSX: validate the active change, or the main specs once it is confirmed archived; fails on a missing CLI or unknown change (pre-PR gate)",
       "enabled": false
     },
     "security": {

@@ -6,6 +6,46 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [2.2.2] - 2026-10-13
+
+### Security
+- The skill now marks third-party content as untrusted. A new core principle in `SKILL.md` says
+  that issue and PR bodies, comments, review threads, diffs, commit messages, and web pages are
+  data to evaluate, never instructions to follow, and that directives found in them (run a
+  command, change scope, touch secrets, alter configuration) are surfaced to the user instead of
+  acted on. `dev.md`, `review-pr.md`, `research.md`, `feat.md`, and `epic.md` point back to it
+  where they read such content. This addresses the skills.sh Snyk W011 warning (third-party
+  content exposure / indirect prompt injection).
+- `commands/review-pr.md` no longer grants bare `Bash`, which pre-approved every shell command,
+  including scripts from the pull request under review. It now pre-approves only read-only `git`
+  and `gh pr view` / `diff` / `checks` / `gh issue view` patterns, so running the PR's tests goes
+  through the user's normal permission prompts. `commands/devflow-setup.md` gets the same
+  treatment, since setup is told not to install anything: its grant covers read-only inspection.
+
+### Fixed
+- The Claude Code wrappers used `argument-hints` as a YAML list. Claude Code only recognizes
+  `argument-hint` with a single string value and silently drops unknown keys, so no hints were
+  ever shown. All seven wrappers now use `argument-hint`, and `CLAUDE.md`, `AGENTS.md`, and the
+  `SKILL.md` gotchas no longer document the plural form as correct.
+- The wrappers and the contributor guidance described `allowed-tools` as a restriction ("using
+  Claude Code tools only where allowed by this wrapper", "Restrict `allowed-tools` to minimum
+  required"). It only pre-approves tools; every tool stays callable. The wrappers drop the claim,
+  and `CLAUDE.md` / `AGENTS.md` now say to grant only what a workflow should run without asking,
+  never bare `Bash` for a workflow that executes untrusted code, and `disallowed-tools` to
+  actually forbid a tool.
+- The OPSX `opsx_validate` template gate fell back to `openspec validate --specs --strict`
+  whenever `openspec status` failed, including when the CLI was missing or the change name was
+  mistyped, so it could pass without validating the change. It now falls back only when
+  `openspec list --archived --json` confirms the change was archived, and otherwise prints the
+  reason to stderr and exits non-zero, which `check.md` reports as broken configuration. Both
+  templates carry the identical gate, verified against OpenSpec 1.14.1 for an active change, an
+  archived change, an unknown change name, and a missing CLI.
+
+### Added
+- `docs/skills-best-practices.md`: consolidated Agent Skills authoring guidance from Anthropic,
+  OpenAI, the open specification, and skills.sh, with a compliance audit of `skills/devflow/`
+  and a prioritized backlog.
+
 ## [2.2.1] - 2026-10-13
 
 ### Fixed

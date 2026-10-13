@@ -21,7 +21,7 @@ Claude Code can install the skill the same way as above. The marketplace plugin 
 
 ## Version
 
-Current version: `2.2.1`
+Current version: `2.2.2`
 
 ## What DevFlow Provides
 
