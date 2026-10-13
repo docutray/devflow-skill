@@ -42,9 +42,10 @@ This project follows Semantic Versioning.
   branches. Each review starts from a fresh worktree; one left from an earlier review is removed
   first, and the review stops if it holds uncommitted changes. A push during the review repeats
   the metadata and diff fetch so the reviewed and validated commits match. `fix-issues` commits
-  only when the user asks, on a `review-pr-<number>-fixes` branch that outlives the worktree, and
-  pushes only a same-repository PR's fixes (`git push origin HEAD:<headRefName>`); a fork PR's
-  fixes are handed over as `git diff`, `git format-patch`, or suggestions, and local secrets such
+  its fixes locally on a `review-pr-<number>-fixes` branch that outlives the worktree, and pushes
+  only when asked and only a same-repository PR's fixes (`git push origin HEAD:<headRefName>`);
+  a fork PR's fixes are handed over with `git format-patch` or as suggestions. The report names
+  the PR commit and, separately, the fixes commit, and local secrets such
   as `.env` are never copied into a fork's review worktree. Without PR
   metadata, or without a resolvable main checkout, the review is
   static. The wrapper drops `--worktree`, since every review now uses one. The report
@@ -56,7 +57,7 @@ This project follows Semantic Versioning.
   for does not); post a review
   or comment only when asked, which the Claude Code wrapper exposes as `--post`, a request for
   approval being a request to post it; never merge, only recommend it. `fix-issues`
-  fixes stay in the review worktree and are committed or pushed only when the user asks.
+  fixes are committed locally in the review worktree and pushed only when the user asks.
 
 ## [2.3.0] - 2026-10-13
 
