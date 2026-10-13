@@ -63,7 +63,7 @@ DevFlow reads optional project-local configuration. The canonical location is cl
 └── review-pr.md
 ```
 
-The file names match the workflows: `check.md` for validation, `dev.md` for implementation, `feat.md` for feature planning, `review-pr.md` for PR review. A workflow that has a file resolves it before any other step, so the project's conventions (commands, branch naming, labels, review rules) shape everything that follows. Resolution order, first match wins per file:
+The file names match the workflows: `check.md` for validation, `dev.md` for implementation, `feat.md` for feature planning, `review-pr.md` for PR review. A workflow that has a file resolves it before the steps it shapes, so the project's conventions (commands, branch naming, labels, review rules) apply throughout; PR review reads it from the PR's base branch once that is known. Resolution order, first match wins per file:
 
 1. `.devflow/<workflow>.md` — canonical, works in every client.
 2. `.claude/details/commands/<workflow>.md` — legacy location from DevFlow 2.0 and earlier. Still read for backward compatibility.

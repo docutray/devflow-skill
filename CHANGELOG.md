@@ -21,17 +21,17 @@ This project follows Semantic Versioning.
 - `SKILL.md` keeps a single gotcha about optional slash commands instead of three, and the
   workflow-map bullets no longer repeat "or mentions `/devflow:X`".
 - The worktree guide moves from `assets/templates/worktree-guide.md` to `references/worktrees.md`,
-  linked from `SKILL.md`, `dev.md`, `review-pr.md`, `epic.md`, and `setup.md`. It is host-neutral ("set the
-  working directory explicitly for every command" instead of "Bash tool calls"), uses POSIX
-  snippets, and says new worktrees always go to `.devflow/worktrees/`: existing ones under the
-  legacy `.claude/worktrees/` are used and cleaned up in place, never created there. A new
-  worktree is created from the main checkout's root, found with `git rev-parse --git-common-dir`,
-  even when the agent already runs inside another linked worktree, and work happens in place only
-  when the current checkout is the worktree for the branch needed. The root lookup honors
-  `core.worktree`, so it also works in submodules, and asks the user when it cannot verify the
-  result; the ignore check and any `.gitignore` edit also run from that root. The ignore check uses
-  `git check-ignore -v` and `--no-index`, so a rule that ignores `.devflow/` as a whole, or one
-  that exists only in a personal excludes file, is reported instead of silently accepted.
+  linked from `SKILL.md`, `dev.md`, `review-pr.md`, `epic.md`, and `setup.md`. It is
+  host-neutral ("set the working directory explicitly for every command" instead of "Bash tool
+  calls"), uses POSIX snippets, and says new worktrees always go to `.devflow/worktrees/`:
+  existing ones under the legacy `.claude/worktrees/` are used and cleaned up in place, never
+  created there. Every snippet is anchored with `git -C` to the main checkout's root, which a new
+  Main Checkout section finds through `git rev-parse --git-common-dir` and `core.worktree` (so
+  submodules work), verifies, and asks the user for when it cannot. A new worktree is created
+  there even when the agent already runs inside another linked worktree, and work happens in
+  place only when the current checkout is the worktree for the branch needed. The ignore check
+  uses `git check-ignore -v` and `--no-index`, so a rule that ignores `.devflow/` as a whole, or
+  one that exists only in a personal excludes file, is reported instead of silently accepted.
 - The OpenSpec gate mechanics live only in `references/openspec.md`, under "The Validation Gate".
   `check.md` and `dev.md` summarize and link to it instead of restating it.
 - The `opsx_validate` template gate is now a shared POSIX script,
@@ -53,7 +53,9 @@ This project follows Semantic Versioning.
   defined once in `SKILL.md`. A review reads its configuration from the PR's base branch, reports
   changes to `.devflow/` or to the check commands as findings, validates with the base branch's
   `check.md` (canonical or legacy location), runs the base branch's copy of a script the PR
-  changed, and runs a command the PR added or changed only with the user's agreement.
+  changed through a temporary file, so a failed read is broken configuration rather than an
+  empty pass, and runs a command the PR added or changed only with the user's agreement. It
+  fetches the PR metadata and the base branch before resolving that configuration.
 - Feature and epic planning asked for a description even when the request already contained one.
   They, and research, now ask only when the request leaves it unclear.
 - `git worktree remove --force` is run only on the user's explicit request, after showing what it
@@ -62,7 +64,8 @@ This project follows Semantic Versioning.
 ### Added
 - `references/check.md` documents the `.devflow/check.md` format (one JSON block with
   `validations.<name>` holding `command`, `description`, `enabled`, `skip_on_fast`) with a minimal
-  example, and says to merge the templates' optional blocks into it. It was defined only by the
+  example, and says to merge the templates' optional blocks into it. Files with several blocks
+  keep working: every block's `validations` is merged, and setup offers to consolidate them. It was defined only by the
   templates.
 - Rust inference for validation without configuration: `cargo build`, `cargo test`,
   `cargo fmt --check`, and `cargo clippy -- -D warnings` when clippy is installed, with

@@ -76,7 +76,7 @@ Use this when running DevFlow quality checks: tests, linting, type checking, bui
 }
 ```
 
-Prose around the block may add project notes; follow them. The framework examples in [assets/templates](../assets/templates) show fuller configurations as several blocks: the main configuration plus optional entries and variants (additional validations, environments, frameworks). When adapting them, merge the entries that apply into the single `validations` block; never copy the alternatives as extra blocks. If an existing file has more than one block that defines `validations`, use the first and say in the report that the others were ignored.
+Prose around the block may add project notes; follow them. The framework examples in [assets/templates](../assets/templates) show fuller configurations as several blocks: the main configuration plus optional entries and variants (additional validations, environments, frameworks). When adapting them, merge the entries that apply into the single `validations` block; never copy the alternatives as extra blocks. Files written before 2.3.0 may follow the templates and keep extra checks, such as `opsx_validate`, in a later block. Merge the `validations` of every block in order; when two blocks define the same check name, use the first definition and report the conflict. Setup offers to consolidate such a file into one block.
 
 ## Report Template
 
