@@ -47,10 +47,14 @@ This project follows Semantic Versioning.
   `openspec status` resolves the branch's name, and otherwise runs `openspec validate --all
   --strict`, which covers the main specs and every active change, with a note on stderr. The
   default branch, a detached CI checkout, an unrelated branch, an archived change, and a mistyped
-  name therefore all still validate the branch's change if it exists. A missing CLI exits `2`,
-  which `check.md` reports as broken configuration, distinct from a validation failure (`1`). The
-  branch is read with `git symbolic-ref`, which works on git older than 2.22. Both templates
-  carry the identical gate, verified against OpenSpec 1.14.1 under `dash`.
+  branch name therefore all still validate the branch's change if it exists. An explicit
+  `DEVFLOW_OPENSPEC_CHANGE` is honored strictly: it widens to `--all` only once that change is
+  archived. A missing CLI, a failing `openspec list`, or a `DEVFLOW_OPENSPEC_CHANGE` naming no
+  active or archived change exits `2`, which `check.md` reports as broken configuration,
+  distinct from a validation failure (`1`). Both OPSX gates read the branch with `git
+  symbolic-ref`, which works on git older than 2.22, and lowercase it, since `openspec status`
+  matches names case-insensitively on macOS but `openspec validate` does not. Both templates
+  carry the identical gates, verified against OpenSpec 1.14.1 under `dash`.
 
 ### Added
 - `docs/skills-best-practices.md`: consolidated Agent Skills authoring guidance from Anthropic,

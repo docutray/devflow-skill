@@ -84,12 +84,12 @@ You can add custom validations:
   "validations": {
     "...": "...",
     "opsx_status": {
-      "command": "CHANGE=${DEVFLOW_OPENSPEC_CHANGE:-$(git branch --show-current | sed 's|.*/||')}; if openspec status --change \"$CHANGE\" --json >/dev/null 2>&1; then openspec status --change \"$CHANGE\"; else echo \"No active OpenSpec change named $CHANGE\"; fi",
+      "command": "CHANGE=${DEVFLOW_OPENSPEC_CHANGE:-$(git symbolic-ref --quiet --short HEAD 2>/dev/null | sed 's|.*/||' | tr '[:upper:]' '[:lower:]')}; if [ -n \"$CHANGE\" ] && openspec status --change \"$CHANGE\" --json >/dev/null 2>&1; then openspec status --change \"$CHANGE\"; else echo \"No active OpenSpec change named ${CHANGE:-<detached HEAD>}\"; fi",
       "description": "OPSX: check current change status",
       "enabled": false
     },
     "opsx_validate": {
-      "command": "CHANGE=${DEVFLOW_OPENSPEC_CHANGE:-$(git symbolic-ref --quiet --short HEAD 2>/dev/null | sed 's|.*/||')}; if ! command -v openspec >/dev/null 2>&1; then echo \"opsx_validate: openspec CLI not found on PATH\" >&2; (exit 2); elif [ -n \"$CHANGE\" ] && openspec status --change \"$CHANGE\" --json >/dev/null 2>&1; then openspec validate \"$CHANGE\" --strict; else echo \"opsx_validate: no active change named '${CHANGE:-<detached HEAD>}'; validating the main specs and every active change\" >&2; openspec validate --all --strict; fi",
+      "command": "if [ -n \"${DEVFLOW_OPENSPEC_CHANGE:-}\" ]; then CHANGE=$DEVFLOW_OPENSPEC_CHANGE; PINNED=1; else CHANGE=$(git symbolic-ref --quiet --short HEAD 2>/dev/null | sed 's|.*/||' | tr '[:upper:]' '[:lower:]'); PINNED=; fi; if ! command -v openspec >/dev/null 2>&1; then echo \"opsx_validate: openspec CLI not found on PATH\" >&2; (exit 2); elif ! openspec list --json >/dev/null 2>&1; then echo \"opsx_validate: openspec list failed; check the OpenSpec setup\" >&2; (exit 2); elif [ -n \"$CHANGE\" ] && openspec status --change \"$CHANGE\" --json >/dev/null 2>&1; then openspec validate \"$CHANGE\" --strict; elif [ -n \"$PINNED\" ] && ! openspec list --archived --json 2>/dev/null | sed -n 's/^ *\"name\": *\"[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}-\\(.*\\)\",*$/\\1/p' | grep -Fqx -- \"$CHANGE\"; then echo \"opsx_validate: DEVFLOW_OPENSPEC_CHANGE='$CHANGE' names no active or archived change\" >&2; (exit 2); else echo \"opsx_validate: no active change named '${CHANGE:-<detached HEAD>}'; validating the main specs and every active change\" >&2; openspec validate --all --strict; fi",
       "description": "OPSX: validate the branch's change, or the main specs and every active change when the branch names none; exits 2 when the CLI is missing (pre-PR gate)",
       "enabled": false
     },

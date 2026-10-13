@@ -19,7 +19,7 @@ Use this when implementing a GitHub issue and preparing a pull request.
 6. Prepare the workspace:
    - If dirty, protect existing changes before switching branches.
    - Use a branch name like `feat/issue-<number>-<slug>` unless the user provided one. When OpenSpec is configured, the branch must end in the change name from step 4, so a change that already existed gives `feat/<change-name>`.
-   - If the user's branch name cannot end in the change name, keep it and say that the OpenSpec check gates then need `DEVFLOW_OPENSPEC_CHANGE=<change-name>` set in the environment, since they otherwise cannot resolve the change and fail as broken configuration.
+   - If the user's branch name cannot end in the change name, keep it and say that the OpenSpec check gates then need `DEVFLOW_OPENSPEC_CHANGE=<change-name>` set in the environment to target that change; without it they validate the main specs and every active change instead of the change alone.
    - Use a worktree when requested or when it is the safest way to avoid disturbing current work.
 7. Install or verify dependencies using project conventions or `.devflow/dev.md` when present, falling back to the legacy `.claude/details/commands/dev.md`.
 8. Implement in small steps following existing code patterns. When OpenSpec is configured, delegate to the skill for implementing a change's tasks (usually `openspec-apply-change`), resolved against the step 4 listing, or drive the CLI with `openspec instructions apply --change <name> --json` when it is absent. Keep the tasks file in sync as work completes.
