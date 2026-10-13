@@ -49,7 +49,7 @@ Use this when running DevFlow quality checks: tests, linting, type checking, bui
 
 ## Configuration Format
 
-`.devflow/check.md` is Markdown around one fenced JSON block. Each entry under `validations` is one check, keyed by its name:
+`.devflow/check.md` is Markdown around one fenced JSON block holding `validations`. Each entry under it is one check, keyed by its name:
 
 | Key | Meaning |
 |---|---|
@@ -60,23 +60,23 @@ Use this when running DevFlow quality checks: tests, linting, type checking, bui
 
 ```json
 {
-  "validations": {
-    "tests": {
-      "command": "npm run test",
-      "description": "Unit tests",
-      "enabled": true
-    },
-    "build": {
-      "command": "npm run build",
-      "description": "Production build",
-      "enabled": true,
-      "skip_on_fast": true
+    "validations": {
+        "tests": {
+            "command": "npm run test",
+            "description": "Unit tests",
+            "enabled": true
+        },
+        "build": {
+            "command": "npm run build",
+            "description": "Production build",
+            "enabled": true,
+            "skip_on_fast": true
+        }
     }
-  }
 }
 ```
 
-Prose around the block may add project notes; follow them. The framework examples in [assets/templates](../assets/templates) show fuller configurations.
+Prose around the block may add project notes; follow them. The framework examples in [assets/templates](../assets/templates) show fuller configurations as several blocks: the main configuration plus optional entries and variants (additional validations, environments, frameworks). When adapting them, merge the entries that apply into the single `validations` block; never copy the alternatives as extra blocks. If an existing file has more than one block that defines `validations`, use the first and say in the report that the others were ignored.
 
 ## Report Template
 

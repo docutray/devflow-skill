@@ -19,16 +19,23 @@ Create worktrees under `.devflow/worktrees/` in the repository root, one directo
 The worktree root must be ignored before the first worktree is created. Ignore the `worktrees` subdirectory only: `.devflow/` also holds the project's committed DevFlow configuration and scripts, so ignoring `.devflow/` as a whole would silently drop them from version control.
 
 ```bash
-git check-ignore -q .devflow/worktrees/x || printf '\n# DevFlow worktrees\n.devflow/worktrees/\n' >> .gitignore
+git check-ignore -v .devflow/worktrees/x   # prints source:line:pattern of the matching rule, if any
+git check-ignore -q --no-index .devflow/check.md && echo "the DevFlow configuration is ignored"
 ```
+
+- No output from the first command: append the rule, `printf '\n# DevFlow worktrees\n.devflow/worktrees/\n' >> .gitignore`.
+- A match that is not the repository's own `.gitignore`, such as a global excludes file, protects only this machine: add the rule to `.gitignore` as well so collaborators get it.
+- If the second command prints its warning, a broader rule such as `.devflow/` hides the configuration. Tell the user which rule it is and propose narrowing it to `.devflow/worktrees/`; do not rewrite their ignore file without agreement.
 
 ## Create
 
-Check first whether you are already inside a linked worktree; if so, work in place instead of nesting another one:
+Work in place only when the current checkout already is the worktree for the branch you need (`git branch --show-current` names it). Otherwise create a new one, even from inside another linked worktree, whose unrelated work must not be disturbed. Create it from the main checkout so worktrees never nest; this prints the main checkout's root from any directory, linked worktrees included:
 
 ```bash
-[ "$(git rev-parse --git-dir)" != "$(git rev-parse --git-common-dir)" ] && echo "already in a worktree"
+(cd "$(git rev-parse --git-common-dir)/.." && pwd)
 ```
+
+From that directory:
 
 ```bash
 git fetch origin
