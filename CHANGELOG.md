@@ -6,6 +6,45 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [2.4.1] - 2026-10-13
+
+### Fixed
+- The development workflow wrote a change's OpenSpec artifacts before preparing the branch, so
+  they landed in whatever checkout was current and a fresh worktree did not see them. It now
+  settles the change name first, prepares the branch, and writes the artifacts there; a change
+  the feature workflow left uncommitted is carried onto the branch (kept by an in-place switch,
+  copied into a worktree). Feature planning creates the change only after approval and leaves it
+  uncommitted unless the user asks.
+- New branches no longer track the base: `git worktree add --no-track` and
+  `git switch --no-track -c`, so a bare `git push` cannot fail or, with `push.default=upstream`,
+  push onto the base branch. The first push is `git push -u origin <branch>`.
+- The development workflow resolves the base branch explicitly (the user's, the `dev`
+  configuration's, or the repository default via `gh` or `origin/HEAD`) and always branches from
+  a freshly fetched `origin/<base>`.
+- The OpenSpec gate passes `--type change`, so a capability spec with the same name as the
+  change no longer makes `openspec validate` fail as ambiguous.
+- Once the branch's change is archived, the gate validates only the main specs
+  (`openspec validate --specs --strict`) instead of `--all`, so a teammate's active change cannot
+  fail it. A name matching nothing still runs `--all`, and a `DEVFLOW_OPENSPEC_CHANGE` matching
+  nothing still exits `2`. Re-run setup to copy the updated script into `.devflow/scripts/`.
+- The OpenSpec skill listing uses `ls -d ./.[!.]*/skills/openspec-*`, which no longer matches
+  `../skills/` in shells where `.*` includes `..`.
+
+### Changed
+- One dirty-workspace rule, in core principle 4: never stash, discard, or commit the user's
+  uncommitted changes; create a worktree (no permission needed) or stop and ask, and use a
+  worktree in a non-interactive run.
+- Validation autofix is bounded: it fixes only failures the branch caused, never another
+  person's OpenSpec change or an untouched spec, and stops after two attempts per check. Failures
+  in untouched specs after archiving are reported, not fixed.
+- `openspec archive <name> --yes` is the documented non-interactive form; it confirms both the
+  spec updates and unchecked tasks. `--skip-specs` is never used; `skip_specs: true` may be
+  declared at any point before archiving.
+- An `opsx_validate` found only in a later JSON block of `check.md` counts as absent, so the gate
+  rules are applied by hand.
+- Python check inference runs `pytest`, `ruff`, and `mypy` through `uv run` or `poetry run` when
+  `uv.lock` or `poetry.lock` exists.
+
 ## [2.4.0] - 2026-10-13
 
 ### Changed

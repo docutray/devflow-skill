@@ -136,7 +136,7 @@ You can add custom validations:
     },
     "opsx_validate": {
       "command": "sh .devflow/scripts/opsx-validate.sh",
-      "description": "OPSX: validate the branch's change, or the main specs and every active change when the branch names none; exits 2 on broken configuration (pre-PR gate; runs the script setup copies into .devflow/scripts/)",
+      "description": "OPSX: validate the branch's change, only the main specs once it is archived, or the main specs and every active change when the branch names none; exits 2 on broken configuration (pre-PR gate; runs the script setup copies into .devflow/scripts/)",
       "enabled": false
     },
     "coverage": {
