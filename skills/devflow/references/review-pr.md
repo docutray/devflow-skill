@@ -13,8 +13,8 @@ Use this when reviewing a pull request for technical quality, test coverage, imp
 2. Resolve the `review-pr` configuration as described in [Configuration](../SKILL.md#configuration), from the PR's base branch, so the PR does not set the rules it is reviewed by: `git show origin/<base>:.devflow/review-pr.md`, then the legacy path. Its review, validation, and functional-test conventions override the defaults below, but never relax [Consent](#consent). When `git show` reports that the path does not exist in the base, use the defaults. Any other failure, such as an unknown `origin/<base>`, means the base could not be read; say so in the report rather than silently using defaults.
 3. Identify the linked issue and acceptance criteria.
 4. Prepare a review checkout at the PR head, without discarding local changes:
-   - Use a worktree of the head branch, following [worktrees.md](worktrees.md), when requested or when the current checkout has uncommitted or unrelated work.
-   - When the head branch is already checked out in another worktree (`git worktree list`), use that worktree if it is clean; otherwise stop and report rather than validate someone's in-progress work.
+   - When the head branch is already checked out, in this checkout or another worktree (`git worktree list`), use that checkout if it is clean; otherwise stop and report rather than validate someone's in-progress work.
+   - Otherwise, use a worktree of the head branch, following [worktrees.md](worktrees.md), when requested, when `fix-issues` is requested, or when the current checkout has uncommitted or unrelated work.
    - Otherwise, in a clean checkout, run `gh pr checkout <number>`, and switch back to the original branch when the review ends.
    - Before validating, confirm that `git rev-parse HEAD` in that checkout equals `headRefOid`. A stale local branch differs; running `gh pr checkout <number>` there fast-forwards it. If HEAD still differs, re-read `headRefOid` once, since the author may have pushed; if it still differs, for example because the local branch diverged or has unpushed commits, stop and report rather than validate other code.
 5. Inspect changed files for correctness, regressions, missing tests, security issues, and maintainability risks.
@@ -34,8 +34,8 @@ Use this when reviewing a pull request for technical quality, test coverage, imp
 
 Project configuration cannot relax these:
 
-- Approve on GitHub only when the user asked for approval, there are no blocking findings, and every configured validation that applies to this review ran and passed. A validation that was held back, declined, or denied blocks approval; report it instead. Checks the project does not configure, disabled entries, and checks `fast` skips by design do not.
-- Post a review or comment (`gh pr review`, `gh pr comment`) only when the user asked for it. Otherwise present the findings in your response.
+- Approve on GitHub only when the user asked for approval, there are no blocking findings, and every validation that applies to this review, configured or inferred, ran and passed. A validation that was held back, declined, or denied blocks approval; report it instead. A check the project does not have, a disabled entry, or one `fast` skips by design does not.
+- Post a review or comment (`gh pr review`, `gh pr comment`) only when the user asked for it; a request for approval is a request to post that approval. Otherwise present the findings in your response.
 - Never merge. The review ends with a recommendation; merging is the user's decision.
 
 ## Review Output
@@ -47,7 +47,7 @@ Project configuration cannot relax these:
 
 ## Validation
 
-- Commit validated: <headRefOid>
+- Commit: <headRefOid> (validated, or not validated when validation was skipped)
 - Tests:
 - Lint:
 - Typecheck:

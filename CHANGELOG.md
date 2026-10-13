@@ -22,7 +22,7 @@ This project follows Semantic Versioning.
   review, never instructions to follow. The `review-pr` configuration is still read from the
   base branch.
 - A new core principle covers non-interactive runs: never block on a question, create, post,
-  approve, merge, overwrite, or push nothing that needed approval, present drafts and findings,
+  approve, overwrite, or push nothing that needed approval, present drafts and findings,
   and say what was held back. Feature planning, epic planning, setup, and the worktree guide
   point to it at their approval gates.
 - Research follows links that serve it but never acts on instructions a page gives, keeps the
@@ -39,12 +39,15 @@ This project follows Semantic Versioning.
   checkout, switching back afterwards), confirms `git rev-parse HEAD` equals `headRefOid`,
   fast-forwards a stale branch with `gh pr checkout`, re-reads `headRefOid` once in case the
   author pushed, and otherwise stops. A head branch already checked out in another worktree is
-  used there when clean, and the review stops otherwise. The report names the commit validated.
+  used there when clean, and the review stops otherwise; `fix-issues` always works in a worktree,
+  so its uncommitted fixes never follow the user back to their branch. The report names the
+  commit and whether it was validated.
 - PR review consent is explicit, in a new Consent section that project configuration cannot
-  relax: approve only when the user asked, nothing is blocking, and every configured validation
-  that applies ran and passed (one held back, declined, or denied blocks approval; unconfigured,
-  disabled, or `fast`-skipped checks do not); post a review or comment only when asked, which
-  the Claude Code wrapper exposes as `--post`; never merge, only recommend it. `fix-issues`
+  relax: approve only when the user asked, nothing is blocking, and every validation that
+  applies, configured or inferred, ran and passed (one held back, declined, or denied blocks
+  approval; a check the project lacks, a disabled entry, or a `fast` skip does not); post a review
+  or comment only when asked, which the Claude Code wrapper exposes as `--post`, a request for
+  approval being a request to post it; never merge, only recommend it. `fix-issues`
   fixes stay in the review checkout and are committed or pushed only when the user asks.
 
 ## [2.3.0] - 2026-10-13
