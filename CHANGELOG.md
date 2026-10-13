@@ -23,7 +23,8 @@ This project follows Semantic Versioning.
   base branch.
 - A new core principle covers non-interactive runs: never block on a question, create, post,
   approve, overwrite, or push nothing that needed approval, present drafts and findings,
-  and say what was held back. Feature planning, epic planning, setup, and the worktree guide
+  and say what was held back. A request for the action itself (approve, post) or to proceed
+  without review counts as approval. Feature planning, epic planning, setup, and the worktree guide
   point to it at their approval gates.
 - Research follows links that serve it but never acts on instructions a page gives, keeps the
   number of sources to what the depth needs, and never puts secrets, credentials, environment
@@ -38,11 +39,13 @@ This project follows Semantic Versioning.
   It now always validates in a detached worktree at the PR's exact commit (`git fetch origin
   pull/<number>/head`, then `git worktree add --detach … <headRefOid>`), never in a checkout the
   user works in, works for fork PRs, and avoids branch-name collisions and stale local
-  branches. A re-review moves an existing review worktree to the new `headRefOid` only when it is
-  clean and holds no commits missing from the PR, and a push during the review repeats the
-  metadata and diff fetch so the reviewed and validated commits match. `fix-issues` commits
-  only when the user asks and pushes only a same-repository PR's fixes (`git push origin
-  HEAD:<headRefName>`); a fork PR's fixes are handed over as a patch or suggestions. Without PR
+  branches. Each review starts from a fresh worktree; one left from an earlier review is removed
+  first, and the review stops if it holds uncommitted changes. A push during the review repeats
+  the metadata and diff fetch so the reviewed and validated commits match. `fix-issues` commits
+  only when the user asks, on a `review-pr-<number>-fixes` branch that outlives the worktree, and
+  pushes only a same-repository PR's fixes (`git push origin HEAD:<headRefName>`); a fork PR's
+  fixes are handed over as `git diff`, `git format-patch`, or suggestions, and local secrets such
+  as `.env` are never copied into a fork's review worktree. Without PR
   metadata, or without a resolvable main checkout, the review is
   static. The wrapper drops `--worktree`, since every review now uses one. The report
   names the commit and whether it was validated.
