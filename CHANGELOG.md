@@ -13,8 +13,10 @@ This project follows Semantic Versioning.
   they landed in whatever checkout was current and a fresh worktree did not see them. It now
   settles the change name first, prepares the branch, and writes the artifacts there; a change
   the feature workflow left uncommitted is carried onto the branch (kept by an in-place switch,
-  copied into a worktree). Feature planning creates the change only after approval and leaves it
-  uncommitted unless the user asks.
+  copied into a worktree). Feature planning creates the change only after approval, names it in
+  the issue (editing the body when the issue had to exist first), and leaves it uncommitted. An
+  in-place switch happens only in the main checkout; inside another branch's worktree, dev
+  creates a new worktree.
 - New branches no longer track the base: `git worktree add --no-track` and
   `git switch --no-track -c`, so a bare `git push` cannot fail or, with `push.default=upstream`,
   push onto the base branch. The first push is `git push -u origin <branch>`.
@@ -32,16 +34,18 @@ This project follows Semantic Versioning.
 
 ### Changed
 - One dirty-workspace rule, in core principle 4: never stash, discard, or commit the user's
-  uncommitted changes; create a worktree (no permission needed) or stop and ask, and use a
+  uncommitted changes (a workflow's own artifacts are not theirs); create a worktree (no
+  permission needed) or stop and ask, and use a
   worktree in a non-interactive run.
 - Validation autofix is bounded: it fixes only failures the branch caused, never another
   person's OpenSpec change or an untouched spec, and stops after two attempts per check. Failures
-  in untouched specs after archiving are reported, not fixed.
+  in untouched specs after archiving are reported, not fixed, and failures the branch did not
+  cause do not block archiving.
 - `openspec archive <name> --yes` is the documented non-interactive form; it confirms both the
   spec updates and unchecked tasks. `--skip-specs` is never used; `skip_specs: true` may be
   declared at any point before archiving.
-- An `opsx_validate` found only in a later JSON block of `check.md` counts as absent, so the gate
-  rules are applied by hand.
+- An enabled `opsx_validate` found only in a later JSON block of `check.md` counts as absent, so
+  the gate rules are applied by hand; a disabled one stays skipped.
 - Python check inference runs `pytest`, `ruff`, and `mypy` through `uv run` or `poetry run` when
   `uv.lock` or `poetry.lock` exists.
 
