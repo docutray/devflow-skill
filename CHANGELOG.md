@@ -6,6 +6,42 @@ This project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-10-13
+
+### Fixed
+- The OpenSpec reference is verified against 1.14.1 instead of 1.6.0. Since 1.7, Codex writes its
+  skills to the shared vendor-neutral `.agents/skills/` tree, not `.codex/skills/`; the surface
+  table, the discovery step, and `setup.md` now say so. The discovery glob already matched the
+  new path. Delegation now explicitly allows following a skill found only in another client's
+  tree, which is all a Claude Code user with `delivery: commands` will find next to a Codex setup.
+- `delivery: commands` no longer reads as "no skills at all": skills-only tools such as Codex
+  still get them.
+- Changes that own no spec behavior now declare `skip_specs: true` in `.openspec.yaml` (OpenSpec
+  1.7+). Without it the `validate <change> --strict` gate fails with `Change must have at least
+  one delta`, so recommending `archive --skip-specs` left the gate red until the last step.
+  `review-pr.md` treats an unjustified `skip_specs: true` like an unjustified `--skip-specs`.
+- The OPSX `check` template gates tested `openspec/changes/<name>` on disk, so they exited `1`
+  once the change was archived, which DevFlow does before opening the PR, and never saw
+  store-backed changes. They now ask the CLI whether the change is active and otherwise validate
+  the main specs with `--strict`.
+- The gates derived the change name from the branch's last path segment, which for the default
+  `feat/issue-<number>-<slug>` branch is `issue-<number>-<slug>`, while `openspec.md` only said
+  the change "usually matches the branch slug". With nothing aligning the two, the gates could not
+  find the change. `dev.md` now makes the change name equal the branch's last segment: an
+  existing change gives `feat/<change-name>`, and a new change is named `issue-<number>-<slug>`.
+  `feat.md` names a change it creates in the issue body so `dev.md` continues it, and the
+  templates read `DEVFLOW_OPENSPEC_CHANGE` first, for branches that cannot follow the rule.
+
+### Added
+- Notes on stricter `--strict` validation in 1.8–1.14.1: the placeholder `## Purpose` that
+  `archive` writes for a new capability now fails `validate --specs --strict`, so `dev.md`
+  validates the main specs after archiving.
+- A warning not to adopt `openspec validate --archived` as a gate, since it fails on the
+  post-merge tasks DevFlow deliberately leaves unchecked.
+- A section on store-backed repositories (OpenSpec 1.5+ stores, beta), where changes and main
+  specs live in a separate repository and the code PR carries no spec diff.
+- `status --all`, `show --diff`, `list --archived`, and `version --json` in the CLI fallback.
+
 ## [2.2.0] - 2026-07-30
 
 ### Added
