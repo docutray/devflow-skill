@@ -11,13 +11,17 @@ This project follows Semantic Versioning.
 ### Changed
 - Epic planning hands off to the development workflow for the first sub-issue; the handoff
   table no longer routes it through feature planning first.
-- Epic planning resolves the `feat` configuration and applies its issue, label, and template
-  conventions to the epic and every sub-issue. Its draft list now matches the output template.
+- Epic planning resolves the `feat` configuration: its label and title conventions apply to the
+  epic and every sub-issue, its issue body template to the sub-issues. Its draft list now matches the output template.
 - Epic branches are created only when the user asks for one: `epic/<name>` is created without a
-  checkout, pushed, and named in the handoff as the base branch for the sub-issues. The epic
+  checkout, pushed, and named as the base branch in every sub-issue body, which the development
+  workflow now honors after a base the user names. Sub-issues merged into it are closed by hand
+  or listed in the epic branch's final PR, since closing keywords only act on the default branch. The epic
   `--worktree` hint is replaced by `--epic-branch`.
 - Workflow routing: a request to open a PR for work already committed on the current branch goes
-  to the development workflow's PR step, after full validation, without requiring an issue.
+  to the development workflow's PR step, after full validation, without requiring an issue. If
+  that branch is the base, the work first moves to a new branch; if it belongs to an issue or an
+  active OpenSpec change, the issue is linked and the change archived.
 - Core principle 2 now says issues and labels are created only after the user approves the
   draft, regardless of the client's permission prompts.
 
