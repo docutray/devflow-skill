@@ -10,8 +10,8 @@ This project follows Semantic Versioning.
 
 ### Changed
 - PR review trusts by origin. It fetches `isCrossRepository` and `headRefOid`. A same-repository
-  PR is the team's own work and is validated with its configuration as usual. A PR from a fork,
-  or one whose origin could not be determined, runs nothing from its checkout (install, tests, build, configured commands or scripts) until
+  PR is the team's own work and is validated with its configuration as usual. A PR from a fork
+  runs nothing from its checkout (install, tests, build, configured commands or scripts) until
   the user has seen what will run, with additions and changes the PR makes flagged, and agreed;
   when it changes DevFlow configuration, the base branch's configuration is preferred, and with
   no user to agree and no explicit request to run it, the review is static and validation is
@@ -38,14 +38,18 @@ This project follows Semantic Versioning.
   It now always validates in a detached worktree at the PR's exact commit (`git fetch origin
   pull/<number>/head`, then `git worktree add --detach … <headRefOid>`), which never touches the
   user's checkouts, works for fork PRs, and avoids branch-name collisions and stale local
-  branches. A re-review moves a clean existing review worktree to the new `headRefOid`;
-  `fix-issues` creates a branch there only when the user asks to commit. Without PR metadata the
-  review is static. The wrapper drops `--worktree`, since every review now uses one. The report
+  branches. A re-review moves a clean existing review worktree to the new `headRefOid`, and a
+  push during the review repeats the metadata and diff fetch so the reviewed and validated
+  commits match. `fix-issues` commits and pushes (`git push origin HEAD:<headRefName>`) only when
+  the user asks. A missing ignore rule goes to the local exclude file, not the tracked
+  `.gitignore`. Without PR metadata, or without a resolvable main checkout, the review is
+  static. The wrapper drops `--worktree`, since every review now uses one. The report
   names the commit and whether it was validated.
 - PR review consent is explicit, in a new Consent section that project configuration cannot
   relax: approve only when the user asked, nothing is blocking, and every validation that
   applies, configured or inferred, ran and passed (one held back, declined, or denied blocks
-  approval; a check the project lacks, a disabled entry, or a `fast` skip does not); post a review
+  approval; a check the project lacks, a disabled entry, a `fast` skip, or a skip the user asked
+  for does not); post a review
   or comment only when asked, which the Claude Code wrapper exposes as `--post`, a request for
   approval being a request to post it; never merge, only recommend it. `fix-issues`
   fixes stay in the review worktree and are committed or pushed only when the user asks.
